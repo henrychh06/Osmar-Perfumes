@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="_ds/classical-280dc767-045c-4836-a55f-a92fbb1c2a6c/styles.css">
 <script src="_ds/classical-280dc767-045c-4836-a55f-a92fbb1c2a6c/_ds_bundle.js"></script>
 <script src="image-slot.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="./supabase-config.js"></script>
+<script>window.sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Manrope:wght@400;600;700&display=swap');
 :root { --font-heading: 'Oswald', system-ui, sans-serif; --font-body: 'Manrope', system-ui, sans-serif; }
@@ -115,7 +118,7 @@ html, body { height: auto; min-height: 100%; }
       <sc-for list="{{ topItems }}" as="p" hint-placeholder-count="5">
         <div class="card" data-reveal data-reveal-delay="{{ p.delay }}" style="gap:8px;padding:12px;transition:transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease, border-color .35s ease" style-hover="transform:translateY(-5px);box-shadow:var(--shadow-md);border-color:var(--color-accent)">
           <div style="position:relative">
-            <image-slot id="{{ p.slotId }}" shape="rect" class="plate" style="width:100%;aspect-ratio:3/4" placeholder="{{ p.name }}"></image-slot>
+            <img src="{{ p.imgUrl }}" alt="{{ p.name }}" class="plate" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block">
             <span style="position:absolute;top:8px;left:8px;width:22px;height:22px;border-radius:50%;background:#ffffff;border:1px solid var(--color-accent);color:var(--color-accent-700);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-feature-settings:'tnum' 1;box-shadow:var(--shadow-sm)">{{ p.pos }}</span>
             <sc-if value="{{ p.badge }}" hint-placeholder-val="{{ false }}">
               <span style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;letter-spacing:0.1em;background:{{ p.badgeBg }};color:#ffffff;padding:3px 7px;border-radius:999px">{{ p.badge }}</span>
@@ -324,20 +327,21 @@ class Component extends DCLogic {
     s.async = true;
     document.body.appendChild(s);
     this.setupReveal();
-    try {
-      const raw = localStorage.getItem('maros:admin:v4');
-      if (raw) {
-        const admin = JSON.parse(raw);
+    window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
+      if (error || !row || !row.data) return;
+      const admin = row.data;
+      if (admin.products && admin.top10) {
         const byId = {};
         admin.products.forEach(p => { byId[p.id] = p; });
         const list = admin.top10.map(id => byId[id]).filter(p => p && p.enDecants && p.p3 !== '' && p.p3 != null).map(p => ({
-          brand: p.marca, name: p.nombre, badge: p.etiqueta || '', price: Number(p.p3), id: p.id
+          brand: p.marca, name: p.nombre, badge: p.etiqueta || '', price: Number(p.p3), id: p.id, imagenes: p.imagenes || []
         }));
         if (list.length) { this.topProducts = list; this.forceUpdate(); }
-        if (admin.inicio && admin.inicio.heroImagen) this.setState({ heroImg: admin.inicio.heroImagen });
       }
-    } catch (e) {}
+      if (admin.inicio && admin.inicio.heroImagen) this.setState({ heroImg: admin.inicio.heroImagen });
+    });
   }
+  BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   fmt(n) { return 'S/. ' + Number(n).toFixed(2); }
   badgeColor(b) { return b === 'HOT' ? '#9a3324' : b === 'OFERTA' ? '#1a7d38' : '#1b1816'; }
   componentDidUpdate() { this.setupReveal(); }
@@ -372,7 +376,7 @@ class Component extends DCLogic {
     const topItems = shown.map((t, i) => {
       const pos = this.state.showAllTop ? i + 1 : p * 5 + i + 1;
       return {
-        slotId: t.id ? 'prod-' + t.id : 'prod-' + pos, name: t.name, brand: t.brand, pos,
+        imgUrl: (t.imagenes && t.imagenes[0]) || this.BLANK_IMG, name: t.name, brand: t.brand, pos,
         badge: t.badge, badgeBg: this.badgeColor(t.badge), priceLabel: 'Desde ' + this.fmt(t.price),
         delay: (i % 5) * 70
       };

@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="_ds/classical-280dc767-045c-4836-a55f-a92fbb1c2a6c/styles.css">
 <script src="_ds/classical-280dc767-045c-4836-a55f-a92fbb1c2a6c/_ds_bundle.js"></script>
 <script src="image-slot.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="./supabase-config.js"></script>
+<script>window.sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Manrope:wght@400;600;700&display=swap');
 :root { --font-heading: 'Oswald', system-ui, sans-serif; --font-body: 'Manrope', system-ui, sans-serif; }
@@ -99,7 +102,7 @@ html, body { height: auto; min-height: 100%; }
       <sc-for list="{{ curated }}" as="k" hint-placeholder-count="6">
         <div class="card" onClick="{{ k.open }}" style="padding:0;overflow:hidden;gap:0;cursor:pointer;transition:transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease, border-color .35s ease" style-hover="transform:translateY(-5px);box-shadow:var(--shadow-md);border-color:var(--color-accent)">
           <div style="position:relative;background:#f0efee">
-            <image-slot id="{{ k.slotId }}" shape="rect" style="width:100%;aspect-ratio:4/3" placeholder="{{ k.name }}"></image-slot>
+            <img src="{{ k.imgUrl }}" alt="{{ k.name }}" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">
             <span style="position:absolute;top:12px;left:12px;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;background:#ffffff;border:1px solid var(--color-accent);color:var(--color-accent-700);padding:5px 10px">{{ k.typeLabel }}</span>
             <sc-if value="{{ k.badge }}" hint-placeholder-val="{{ false }}">
               <span style="position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:{{ k.badgeBg }};color:#ffffff;padding:4px 9px;border-radius:999px">{{ k.badge }}</span>
@@ -133,12 +136,11 @@ html, body { height: auto; min-height: 100%; }
         <div style="display:grid;grid-template-columns:minmax(0,10fr) minmax(0,10fr)">
           <div style="background:#f0efee;padding:28px;display:flex;flex-direction:column;gap:14px">
             <div style="flex:1;display:flex;align-items:center">
-              <image-slot id="{{ selectedSlot }}" shape="rect" style="width:100%;aspect-ratio:1/1" placeholder="Foto del pack"></image-slot>
+              <img src="{{ selectedImg }}" alt="Foto del pack" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block">
             </div>
             <div style="display:flex;gap:10px;justify-content:center">
-              <image-slot id="{{ thumb1 }}" shape="rect" style="width:64px;height:64px;background:#ffffff" placeholder="Foto 2"></image-slot>
-              <image-slot id="{{ thumb2 }}" shape="rect" style="width:64px;height:64px;background:#ffffff" placeholder="Foto 3"></image-slot>
-              <image-slot id="{{ thumb3 }}" shape="rect" style="width:64px;height:64px;background:#ffffff" placeholder="Foto 4"></image-slot>
+              <img src="{{ thumb1Img }}" alt="Foto 2" style="width:64px;height:64px;object-fit:cover;background:#ffffff">
+              <img src="{{ thumb2Img }}" alt="Foto 3" style="width:64px;height:64px;object-fit:cover;background:#ffffff">
             </div>
           </div>
 
@@ -273,10 +275,9 @@ class Component extends DCLogic {
   state = { cat: 'arabes', type: 'todos', size: 0, picked: [], sel: null, mSize: 0, qty: 1, cart: 0, searchOpen: false };
   packDiscountAdmin = null;
   componentDidMount() {
-    try {
-      const raw = localStorage.getItem('maros:admin:v4');
-      if (!raw) return;
-      const admin = JSON.parse(raw);
+    window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
+      if (error || !row || !row.data) return;
+      const admin = row.data;
       const catMap = { 'Nicho': 'nicho', 'Diseñador': 'disenador', 'Árabe': 'arabes', 'Damas': 'damas' };
       const newTesters = (admin.products || []).filter(p => p.enDecants && p.p3 !== '' && p.p3 != null).map(p => ({
         id: p.id, brand: p.marca, name: p.nombre, cat: catMap[p.linea] || 'nicho', price: Number(p.p3)
@@ -285,13 +286,14 @@ class Component extends DCLogic {
       const typeKeyMap = { 'Mixto': 'mixtos', 'Nicho': 'nicho', 'Diseñador': 'disenador', 'Árabe': 'arabes', 'Damas': 'damas' };
       const newPacks = (admin.packs || []).map(k => ({
         id: k.id, type: typeKeyMap[k.tipo] || 'mixtos', typeLabel: k.tipo === 'Árabe' ? 'Árabes' : k.tipo,
-        tag: k.etiqueta || '', name: k.nombre, subtitle: k.subtitulo, ids: k.productos || []
+        tag: k.etiqueta || '', name: k.nombre, subtitle: k.subtitulo, ids: k.productos || [], imagenes: k.imagenes || []
       }));
       if (newPacks.length) this.packs = newPacks;
       if (admin.packDiscountGlobal != null) this.packDiscountAdmin = admin.packDiscountGlobal;
       this.forceUpdate();
-    } catch (e) {}
+    });
   }
+  BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   sizes = [
     { ml: '3 ml', mult: 1, sprays: 'aprox. 50 aplicaciones por decant', label: '3ml / 50 sprays' },
     { ml: '5 ml', mult: 1.55, sprays: 'aprox. 90 aplicaciones por decant', label: '5ml / 90 sprays' },
@@ -383,7 +385,7 @@ class Component extends DCLogic {
       curated: shownPacks.map(p => {
         const base = this.packPrice(p, 0, packPct);
         return {
-          slotId: 'pack-' + p.id,
+          imgUrl: (p.imagenes && p.imagenes[0]) || this.BLANK_IMG,
           name: p.name,
           typeLabel: p.typeLabel,
           badge: p.tag || '',
@@ -400,10 +402,9 @@ class Component extends DCLogic {
       selectedType: selPack ? 'Pack ' + selPack.typeLabel : '',
       selectedSubtitle: selPack ? selPack.subtitle : '',
       selectedItems: selCalc ? selCalc.items.map(t => t.brand + ' ' + t.name) : [],
-      selectedSlot: selPack ? 'pack-' + selPack.id : 'none',
-      thumb1: selPack ? 'packdet-' + selPack.id + '-1' : 'none1',
-      thumb2: selPack ? 'packdet-' + selPack.id + '-2' : 'none2',
-      thumb3: selPack ? 'packdet-' + selPack.id + '-3' : 'none3',
+      selectedImg: (selPack && selPack.imagenes && selPack.imagenes[0]) || this.BLANK_IMG,
+      thumb1Img: (selPack && selPack.imagenes && selPack.imagenes[1]) || this.BLANK_IMG,
+      thumb2Img: (selPack && selPack.imagenes && selPack.imagenes[2]) || this.BLANK_IMG,
       selectedBefore: selCalc ? this.fmt(selCalc.before) : '',
       selectedSave: selCalc ? 'Ahorras ' + this.fmt(selCalc.before - selCalc.price) : '',
       selectedPerUnit: selCalc ? this.fmt(selCalc.price / selCalc.items.length) + ' por decant' : '',

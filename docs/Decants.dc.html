@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="_ds/classical-280dc767-045c-4836-a55f-a92fbb1c2a6c/styles.css">
 <script src="_ds/classical-280dc767-045c-4836-a55f-a92fbb1c2a6c/_ds_bundle.js"></script>
 <script src="image-slot.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="./supabase-config.js"></script>
+<script>window.sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Manrope:wght@400;600;700&display=swap');
 :root { --font-heading: 'Oswald', system-ui, sans-serif; --font-body: 'Manrope', system-ui, sans-serif; }
@@ -64,7 +67,7 @@ html, body { height: auto; min-height: 100%; }
     <sc-for list="{{ items }}" as="p" hint-placeholder-count="10">
       <div style="cursor:pointer;min-width:0" onClick="{{ p.open }}">
         <div style="position:relative;background:#f0efee;border-radius:var(--radius-md);overflow:hidden">
-          <image-slot id="{{ p.slotId }}" shape="rect" style="width:100%;aspect-ratio:4/5;filter:{{ p.imgFilter }}" placeholder="{{ p.name }}"></image-slot>
+          <img src="{{ p.imgUrl }}" alt="{{ p.name }}" style="width:100%;aspect-ratio:4/5;object-fit:cover;display:block;filter:{{ p.imgFilter }}">
           <sc-if value="{{ p.soldOut }}" hint-placeholder-val="{{ false }}">
             <span style="position:absolute;top:10px;left:10px;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;background:#ffffff;border:1px solid var(--color-divider);border-radius:999px;padding:4px 10px;color:color-mix(in srgb, var(--color-text) 65%, transparent)">Agotado</span>
           </sc-if>
@@ -87,14 +90,13 @@ html, body { height: auto; min-height: 100%; }
 
           <div style="background:#f0efee;padding:28px;display:flex;flex-direction:column;gap:14px;position:relative">
             <div style="flex:1;display:flex;align-items:center">
-              <image-slot id="{{ selectedSlot }}" shape="rect" style="width:100%;aspect-ratio:1/1" placeholder="Foto principal del producto"></image-slot>
+              <img src="{{ selectedImg }}" alt="Foto principal del producto" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block">
             </div>
             <button type="button" aria-label="Anterior" onClick="{{ prevProd }}" style="position:absolute;left:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text)" style-hover="border-color:var(--color-accent)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg></button>
             <button type="button" aria-label="Siguiente" onClick="{{ nextProd }}" style="position:absolute;right:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text)" style-hover="border-color:var(--color-accent)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></button>
             <div style="display:flex;gap:10px;justify-content:center">
-              <image-slot id="{{ thumb1 }}" shape="rect" style="width:64px;height:64px;background:#ffffff" placeholder="Foto 2"></image-slot>
-              <image-slot id="{{ thumb2 }}" shape="rect" style="width:64px;height:64px;background:#ffffff" placeholder="Foto 3"></image-slot>
-              <image-slot id="{{ thumb3 }}" shape="rect" style="width:64px;height:64px;background:#ffffff" placeholder="Foto 4"></image-slot>
+              <img src="{{ thumb1Img }}" alt="Foto 2" style="width:64px;height:64px;object-fit:cover;background:#ffffff">
+              <img src="{{ thumb2Img }}" alt="Foto 3" style="width:64px;height:64px;object-fit:cover;background:#ffffff">
             </div>
           </div>
 
@@ -191,13 +193,13 @@ class Component extends DCLogic {
     bannerSub: 'Prueba fragancias originales en formato pequeño antes de invertir en la botella completa. Sellados y etiquetados al momento de tu pedido.'
   };
   componentDidMount() {
-    try {
-      const raw = localStorage.getItem('maros:admin:v4');
-      if (!raw) return;
-      const admin = JSON.parse(raw);
+    window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
+      if (error || !row || !row.data) return;
+      const admin = row.data;
       if (admin.banners && admin.banners.decants) {
         this.setState({ bannerKicker: admin.banners.decants.kicker || this.state.bannerKicker, bannerSub: admin.banners.decants.subtitulo || this.state.bannerSub });
       }
+      if (!admin.products) return;
       const catMap = { 'Nicho': 'nicho', 'Diseñador': 'disenador', 'Árabe': 'arabes', 'Damas': 'damas' };
       const split3 = (s) => {
         const parts = (s || '').split(',').map(x => x.trim()).filter(Boolean);
@@ -210,13 +212,15 @@ class Component extends DCLogic {
         return {
           id: p.id, tag: p.etiqueta || '', brand: p.marca, name: p.nombre, cat: catMap[p.linea] || 'nicho',
           price: Number(p.p3), stock: Number(p.stock) || 0, desc: 'Notas: ' + (p.notas || '—') + '.', top, heart, base,
-          sizes: [{ ml: '3ml / 50 sprays', price: Number(p.p3) }, { ml: '5ml / 90 sprays', price: Number(p.p5) }, { ml: '10ml / 180 sprays', price: Number(p.p10) }]
+          sizes: [{ ml: '3ml / 50 sprays', price: Number(p.p3) }, { ml: '5ml / 90 sprays', price: Number(p.p5) }, { ml: '10ml / 180 sprays', price: Number(p.p10) }],
+          imagenes: p.imagenes || []
         };
       });
       if (list.length) this.data = list;
       this.forceUpdate();
-    } catch (e) {}
+    });
   }
+  BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   cats = [
     { key: 'todos', label: 'Todos' },
     { key: 'nicho', label: 'Nicho' },
@@ -277,18 +281,18 @@ class Component extends DCLogic {
         select: () => this.setState({ cat: c.key, sel: null })
       })),
       items: list.map(p => ({
-        name: p.name, slotId: 'dec-' + p.id, soldOut: p.stock === 0,
+        name: p.name, soldOut: p.stock === 0,
         badge: p.tag || '', badgeBg: this.tagColor(p.tag),
+        imgUrl: (p.imagenes && p.imagenes[0]) || this.BLANK_IMG,
         imgFilter: p.stock === 0 ? 'grayscale(1)' : 'none',
         textOpacity: p.stock === 0 ? 0.5 : 1,
         priceLabel: 'Desde ' + this.fmt(p.price) + ' PEN',
         open: () => this.setState({ sel: p.id, selSize: 0, qty: 1 })
       })),
       selected,
-      selectedSlot: selected ? 'dec-' + selected.id : 'none',
-      thumb1: selected ? 'decdet-' + selected.id + '-1' : 'none1',
-      thumb2: selected ? 'decdet-' + selected.id + '-2' : 'none2',
-      thumb3: selected ? 'decdet-' + selected.id + '-3' : 'none3',
+      selectedImg: (selected && selected.imagenes && selected.imagenes[0]) || this.BLANK_IMG,
+      thumb1Img: (selected && selected.imagenes && selected.imagenes[1]) || this.BLANK_IMG,
+      thumb2Img: (selected && selected.imagenes && selected.imagenes[2]) || this.BLANK_IMG,
       sizeOptions: sizes.map((s, i) => ({
         priceLabel: this.fmt(s.price),
         ml: s.ml,

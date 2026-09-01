@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="_ds/classical-280dc767-045c-4836-a55f-a92fbb1c2a6c/styles.css">
 <script src="_ds/classical-280dc767-045c-4836-a55f-a92fbb1c2a6c/_ds_bundle.js"></script>
 <script src="image-slot.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="./supabase-config.js"></script>
+<script>window.sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Manrope:wght@400;600;700&display=swap');
 :root { --font-heading: 'Oswald', system-ui, sans-serif; --font-body: 'Manrope', system-ui, sans-serif; }
@@ -121,7 +124,7 @@ html, body { height: auto; min-height: 100%; }
             <sc-for list="{{ options }}" as="o" hint-placeholder-count="9">
               <button type="button" onClick="{{ o.toggle }}" style="background:{{ o.bg }};border:{{ o.border }};padding:0;overflow:hidden;cursor:pointer;font:inherit;text-align:left;display:flex;flex-direction:column;transition:border-color .25s ease, transform .3s cubic-bezier(.2,.7,.2,1)" style-hover="border-color:var(--color-accent);transform:translateY(-3px)">
                 <span style="position:relative;display:block;background:#f0efee">
-                  <image-slot id="{{ o.slotId }}" shape="rect" style="width:100%;aspect-ratio:1/1" placeholder="{{ o.name }}"></image-slot>
+                  <img src="{{ o.imgUrl }}" alt="{{ o.name }}" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block">
                   <span style="position:absolute;top:9px;right:9px;width:22px;height:22px;border-radius:50%;border:1px solid {{ o.markBorder }};background:{{ o.markBg }};color:{{ o.markColor }};display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"></path></svg></span>
                   <sc-if value="{{ o.badge }}" hint-placeholder-val="{{ false }}">
                     <span style="position:absolute;top:9px;left:9px;font-size:8.5px;font-weight:700;letter-spacing:0.1em;background:{{ o.badgeBg }};color:#ffffff;padding:3px 7px;border-radius:999px">{{ o.badge }}</span>
@@ -237,23 +240,23 @@ class Component extends DCLogic {
   tramosAdmin = null;
   sizesOn = null;
   componentDidMount() {
-    try {
-      const raw = localStorage.getItem('maros:admin:v4');
-      if (!raw) return;
-      const admin = JSON.parse(raw);
+    window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
+      if (error || !row || !row.data) return;
+      const admin = row.data;
       const catMap = { 'Nicho': 'nicho', 'Diseñador': 'disenador', 'Árabe': 'arabes', 'Damas': 'damas' };
       const marcas = admin.marcasPorLinea || {};
       const newCats = (admin.cats || []).map(c => ({ key: catMap[c] || c.toLowerCase(), label: c, brands: marcas[c] || '' }));
       if (newCats.length) this.cats = newCats;
       const newTesters = (admin.products || []).filter(p => p.enCombo && p.p3 !== '' && p.p3 != null).map(p => ({
-        id: p.id, brand: p.marca, name: p.nombre, cat: catMap[p.linea] || 'nicho', price: Number(p.p3), tag: p.etiqueta || ''
+        id: p.id, brand: p.marca, name: p.nombre, cat: catMap[p.linea] || 'nicho', price: Number(p.p3), tag: p.etiqueta || '', imagenes: p.imagenes || []
       }));
       if (newTesters.length) this.testers = newTesters;
       if (admin.tramos && admin.tramos.length) this.tramosAdmin = admin.tramos;
       if (admin.tamanos) this.sizesOn = admin.tamanos;
       this.forceUpdate();
-    } catch (e) {}
+    });
   }
+  BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   sizes = [
     { ml: '3 ml', mult: 1, sprays: 'aprox. 50 aplicaciones' },
     { ml: '5 ml', mult: 1.55, sprays: 'aprox. 90 aplicaciones' },
@@ -383,7 +386,7 @@ class Component extends DCLogic {
         const on = picked.includes(t.id);
         return {
           brand: t.brand, name: t.name,
-          slotId: 'combo-' + t.id,
+          imgUrl: (t.imagenes && t.imagenes[0]) || this.BLANK_IMG,
           priceLabel: this.fmt(unit(t)),
           badge: t.tag || '',
           badgeBg: this.tagColor(t.tag),
