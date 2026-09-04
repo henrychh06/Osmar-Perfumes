@@ -203,7 +203,7 @@
               <input value="{{ pd.subtitulo }}" onChange="{{ pdh.subtitulo }}">
             </label>
             <div>
-              <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div>
+              <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. Recomendado: 800 × 800 px (cuadrada).</p>
               <div style="display: grid; gap: 9.2px;">
                 <sc-for list="{{ draftImagenesRows }}" as="im" hint-placeholder-count="3">
                   <div style="display: grid; gap: 4.6px;">
@@ -273,7 +273,7 @@
                 <input value="{{ k.subtitulo }}" onChange="{{ k.setSubtitulo }}">
               </label>
               <div>
-                <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div>
+                <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. Recomendado: 800 × 800 px (cuadrada).</p>
                 <div style="display: grid; gap: 9.2px;">
                   <sc-for list="{{ k.imagenesRows }}" as="im" hint-placeholder-count="3">
                     <div style="display: grid; gap: 4.6px;">
@@ -403,11 +403,24 @@
           </div>
           <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: #fff; padding: 18.4px 22px; display: grid; gap: 13.8px;">
             <div style="font-family: var(--font-heading); font-size: 22px;">Categorías del combo</div>
-            <p style="margin: 0; font-size: 12px; color: var(--color-neutral-600);">Las mismas líneas de Ajustes. Aquí solo defines qué marcas destacadas se muestran en cada tarjeta.</p>
+            <p style="margin: 0; font-size: 12px; color: var(--color-neutral-600); line-height: 1.5;">Las mismas líneas de Ajustes. Aquí defines la foto y qué marcas destacadas se muestran en cada tarjeta.<br><strong>Tamaño recomendado de la foto: 400 × 400 px (cuadrada).</strong> Se recorta para llenar el recuadro de la tarjeta.</p>
             <sc-for list="{{ marcas }}" as="m" hint-placeholder-count="4">
-              <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">{{ m.linea }}
-                <input value="{{ m.marcas }}" onChange="{{ m.setMarcas }}" placeholder="Marca · Marca · Marca">
-              </label>
+              <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); padding: 13.8px 18.4px; display: grid; gap: 9.2px;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--color-neutral-700);">{{ m.linea }}</div>
+                <label onDragOver="{{ m.img.onDragOver }}" onDrop="{{ m.img.onDrop }}" style="{{ m.img.dropStyle }}">
+                  <input type="file" accept="image/*" onChange="{{ m.img.onFileChange }}" style="display: none;">
+                  <sc-if value="{{ m.img.url }}" hint-placeholder-val="{{ false }}">
+                    <img src="{{ m.img.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                  </sc-if>
+                  <sc-if value="{{ m.img.empty }}" hint-placeholder-val="{{ true }}">
+                    <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto de {{ m.linea }} — arrastra o haz clic</span>
+                  </sc-if>
+                </label>
+                <input value="{{ m.img.url }}" onChange="{{ m.img.onChange }}" placeholder="o pega un enlace de imagen" style="font-size: 12px; padding: 6px 10px;">
+                <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">Marcas destacadas
+                  <input value="{{ m.marcas }}" onChange="{{ m.setMarcas }}" placeholder="Marca · Marca · Marca">
+                </label>
+              </div>
             </sc-for>
           </div>
           <p style="margin: 0; font-size: 13px; color: var(--color-neutral-600);">Los perfumes que se pueden elegir en cada categoría son los que tengan «Disponible en Arma tu combo» activado, dentro de su ficha en Perfumes o Decants.</p>
@@ -461,17 +474,68 @@
           <p style="margin: 0; font-size: 13px; color: var(--color-neutral-600);">Vista previa aproximada del inicio de la tienda.</p>
 
           <div style="border-top: 1px solid var(--color-divider); padding-top: 22px; margin-top: 4.6px;">
-            <div style="font-family: var(--font-heading); font-size: 22px; margin-bottom: 9.2px;">Imagen del banner principal</div>
-            <label onDragOver="{{ onHeroImgDragOver }}" onDrop="{{ onHeroImgDrop }}" style="{{ heroDropStyle }}">
-              <input type="file" accept="image/*" onChange="{{ onHeroFileChange }}" style="display: none;">
-              <sc-if value="{{ inicio.heroImagen }}" hint-placeholder-val="{{ false }}">
-                <img src="{{ inicio.heroImagen }}" alt="" style="max-height: 100px; max-width: 100%; object-fit: contain; display: block; margin: 0 auto;">
-              </sc-if>
-              <sc-if value="{{ noHeroImg }}" hint-placeholder-val="{{ true }}">
-                <div style="font-size: 13px; color: var(--color-neutral-400); line-height: 1.6; text-align: center;">Arrastra aquí la foto del banner o haz clic<br><span style="font-size: 12px; color: var(--color-neutral-500);">(o pega un enlace abajo)</span></div>
-              </sc-if>
-            </label>
-            <input value="{{ inicio.heroImagen }}" onChange="{{ setHeroImagen }}" placeholder="o pega un enlace de imagen" style="margin-top: 9.2px; font-size: 12px;">
+            <div style="font-family: var(--font-heading); font-size: 22px; margin-bottom: 4.6px;">Fotos del banner principal (3 botellas)</div>
+            <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin: 0 0 9.2px; padding: 13px; border-radius: var(--radius-md); background: var(--color-neutral-100);">
+              <svg width="54" height="81" viewBox="0 0 80 120" style="flex: 0 0 auto;">
+                <rect x="1" y="1" width="78" height="118" rx="4" fill="none" stroke="var(--color-neutral-400)" stroke-width="2" stroke-dasharray="4 3"/>
+                <path d="M32 10 h16 v10 l6 10 v82 a4 4 0 0 1 -4 4 h-24 a4 4 0 0 1 -4 -4 v-82 l6 -10 z" fill="var(--color-accent)" opacity="0.85"/>
+              </svg>
+              <div style="display: grid; gap: 3px; font-size: 12.5px; color: var(--color-neutral-700); line-height: 1.45;">
+                <div><strong>Formato:</strong> PNG, fondo transparente</div>
+                <div><strong>Tamaño exacto:</strong> 800 × 1200 px</div>
+                <div><strong>Proporción:</strong> 2:3 (más alta que ancha)</div>
+                <div><strong>La botella debe ocupar:</strong> 85–90% del alto, con poco margen vacío alrededor (como en el dibujo)</div>
+              </div>
+            </div>
+            <div style="display: grid; gap: 9.2px;">
+              <sc-for list="{{ heroImagenesRows }}" as="im" hint-placeholder-count="3">
+                <div style="display: grid; gap: 4.6px;">
+                  <div style="display: flex; gap: 9.2px; align-items: flex-start;">
+                    <label onDragOver="{{ im.onDragOver }}" onDrop="{{ im.onDrop }}" style="{{ im.dropStyle }}">
+                      <input type="file" accept="image/png" onChange="{{ im.onFileChange }}" style="display: none;">
+                      <sc-if value="{{ im.url }}" hint-placeholder-val="{{ false }}">
+                        <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;">
+                      </sc-if>
+                      <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
+                        <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                      </sc-if>
+                    </label>
+                  </div>
+                  <input value="{{ im.url }}" onChange="{{ im.onChange }}" placeholder="o pega un enlace de imagen" style="font-size: 12px; padding: 6px 10px;">
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--color-divider); padding-top: 22px; margin-top: 4.6px; display: grid; gap: 13.8px;">
+            <div style="font-family: var(--font-heading); font-size: 22px;">Compra por ocasión</div>
+            <p style="margin: 0; font-size: 13px; color: var(--color-neutral-600); line-height: 1.5;">Las 6 tarjetas de la portada. Sube una foto para cada ocasión y marca qué fragancias se muestran al hacer clic en “Ver fragancias”.<br><strong>Tamaño recomendado: 600 × 800 px (proporción 3:4, vertical).</strong> La foto se recorta para llenar la tarjeta, así que deja el motivo principal al centro.</p>
+            <sc-for list="{{ ocasionCards }}" as="o" hint-placeholder-count="6">
+              <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); padding: 13.8px 18.4px; display: grid; gap: 9.2px;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--color-neutral-700);">{{ o.nombre }}</div>
+                <div style="display: grid; gap: 4.6px;">
+                  <label onDragOver="{{ o.img.onDragOver }}" onDrop="{{ o.img.onDrop }}" style="{{ o.img.dropStyle }}">
+                    <input type="file" accept="image/*" onChange="{{ o.img.onFileChange }}" style="display: none;">
+                    <sc-if value="{{ o.img.url }}" hint-placeholder-val="{{ false }}">
+                      <img src="{{ o.img.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                    </sc-if>
+                    <sc-if value="{{ o.img.empty }}" hint-placeholder-val="{{ true }}">
+                      <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto de {{ o.nombre }} — arrastra o haz clic</span>
+                    </sc-if>
+                  </label>
+                  <input value="{{ o.img.url }}" onChange="{{ o.img.onChange }}" placeholder="o pega un enlace de imagen" style="font-size: 12px; padding: 6px 10px;">
+                </div>
+                <div style="font-size: 12px; color: var(--color-neutral-600);">Fragancias que se muestran ({{ o.countLabel }})</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4.6px;">
+                  <sc-for list="{{ o.opciones }}" as="op" hint-placeholder-count="4">
+                    <label style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--color-neutral-700);">
+                      <input type="checkbox" checked="{{ op.on }}" onChange="{{ op.toggle }}">
+                      {{ op.label }}
+                    </label>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
           </div>
 
           <div style="border-top: 1px solid var(--color-divider); padding-top: 22px; margin-top: 4.6px; display: grid; gap: 13.8px;">
@@ -681,6 +745,10 @@ const SEED = {
     'Árabe': 'Lattafa · Rasasi · Afnan · Armaf',
     'Damas': 'PDM · Carolina Herrera · YSL'
   },
+  // Tabla paralela a marcasPorLinea: la foto de cada tarjeta de categoría en
+  // "Arma tu combo". Va aparte para no tener que convertir `cats` (un array de
+  // nombres) en objetos, que rompería todo lo que hoy lo usa como string.
+  imagenPorLinea: {},
   pedidos: [
     { id: '#1042', cliente: 'Andrea Ríos', items: 'Khamrah 5 ml · Asad 5 ml', total: 130, estado: 'Nuevo' },
     { id: '#1041', cliente: 'Luis Mendoza', items: 'Pack Iniciación', total: 120, estado: 'Preparando' },
@@ -692,7 +760,13 @@ const SEED = {
     titular: 'Perfumes originales, en la medida que quieras',
     bajada: 'Decants de 3, 5 y 10 ml de casas de nicho, diseñador y árabes. Prueba antes de comprar el frasco completo.',
     cta: 'Ver los decants',
-    heroImagen: ''
+    heroImagenes: ['', '', ''],
+    // 6 ocasiones fijas (Oficina, Citas, Fiesta, Verano, Invierno, Noche).
+    // El nombre y el ícono viven en la portada; aquí solo la foto y qué fragancias muestra.
+    ocasiones: [
+      { imagen: '', productos: [] }, { imagen: '', productos: [] }, { imagen: '', productos: [] },
+      { imagen: '', productos: [] }, { imagen: '', productos: [] }, { imagen: '', productos: [] }
+    ]
   },
   contacto: { telefono: '+51 987 654 321', correo: 'maros.perfumes@gmail.com' },
   redes: { instagram: '', tiktok: 'https://www.tiktok.com/@maros.parfums1', facebook: '', whatsapp: 'https://wa.me/51987654321' },
@@ -704,6 +778,8 @@ const SEED = {
     contacto: { kicker: '', subtitulo: '' }
   }
 };
+
+const OCASIONES = ['Oficina', 'Citas', 'Fiesta', 'Verano', 'Invierno', 'Noche'];
 
 const SECTIONS = [
   { id: 'inicio', label: 'Inicio', title: 'Inicio de la tienda', sub: 'Banner principal y el texto de cabecera de cada sección.' },
@@ -734,7 +810,14 @@ class Component extends DCLogic {
     window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
       if (error) { console.error('No se pudo cargar site_data de Supabase:', error); return; }
       const saved = (row && row.data) || {};
-      this.setState({ data: Object.assign(JSON.parse(JSON.stringify(SEED)), saved) });
+      const merged = Object.assign(JSON.parse(JSON.stringify(SEED)), saved);
+      // Object.assign es superficial: una fila guardada antes de que existieran
+      // estos campos traería un `inicio` incompleto y borraría los valores por
+      // defecto. Rellenamos lo que falte sin pisar lo que el cliente ya guardó.
+      merged.inicio = Object.assign(JSON.parse(JSON.stringify(SEED.inicio)), merged.inicio || {});
+      const prevOc = Array.isArray(merged.inicio.ocasiones) ? merged.inicio.ocasiones : [];
+      merged.inicio.ocasiones = SEED.inicio.ocasiones.map((d, i) => Object.assign({ imagen: '', productos: [] }, prevOc[i] || {}));
+      this.setState({ data: merged });
     });
     if (this.props.requiereLogin === false) this.setState({ authed: true });
   }
@@ -961,7 +1044,13 @@ class Component extends DCLogic {
 
     const marcas = d0.cats.map(c => ({
       linea: c, marcas: (d0.marcasPorLinea || {})[c] || '',
-      setMarcas: e => { const data = this.clone(); if (!data.marcasPorLinea) data.marcasPorLinea = {}; data.marcasPorLinea[c] = e.target.value; this.persist(data); }
+      setMarcas: e => { const data = this.clone(); if (!data.marcasPorLinea) data.marcasPorLinea = {}; data.marcasPorLinea[c] = e.target.value; this.persist(data); },
+      img: this.imgRows([(d0.imagenPorLinea || {})[c] || ''], arr => {
+        const data = this.clone();
+        if (!data.imagenPorLinea) data.imagenPorLinea = {};
+        data.imagenPorLinea[c] = arr[0] || '';
+        this.persist(data);
+      })[0]
     }));
 
     const pedidos = d0.pedidos.map((o, i) => ({
@@ -1046,28 +1135,33 @@ class Component extends DCLogic {
 
       inicio: d0.inicio,
       setTitular: setInicio('titular'), setBajada: setInicio('bajada'), setCta: setInicio('cta'), setAviso: setInicio('aviso'),
-      noHeroImg: !d0.inicio.heroImagen,
-      onHeroImgDragOver: e => e.preventDefault(),
-      onHeroImgDrop: e => {
-        e.preventDefault();
-        const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-        if (!file) {
-          const url = e.dataTransfer && e.dataTransfer.getData('text/uri-list');
-          if (url) setInicio('heroImagen')({ target: { value: url } });
-          return;
-        }
-        const r = new FileReader();
-        r.onload = () => setInicio('heroImagen')({ target: { value: r.result } });
-        r.readAsDataURL(file);
-      },
-      setHeroImagen: setInicio('heroImagen'),
-      onHeroFileChange: e => {
-        const file = e.target.files && e.target.files[0]; if (!file) return;
-        const r = new FileReader();
-        r.onload = () => setInicio('heroImagen')({ target: { value: r.result } });
-        r.readAsDataURL(file);
-      },
-      heroDropStyle: 'display: block; border: 1.5px dashed var(--color-neutral-400); border-radius: var(--radius-md); background: var(--color-neutral-900); min-height: 110px; display: grid; place-items: center; padding: 13.8px; text-align: center; cursor: pointer;',
+      heroImagenesRows: this.imgRows(d0.inicio.heroImagenes, arr => { const data = this.clone(); data.inicio.heroImagenes = arr; this.persist(data); }),
+
+      ocasionCards: OCASIONES.map((nombre, i) => {
+        const oc = (d0.inicio.ocasiones && d0.inicio.ocasiones[i]) || { imagen: '', productos: [] };
+        const elegidos = oc.productos || [];
+        return {
+          nombre,
+          countLabel: elegidos.length === 0 ? 'ninguna elegida' : (elegidos.length === 1 ? '1 elegida' : elegidos.length + ' elegidas'),
+          // imgRows siempre devuelve al menos 3 filas; aquí solo se usa una foto
+          // por ocasión, así que tomamos la primera y guardamos solo ese valor.
+          img: this.imgRows([oc.imagen], arr => {
+            const data = this.clone(); data.inicio.ocasiones[i].imagen = arr[0] || ''; this.persist(data);
+          })[0],
+          opciones: decantProducts.map(p => ({
+            label: p.nombre + ' · ' + p.marca,
+            on: elegidos.indexOf(p.id) !== -1,
+            toggle: () => {
+              const data = this.clone();
+              const cur = data.inicio.ocasiones[i].productos || [];
+              const at = cur.indexOf(p.id);
+              if (at === -1) cur.push(p.id); else cur.splice(at, 1);
+              data.inicio.ocasiones[i].productos = cur;
+              this.persist(data);
+            }
+          }))
+        };
+      }),
 
       contacto: d0.contacto,
       setTelefono: e => { const data = this.clone(); data.contacto.telefono = e.target.value; this.persist(data); },

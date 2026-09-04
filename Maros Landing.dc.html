@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
+<script src="./cart.js"></script>
 </head>
 <body>
 <x-dc>
@@ -22,13 +23,54 @@ a:hover { color: var(--color-accent-600); }
 /* sticky host */
 html, body { height: auto; min-height: 100%; }
 #dc-root, .sc-host { height: auto; min-height: 100%; }
+:root { --ease-out: cubic-bezier(0.23, 1, 0.32, 1); }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 @keyframes plateIn { from { opacity: 0; transform: scale(0.965); } to { opacity: 1; transform: none; } }
 @keyframes softFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes slowSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes rulesGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes heroPop { from { opacity: 0; transform: translateY(30px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes heroPhotoIn { from { opacity: 0; transform: translateY(18px) scale(0.88) rotate(-1.4deg); } to { opacity: 1; transform: none; } }
+@keyframes heroPhotoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@keyframes ctaPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+@keyframes heroConverge { from { opacity: 0; transform: translateX(var(--from-x, 0)) translateY(26px) scale(0.82) rotate(var(--from-rot, 0deg)); } to { opacity: 1; transform: none; } }
+@keyframes heroWordIn { from { opacity: 0; transform: translateY(28px) rotate(-2deg); } to { opacity: 1; transform: none; } }
+.hero-word { display: inline-block; animation: heroWordIn .72s var(--ease-out) both; }
+.hero-cta { transition: transform 180ms ease, background 180ms ease; animation: fadeUp .6s var(--ease-out) .52s both, ctaPulse 2.6s ease-in-out 1.9s infinite; }
+@media (hover: hover) and (pointer: fine) { .hero-cta:hover { transform: scale(1.04) translateX(2px); } }
+/* Dos capas: el "slot" recibe el parallax del mouse (JS) y el "wrap" hace de
+   ventana de recorte con la animación de entrada/flotación. Separarlas evita
+   que ambas peleen por la misma propiedad transform. */
+/* Cuatro capas, cada una con su propio transform para que no se pisen:
+   slot = parallax del mouse (JS) · pos = puesto en la rotación (transition)
+   wrap = entrada + flotación (keyframes) · img = recorte del PNG */
+.hero-bottle-slot { position: absolute; left: 50%; bottom: 0; transition: transform 400ms var(--ease-out); will-change: transform; }
+.hero-bottle-pos { transform-origin: bottom center; transition: transform .75s var(--ease-out), opacity .75s ease; will-change: transform; }
+.hero-bottle-wrap { position: relative; overflow: hidden; will-change: transform; }
+.marquee-track { transition: animation-play-state 0s; }
+@media (hover: hover) and (pointer: fine) { .marquee-track:hover { animation-play-state: paused; } }
+.top-viewport { overflow: hidden; }
+/* --per-view no se usa para calcular nada en CSS: es solo el dato que el JS
+   lee para saber cuántas tarjetas caben y avanzar de a esa cantidad. */
+.top-track { --per-view: 5; display: flex; gap: 16px; transition: transform .7s var(--ease-out); will-change: transform; }
+.top-track > * { flex: 0 0 calc((100% - 64px) / 5); min-width: 0; }
+.top-track.is-all { flex-wrap: wrap; row-gap: 16px; transform: none !important; }
+.reviews-viewport { overflow: hidden; }
+.reviews-track { display: flex; gap: 16px; width: max-content; animation: marquee 38s linear infinite; }
+.reviews-track > * { flex: 0 0 300px; }
+@media (hover: hover) and (pointer: fine) { .reviews-track:hover { animation-play-state: paused; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.001s !important; animation-delay: 0s !important; transition-duration: 0.001s !important; } }
+@media (max-width: 1080px) { .top-track { --per-view: 3; } .top-track > * { flex: 0 0 calc((100% - 32px) / 3); } }
+@media (max-width: 860px) {
+  .hero-grid { grid-template-columns: 1fr !important; gap: 34px !important; padding: 44px 0 40px !important; text-align: center; }
+  .hero-grid figure { order: -1; }
+  .hero-grid > div:first-child { display: flex; flex-direction: column; align-items: center; }
+  .hero-subhead { margin-left: auto !important; margin-right: auto !important; }
+  .trust-badges { grid-template-columns: repeat(2,1fr) !important; row-gap: 18px; }
+  .oc-grid { grid-template-columns: repeat(2,1fr) !important; }
+}
+@media (max-width: 620px) { .top-track { --per-view: 2; } .top-track > * { flex: 0 0 calc((100% - 16px) / 2); } .reviews-track > * { flex: 0 0 250px; } }
 </style>
 </helmet>
 
@@ -44,44 +86,54 @@ html, body { height: auto; min-height: 100%; }
   <a href="Contacto.dc.html" style="font-size:12.5px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;color:inherit">CONTACTAR</a>
   <div style="display:flex;gap:6px;align-items:center">
     <button type="button" class="btn btn-ghost btn-icon" aria-label="Buscar" onClick="{{ openSearch }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg></button>
-    <button type="button" class="btn btn-ghost btn-icon" aria-label="Carrito"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5L6 7Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg></button>
+    <button type="button" class="btn btn-ghost btn-icon" aria-label="Carrito" onClick="{{ openCart }}" style="position:relative"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5L6 7Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg><sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--color-accent);color:#1b1816;font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;font-feature-settings:'tnum' 1">{{ cartCount }}</span></sc-if></button>
   </div>
 </nav>
 
 <header id="inicio" data-screen-label="Hero" style="color: #f3f2f2; background-color: #000000">
   <div style="max-width:1280px;margin:0 auto;padding:0 40px">
-    <div style="display:grid;grid-template-columns:minmax(0,11fr) minmax(0,13fr);gap:56px;align-items:center;padding:72px 0 64px">
+    <div class="hero-grid" style="display:grid;grid-template-columns:minmax(0,10fr) minmax(0,14fr);gap:48px;align-items:center;padding:72px 0 64px">
       <div>
-        <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(44px,4.8vw,68px);line-height:1.08;letter-spacing:0.015em;margin:0;text-transform:uppercase;color:#f3f2f2;animation:fadeUp .85s cubic-bezier(.2,.7,.2,1) both">ENCUENTRA TU PRÓXIMA FRAGANCIA</h1>
-        <p style="font-size: 17px; line-height: 1.65; color: rgba(243,242,242,0.72); max-width: 38ch; margin: 22px 0 0; width: 435px; height: 55px; animation: fadeUp .85s cubic-bezier(.2,.7,.2,1) .14s both">Más de 200 fragancias originales para cada ocasión</p>
-        <div style="display:flex;gap:14px;margin-top:34px;animation:fadeUp .85s cubic-bezier(.2,.7,.2,1) .28s both">
-          <a href="#top10" class="btn" style="color:var(--color-accent-400);border-color:var(--color-accent-400);letter-spacing:0.12em;text-transform:uppercase;font-size:13px;padding:12px 24px;text-decoration:none" style-hover="background:rgba(225,173,102,0.12)">Quiero descubrirla <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></a>
+        <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(44px,4.8vw,68px);line-height:1.08;letter-spacing:0.015em;margin:0;text-transform:uppercase;color:#f3f2f2"><span class="hero-word" style="animation-delay:0s">ENCUENTRA</span> <span class="hero-word" style="animation-delay:.08s">TU</span> <span class="hero-word" style="animation-delay:.16s">PRÓXIMA</span> <span class="hero-word" style="animation-delay:.24s">FRAGANCIA</span></h1>
+        <p class="hero-subhead" style="font-size: 17px; line-height: 1.65; color: rgba(243,242,242,0.72); max-width: 38ch; width: 100%; margin: 22px 0 0; animation: fadeUp .6s var(--ease-out) .4s both">Más de 200 fragancias originales para cada ocasión</p>
+        <div style="display:flex;gap:14px;margin-top:34px">
+          <a href="#top10" class="btn hero-cta" style="color:var(--color-accent-400);border-color:var(--color-accent-400);letter-spacing:0.12em;text-transform:uppercase;font-size:13px;padding:12px 24px;text-decoration:none" style-hover="background:rgba(225,173,102,0.12)">Quiero descubrirla <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></a>
         </div>
       </div>
       <figure style="margin:0;display:flex;justify-content:center;align-items:center">
         <sc-if value="{{ heroImg }}" hint-placeholder-val="{{ false }}">
-          <img src="{{ heroImg }}" alt="" style="width:100%;max-width:660px;aspect-ratio:5/4;object-fit:contain;display:block">
+          <div id="hero-figure" style="{{ figureStyle }}">
+            <sc-for list="{{ heroBottles }}" as="b" hint-placeholder-count="3">
+              <div class="hero-bottle-slot" data-depth="{{ b.depth }}" style="{{ b.slotStyle }}">
+                <div class="hero-bottle-pos" style="{{ b.posStyle }}">
+                  <div class="hero-bottle-wrap" style="{{ b.wrapStyle }}">
+                    <img src="{{ b.url }}" alt="" style="{{ b.imgStyle }}">
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
         </sc-if>
         <sc-if value="{{ noHeroImg }}" hint-placeholder-val="{{ true }}">
-          <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Foto principal: colección de botellas" style="width:100%;max-width:660px;aspect-ratio:5/4;object-fit:contain;display:block">
+          <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Foto principal: colección de botellas" style="width:100%;max-width:660px;aspect-ratio:5/4;object-fit:contain;display:block;animation:heroPhotoIn .75s var(--ease-out) .16s both, heroPhotoFloat 5s ease-in-out .95s infinite">
         </sc-if>
       </figure>
     </div>
-    <div style="height:1px;background:rgba(243,242,242,0.16);transform-origin:left;animation:rulesGrow 1.1s cubic-bezier(.2,.7,.2,1) .45s both"></div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);padding:24px 0 26px">
-      <div style="display:flex;gap:14px;align-items:center;padding-right:24px;animation:fadeUp .7s ease .55s both">
+    <div style="height:1px;background:rgba(243,242,242,0.16);transform-origin:left;animation:rulesGrow 1.1s var(--ease-out) .72s both"></div>
+    <div class="trust-badges" style="display:grid;grid-template-columns:repeat(4,1fr);padding:24px 0 26px">
+      <div style="display:flex;gap:14px;align-items:center;padding-right:24px;animation:fadeUp .6s var(--ease-out) .84s both">
         <span style="color:var(--color-accent-400)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path></svg></span>
         <div><div style="font-size:14px;font-weight:600">Originales</div><div style="font-size:12.5px;color:rgba(243,242,242,0.6)">Garantía de autenticidad</div></div>
       </div>
-      <div style="display:flex;gap:14px;align-items:center;padding:0 24px;border-left:1px solid rgba(243,242,242,0.16);animation:fadeUp .7s ease 0.65s both">
+      <div style="display:flex;gap:14px;align-items:center;padding:0 24px;border-left:1px solid rgba(243,242,242,0.16);animation:fadeUp .6s var(--ease-out) 0.92s both">
         <span style="color:var(--color-accent-400)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6H3v12h11Zm0-7h4l3 3v4h-3"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></span>
         <div><div style="font-size:14px;font-weight:600">Envíos rápidos</div><div style="font-size:12.5px;color:rgba(243,242,242,0.6)">A todo el Perú</div></div>
       </div>
-      <div style="display:flex;gap:14px;align-items:center;padding:0 24px;border-left:1px solid rgba(243,242,242,0.16);animation:fadeUp .7s ease 0.75s both">
+      <div style="display:flex;gap:14px;align-items:center;padding:0 24px;border-left:1px solid rgba(243,242,242,0.16);animation:fadeUp .6s var(--ease-out) 1s both">
         <span style="color:var(--color-accent-400)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1Z"></path><path d="m9 12 2 2 4-4"></path></svg></span>
         <div><div style="font-size:14px;font-weight:600">Pago seguro</div><div style="font-size:12.5px;color:rgba(243,242,242,0.6)">Protegemos tu compra</div></div>
       </div>
-      <div style="display:flex;gap:14px;align-items:center;padding-left:24px;border-left:1px solid rgba(243,242,242,0.16);animation:fadeUp .7s ease .85s both">
+      <div style="display:flex;gap:14px;align-items:center;padding-left:24px;border-left:1px solid rgba(243,242,242,0.16);animation:fadeUp .6s var(--ease-out) 1.08s both">
         <span style="color:var(--color-accent-400)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg></span>
         <div><div style="font-size:14px;font-weight:600">Atención personalizada</div><div style="font-size:12.5px;color:rgba(243,242,242,0.6)">Por WhatsApp</div></div>
       </div>
@@ -90,7 +142,7 @@ html, body { height: auto; min-height: 100%; }
 </header>
 
 <div data-screen-label="Marcas" style="border-bottom:1px solid var(--color-divider);overflow:hidden;padding:15px 0">
-  <div style="display:flex;width:max-content;animation:marquee 46s linear infinite" aria-hidden="true"><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CREED</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">XERJOFF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">TOM FORD</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">DIOR</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">YVES SAINT LAURENT</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">PARFUMS DE MARLY</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">LATTAFA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">RASASI</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">AFNAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CAROLINA HERRERA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">INITIO</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">MAISON FRANCIS KURKDJIAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">ARMAF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CREED</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">XERJOFF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">TOM FORD</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">DIOR</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">YVES SAINT LAURENT</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">PARFUMS DE MARLY</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">LATTAFA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">RASASI</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">AFNAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CAROLINA HERRERA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">INITIO</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">MAISON FRANCIS KURKDJIAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">ARMAF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span></div>
+  <div class="marquee-track" style="display:flex;width:max-content;animation:marquee 46s linear infinite" aria-hidden="true"><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CREED</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">XERJOFF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">TOM FORD</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">DIOR</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">YVES SAINT LAURENT</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">PARFUMS DE MARLY</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">LATTAFA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">RASASI</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">AFNAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CAROLINA HERRERA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">INITIO</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">MAISON FRANCIS KURKDJIAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">ARMAF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CREED</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">XERJOFF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">TOM FORD</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">DIOR</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">YVES SAINT LAURENT</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">PARFUMS DE MARLY</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">LATTAFA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">RASASI</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">AFNAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CAROLINA HERRERA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">INITIO</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">MAISON FRANCIS KURKDJIAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">ARMAF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span></div>
 </div>
 
 <div style="max-width:1280px;margin:0 auto;padding:0 40px">
@@ -113,7 +165,8 @@ html, body { height: auto; min-height: 100%; }
         <button type="button" onClick="{{ toggleShowAllTop }}" style="font-size:13px;letter-spacing:0.06em;background:none;border:none;cursor:pointer;font:inherit;padding:0;color:var(--color-text)">{{ showAllTopLabel }}</button>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px">
+    <div id="top-viewport" class="top-viewport">
+    <div id="top-track" class="{{ trackClass }}" style="{{ trackStyle }}">
       <sc-for list="{{ topItems }}" as="p" hint-placeholder-count="5">
         <div class="card" data-reveal data-reveal-delay="{{ p.delay }}" style="gap:8px;padding:12px;transition:transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease, border-color .35s ease" style-hover="transform:translateY(-5px);box-shadow:var(--shadow-md);border-color:var(--color-accent)">
           <div style="position:relative">
@@ -132,6 +185,7 @@ html, body { height: auto; min-height: 100%; }
           <a href="Decants.dc.html" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px;padding:8px 0;border:1px solid var(--color-accent);border-radius:var(--radius-md);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-700);text-decoration:none;transition:background .25s ease, color .25s ease" style-hover="background:var(--color-accent);color:#ffffff">Elegir tester <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></a>
         </div>
       </sc-for>
+    </div>
     </div>
     <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:26px;font-size:12.5px;color:color-mix(in srgb, var(--color-text) 62%, transparent)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22a447" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m9 12 2 2 4-4"></path></svg> Pago contra entrega en todos los testers · previo adelanto</div>
   </section>
@@ -203,17 +257,17 @@ html, body { height: auto; min-height: 100%; }
       </div>
     </div>
     <sc-if value="{{ ocPageA }}" hint-placeholder-val="{{ true }}">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
-      <div style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Oficina" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="1"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">OFICINA</div><a href="#top10" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto">Ver fragancias</a></div></div>
-      <div style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Citas" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A4.5 4.5 0 0 0 17.5 4c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A4.5 4.5 0 0 0 4 8.5c0 2.3 1.5 4 3 5.5l6 6Z"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">CITAS</div><a href="#top10" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto">Ver fragancias</a></div></div>
-      <div style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Fiesta" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9S14.5 18.5 12 21c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3Z"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">FIESTA</div><a href="#top10" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto">Ver fragancias</a></div></div>
+    <div class="oc-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+      <div data-reveal data-reveal-delay="0" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc1Img }}" alt="Oficina" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="1"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">OFICINA</div><a href="#top10" onClick="{{ oc1Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
+      <div data-reveal data-reveal-delay="90" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc2Img }}" alt="Citas" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A4.5 4.5 0 0 0 17.5 4c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A4.5 4.5 0 0 0 4 8.5c0 2.3 1.5 4 3 5.5l6 6Z"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">CITAS</div><a href="#top10" onClick="{{ oc2Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
+      <div data-reveal data-reveal-delay="180" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc3Img }}" alt="Fiesta" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9S14.5 18.5 12 21c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3Z"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">FIESTA</div><a href="#top10" onClick="{{ oc3Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
     </div>
     </sc-if>
     <sc-if value="{{ ocPageB }}" hint-placeholder-val="{{ false }}">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
-      <div style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Verano" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">VERANO</div><a href="#top10" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto">Ver fragancias</a></div></div>
-      <div style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Invierno" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">INVIERNO</div><a href="#top10" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto">Ver fragancias</a></div></div>
-      <div style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Noche" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13.5A8.5 8.5 0 1 1 10.5 3a7 7 0 0 0 10.5 10.5Z"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">NOCHE</div><a href="#top10" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto">Ver fragancias</a></div></div>
+    <div class="oc-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+      <div data-reveal data-reveal-delay="0" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc4Img }}" alt="Verano" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">VERANO</div><a href="#top10" onClick="{{ oc4Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
+      <div data-reveal data-reveal-delay="90" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc5Img }}" alt="Invierno" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">INVIERNO</div><a href="#top10" onClick="{{ oc5Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
+      <div data-reveal data-reveal-delay="180" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc6Img }}" alt="Noche" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13.5A8.5 8.5 0 1 1 10.5 3a7 7 0 0 0 10.5 10.5Z"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">NOCHE</div><a href="#top10" onClick="{{ oc6Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
     </div>
     </sc-if>
   </section>
@@ -225,11 +279,12 @@ html, body { height: auto; min-height: 100%; }
       <h2 style="font-family:var(--font-heading);font-weight:600;font-size:28px;letter-spacing:0.06em;text-transform:uppercase;margin:0">Reseñas reales</h2>
       <a href="Contacto.dc.html" style="font-size:13px;letter-spacing:0.06em">Ver todas</a>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
-      <div class="card" style="gap:12px;padding:22px"><span style="color:var(--color-accent);letter-spacing:3px;font-size:15px" aria-label="5 estrellas">★★★★★</span><p style="font-family:var(--font-heading);font-size:18px;line-height:1.4;margin:0">“La atención y rapidez fueron excepcionales. 100% recomendado.”</p><span style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 62%, transparent)">— Luis C.</span></div>
-      <div class="card" style="gap:12px;padding:22px"><span style="color:var(--color-accent);letter-spacing:3px;font-size:15px" aria-label="5 estrellas">★★★★★</span><p style="font-family:var(--font-heading);font-size:18px;line-height:1.4;margin:0">“Los decants me ayudaron a encontrar mi aroma favorito.”</p><span style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 62%, transparent)">— Marcos S.</span></div>
-      <div class="card" style="gap:12px;padding:22px"><span style="color:var(--color-accent);letter-spacing:3px;font-size:15px" aria-label="5 estrellas">★★★★★</span><p style="font-family:var(--font-heading);font-size:18px;line-height:1.4;margin:0">“Productos 100% originales, mi tienda de confianza.”</p><span style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 62%, transparent)">— Kevin L.</span></div>
-      <div class="card" style="gap:12px;padding:22px"><span style="color:var(--color-accent);letter-spacing:3px;font-size:15px" aria-label="5 estrellas">★★★★★</span><p style="font-family:var(--font-heading);font-size:18px;line-height:1.4;margin:0">“Llegó rápido y todo perfecto. Volveré a comprar.”</p><span style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 62%, transparent)">— Anthony P.</span></div>
+    <div class="reviews-viewport">
+      <div class="reviews-track">
+        <sc-for list="{{ reviewsLoop }}" as="r" hint-placeholder-count="4">
+          <div class="card" style="gap:12px;padding:22px"><span style="color:var(--color-accent);letter-spacing:3px;font-size:15px" aria-label="5 estrellas">★★★★★</span><p style="font-family:var(--font-heading);font-size:18px;line-height:1.4;margin:0">{{ r.quote }}</p><span style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 62%, transparent)">{{ r.author }}</span></div>
+        </sc-for>
+      </div>
     </div>
   </section>
 </div>
@@ -283,6 +338,33 @@ html, body { height: auto; min-height: 100%; }
 
 <a href="https://wa.me/51987654321" aria-label="Escríbenos por WhatsApp" style="position:fixed;right:24px;bottom:24px;width:56px;height:56px;border-radius:50%;background:#25d366;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);z-index:50" style-hover="background:#1fb958"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg></a>
 
+<sc-if value="{{ ocDialogOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;background:rgba(27,24,22,0.55);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding-top:12vh;animation:fadeUp .22s ease-out both" onClick="{{ closeOcDialog }}">
+  <div style="background:#ffffff;width:min(860px, 92vw);max-height:76vh;overflow:auto;border-radius:var(--radius-md);box-shadow:var(--shadow-lg);padding:30px 36px" onClick="{{ stopClick }}">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--color-divider);padding-bottom:16px">
+      <div>
+        <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent)">Compra por ocasión</div>
+        <h3 style="font-family:var(--font-heading);font-weight:600;font-size:26px;letter-spacing:0.06em;text-transform:uppercase;margin:4px 0 0">{{ ocDialogTitle }}</h3>
+      </div>
+      <button type="button" class="btn btn-ghost btn-icon" aria-label="Cerrar" onClick="{{ closeOcDialog }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg></button>
+    </div>
+    <sc-if value="{{ ocDialogEmpty }}" hint-placeholder-val="{{ false }}">
+      <p style="font-size:13px;line-height:1.6;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:22px 0 0">Todavía no hay fragancias asignadas a esta ocasión.</p>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px;margin-top:22px">
+      <sc-for list="{{ ocDialogItems }}" as="f" hint-placeholder-count="3">
+        <a href="Decants.dc.html" style="text-decoration:none;color:inherit;display:block">
+          <img src="{{ f.imgUrl }}" alt="{{ f.name }}" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;border-radius:var(--radius-md)">
+          <div style="font-family:var(--font-heading);font-weight:600;font-size:13.5px;letter-spacing:0.08em;margin-top:9px">{{ f.brand }}</div>
+          <div style="font-size:11.5px;color:color-mix(in srgb, var(--color-text) 62%, transparent)">{{ f.name }}</div>
+          <div style="font-size:12px;font-feature-settings:'tnum' 1;margin-top:2px">{{ f.priceLabel }}</div>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
 <sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:fixed;inset:0;background:rgba(27,24,22,0.55);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding-top:14vh" onClick="{{ closeSearch }}">
   <div style="background:#ffffff;width:min(760px, 92vw);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);padding:34px 40px" onClick="{{ stopClick }}">
@@ -318,14 +400,19 @@ const FALLBACK_TOP = [
 ];
 
 class Component extends DCLogic {
-  state = { page: 0, ocPage: 0, searchOpen: false, showAllTop: false, heroImg: '' };
+  state = { topStart: 0, ocPage: 0, searchOpen: false, showAllTop: false, heroImgs: [], heroTrims: null, heroTick: 0, ocSel: null };
   topProducts = null;
+  ocasiones = null;
+  _perView = 5;
   componentDidMount() {
     const s = document.createElement('script');
     s.src = 'https://www.tiktok.com/embed.js';
     s.async = true;
     document.body.appendChild(s);
     this.setupReveal();
+    this.setupHeroTilt();
+    this.setupTopCarousel();
+    window.MarosCart.onChange(() => this.forceUpdate());
     window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
       if (error || !row || !row.data) return;
       const admin = row.data;
@@ -337,13 +424,163 @@ class Component extends DCLogic {
         }));
         if (list.length) { this.topProducts = list; this.forceUpdate(); }
       }
-      if (admin.inicio && admin.inicio.heroImagen) this.setState({ heroImg: admin.inicio.heroImagen });
+      if (admin.inicio && admin.inicio.heroImagenes) {
+        const imgs = admin.inicio.heroImagenes.filter(Boolean);
+        // Se miden los recortes antes de mostrar, para que los frascos entren
+        // una sola vez ya con su tamaño definitivo (sin salto visible).
+        if (imgs.length) this.measureTrims(imgs).then(trims => {
+          this.setState({ heroImgs: imgs, heroTrims: trims });
+          this.startHeroRotation(imgs.length);
+        });
+      }
+      if (admin.inicio && admin.inicio.ocasiones && admin.products) {
+        const byId = {};
+        admin.products.forEach(p => { byId[p.id] = p; });
+        this.ocasiones = admin.inicio.ocasiones.map(o => ({
+          imagen: o.imagen || '',
+          productos: (o.productos || []).map(id => byId[id]).filter(Boolean)
+        }));
+        this.forceUpdate();
+      }
     });
   }
+  componentWillUnmount() {
+    if (this._topTimer) clearInterval(this._topTimer);
+    if (this._heroTimer) clearInterval(this._heroTimer);
+    if (this._heroStart) clearTimeout(this._heroStart);
+    if (this._onResize) window.removeEventListener('resize', this._onResize);
+  }
+  // Carrusel del Top 10: avanza solo cada 4s, se pausa al pasar el mouse.
+  // El número de tarjetas visibles lo define el CSS (--per-view), así que
+  // lo leemos de ahí en vez de duplicar los breakpoints en JS.
+  readPerView() {
+    const track = document.getElementById('top-track');
+    if (!track) return this._perView;
+    const v = parseInt(getComputedStyle(track).getPropertyValue('--per-view'), 10);
+    return (v > 0) ? v : this._perView;
+  }
+  setupTopCarousel() {
+    this._perView = this.readPerView();
+    this._onResize = () => {
+      const pv = this.readPerView();
+      if (pv !== this._perView) { this._perView = pv; this.forceUpdate(); }
+    };
+    window.addEventListener('resize', this._onResize);
+    const vp = document.getElementById('top-viewport');
+    if (vp) {
+      vp.addEventListener('mouseenter', () => { this._topPaused = true; });
+      vp.addEventListener('mouseleave', () => { this._topPaused = false; });
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    this.startTopTimer();
+  }
+  startTopTimer() {
+    if (this._topTimer) clearInterval(this._topTimer);
+    this._topTimer = setInterval(() => {
+      if (this._topPaused || this.state.showAllTop) return;
+      this.setState(s => ({ topStart: this.nextStart(s.topStart) }));
+    }, 4000);
+  }
+  topTotal() { return (this.topProducts || FALLBACK_TOP).length; }
+  maxStart() { return Math.max(0, this.topTotal() - this._perView); }
+  // Se recorta al último tramo posible antes de volver al principio, así ningún
+  // producto queda sin mostrarse cuando el total no es múltiplo de --per-view.
+  nextStart(cur) { const max = this.maxStart(); return cur >= max ? 0 : Math.min(cur + this._perView, max); }
+  prevStart(cur) { return cur <= 0 ? this.maxStart() : Math.max(cur - this._perView, 0); }
   BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+  OC_NAMES = ['Oficina', 'Citas', 'Fiesta', 'Verano', 'Invierno', 'Noche'];
+  /* Los frascos rotan de puesto cada 5s. Arranca recién a los 2.2s para no
+     encimarse con la animación de entrada, que termina cerca de 1.25s. */
+  startHeroRotation(count) {
+    if (count < 2) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (this._heroTimer || this._heroStart) return;
+    this._heroStart = setTimeout(() => {
+      this._heroStart = null;
+      this._heroTimer = setInterval(() => {
+        this.setState(s => ({ heroTick: (s.heroTick || 0) + 1 }));
+      }, 5000);
+    }, 2200);
+  }
+  /* Las fotos del banner suelen venir con mucho margen transparente alrededor
+     del frasco (una foto cuadrada donde el frasco ocupa ~37% del ancho). Si se
+     dibujan tal cual, el frasco se ve diminuto por más grande que sea la caja.
+     Aquí se detecta el recuadro real del contenido leyendo el canal alfa, y el
+     layout se arma sobre ese recuadro. Así funciona con cualquier PNG que suba
+     el cliente, sin depender de que respete una medida exacta. */
+  measureTrims(urls) {
+    const S = 200, ALPHA = 12, PAD = 2;
+    return Promise.all(urls.map(url => new Promise(resolve => {
+      const im = new Image();
+      im.crossOrigin = 'anonymous';
+      im.onerror = () => resolve(null);
+      im.onload = () => {
+        try {
+          const c = document.createElement('canvas');
+          c.width = S; c.height = S;
+          const g = c.getContext('2d', { willReadFrequently: true });
+          g.drawImage(im, 0, 0, S, S);
+          const d = g.getImageData(0, 0, S, S).data;
+          let minX = S, minY = S, maxX = -1, maxY = -1;
+          for (let y = 0; y < S; y++) {
+            for (let x = 0; x < S; x++) {
+              if (d[(y * S + x) * 4 + 3] > ALPHA) {
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+              }
+            }
+          }
+          if (maxX < 0) return resolve(null);
+          const l = Math.max(0, minX - PAD) / S;
+          const t = Math.max(0, minY - PAD) / S;
+          const r = Math.min(S, maxX + 1 + PAD) / S;
+          const b = Math.min(S, maxY + 1 + PAD) / S;
+          const w = r - l, h = b - t;
+          if (w <= 0 || h <= 0) return resolve(null);
+          resolve({ l, t, w, h, ar: (im.naturalWidth * w) / (im.naturalHeight * h) });
+        } catch (e) {
+          // Si el navegador bloquea la lectura del canvas (CORS), se dibuja
+          // la foto completa sin recortar: se ve más chica, pero nunca rota.
+          resolve(null);
+        }
+      };
+      im.src = url;
+    })));
+  }
+  REVIEWS = [
+    { quote: '“La atención y rapidez fueron excepcionales. 100% recomendado.”', author: '— Luis C.' },
+    { quote: '“Los decants me ayudaron a encontrar mi aroma favorito.”', author: '— Marcos S.' },
+    { quote: '“Productos 100% originales, mi tienda de confianza.”', author: '— Kevin L.' },
+    { quote: '“Llegó rápido y todo perfecto. Volveré a comprar.”', author: '— Anthony P.' }
+  ];
+  setupHeroTilt() {
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!canHover || reduceMotion) return;
+    const wrap = document.getElementById('hero-figure');
+    if (!wrap || wrap.dataset.tiltWired) return;
+    const bottles = Array.from(wrap.querySelectorAll('.hero-bottle-slot'));
+    if (!bottles.length) return;
+    wrap.dataset.tiltWired = '1';
+    const header = document.getElementById('inicio');
+    const onMove = (e) => {
+      const r = wrap.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      bottles.forEach((el) => {
+        const depth = Number(el.dataset.depth) || 1;
+        el.style.transform = 'translate(' + (px * 14 * depth) + 'px, ' + (py * 10 * depth) + 'px)';
+      });
+    };
+    const onLeave = () => { bottles.forEach((el) => { el.style.transform = 'translate(0px, 0px)'; }); };
+    header.addEventListener('mousemove', onMove);
+    header.addEventListener('mouseleave', onLeave);
+  }
   fmt(n) { return 'S/. ' + Number(n).toFixed(2); }
   badgeColor(b) { return b === 'HOT' ? '#9a3324' : b === 'OFERTA' ? '#1a7d38' : '#1b1816'; }
-  componentDidUpdate() { this.setupReveal(); }
+  componentDidUpdate() { this.setupReveal(); this.setupHeroTilt(); }
   setupReveal() {
     const nodes = Array.from(document.querySelectorAll('[data-reveal]:not([data-revealed])'));
     if (!nodes.length) return;
@@ -368,34 +605,121 @@ class Component extends DCLogic {
     });
   }
   renderVals() {
-    const p = this.state.page;
     const op = this.state.ocPage;
     const all = this.topProducts || FALLBACK_TOP;
-    const shown = this.state.showAllTop ? all : all.slice(p * 5, p * 5 + 5);
-    const topItems = shown.map((t, i) => {
-      const pos = this.state.showAllTop ? i + 1 : p * 5 + i + 1;
+    const perView = this._perView;
+    const start = Math.min(this.state.topStart, this.maxStart());
+    // La pista muestra siempre las 10 tarjetas; el desplazamiento se hace con
+    // transform sobre el ancho de una tarjeta + el gap, así el último tramo
+    // nunca queda con espacio vacío al final.
+    const topItems = all.map((t, i) => ({
+      imgUrl: (t.imagenes && t.imagenes[0]) || this.BLANK_IMG, name: t.name, brand: t.brand, pos: i + 1,
+      badge: t.badge, badgeBg: this.badgeColor(t.badge), priceLabel: 'Desde ' + this.fmt(t.price),
+      delay: (i % perView) * 70
+    }));
+    // Ancho de una tarjeta + el gap. Se hace la aritmética aquí (no en CSS) para
+    // no depender de dividir por una var() dentro de calc().
+    const step = '(100% - ' + ((perView - 1) * 16) + 'px) / ' + perView + ' + 16px';
+    const trackStyle = start === 0
+      ? 'transform:translateX(0)'
+      : 'transform:translateX(calc((' + step + ') * ' + (-start) + '))';
+    const heroSrcs = this.state.heroImgs || [];
+    const heroBottles = heroSrcs.map((url, i, arr) => {
+      const n = arr.length;
+      const mid = Math.floor((n - 1) / 2);
+      const isMid = i === mid;
+      // Los frascos convergen desde fuera hacia una composición encimada y
+      // después rotan de puesto en bucle. El puesto (no la foto) define el
+      // tamaño aparente, así que todos comparten el mismo tamaño base y el
+      // énfasis del que está al frente lo da el scale, que sí es animable.
+      const trim = (this.state.heroTrims && this.state.heroTrims[i]) || null;
+      const ar = trim ? trim.ar : 0.62;
+      // Se dimensiona por ancho (con la proporción real del frasco) para que la
+      // altura salga sola; el tope evita que un frasco ancho desborde la fila.
+      const targetH = 540;
+      const capW = 290;
+      const wMax = Math.round(Math.min(capW, targetH * ar));
+      const wMin = Math.round(wMax * 0.42);
+      const wVw = (wMax / 14.4).toFixed(2);
+      // Puesto actual: 0 = centro (frente), 1 = izquierda, 2 = derecha.
+      // El del frente sale hacia la izquierda y el de la derecha pasa al frente.
+      const spot = ((i + (this.state.heroTick || 0)) % 3 + 3) % 3;
+      const POS = [
+        { x: '-50%', s: 1, z: 3, o: 1 },
+        { x: 'calc(-50% - 58%)', s: 0.78, z: 1, o: 0.85 },
+        { x: 'calc(-50% + 58%)', s: 0.78, z: 2, o: 0.85 }
+      ][spot];
+      const fromX = isMid ? '0px' : (i < mid ? '-120px' : '120px');
+      const fromRot = isMid ? '0deg' : (i < mid ? '-6deg' : '6deg');
+      const inDelay = isMid ? 0.35 : (i < mid ? 0.15 : 0.25);
+      // El <img> se agranda y se desplaza para que el recuadro del frasco
+      // coincida exactamente con la ventana de recorte.
+      // max-width:none es imprescindible: la hoja del sistema de diseño aplica
+      // img { max-width: 100% }, que recortaría el ancho de la imagen ampliada
+      // y dejaría el frasco estirado.
+      const imgBox = trim
+        ? 'position:absolute;max-width:none;max-height:none;left:' + (-trim.l / trim.w * 100).toFixed(3) + '%;top:' + (-trim.t / trim.h * 100).toFixed(3) + '%;width:' + (100 / trim.w).toFixed(3) + '%;height:' + (100 / trim.h).toFixed(3) + '%;display:block'
+        : 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block';
       return {
-        imgUrl: (t.imagenes && t.imagenes[0]) || this.BLANK_IMG, name: t.name, brand: t.brand, pos,
-        badge: t.badge, badgeBg: this.badgeColor(t.badge), priceLabel: 'Desde ' + this.fmt(t.price),
-        delay: (i % 5) * 70
+        url,
+        depth: spot === 0 ? 1 : 0.55,
+        // Solo slotStyle y posStyle dependen del tick. wrapStyle debe quedar
+        // idéntico entre vueltas: si cambiara, el runtime reescribiría su
+        // atributo style y reiniciaría la entrada y la flotación en cada giro.
+        slotStyle: 'z-index:' + POS.z,
+        posStyle: 'transform:translateX(' + POS.x + ') scale(' + POS.s + ');opacity:' + POS.o,
+        wrapStyle: '--from-x:' + fromX + ';--from-rot:' + fromRot + ';width:clamp(' + wMin + 'px, ' + wVw + 'vw, ' + wMax + 'px);aspect-ratio:' + ar.toFixed(4) + ';animation:heroConverge .9s var(--ease-out) ' + inDelay + 's both, heroPhotoFloat ' + (4.6 + i * 0.3) + 's ease-in-out ' + (1.35 + i * 0.12) + 's infinite',
+        imgStyle: imgBox
       };
     });
+    // El contenedor pasa a posicionamiento absoluto, así que necesita una altura
+    // propia: la del frasco más alto (los de atrás encogen por scale, que no
+    // afecta al layout).
+    const heroH = Math.max.apply(null, heroSrcs.map((u, i) => {
+      const t = (this.state.heroTrims && this.state.heroTrims[i]) || null;
+      const a = t ? t.ar : 0.62;
+      return Math.round(Math.min(290, 540 * a) / a);
+    }).concat([420]));
+    const figureStyle = 'position:relative;width:100%;max-width:760px;height:clamp(300px, ' + (heroH / 14.4).toFixed(2) + 'vw, ' + heroH + 'px)';
+    const ocs = this.ocasiones || [];
+    const ocImg = i => (ocs[i] && ocs[i].imagen) || this.BLANK_IMG;
+    const openOc = i => (e) => { e.preventDefault(); this.setState({ ocSel: i }); };
+    const sel = this.state.ocSel;
+    const selOc = (sel != null && ocs[sel]) ? ocs[sel] : null;
+    const ocDialogItems = selOc ? selOc.productos.map(p => ({
+      imgUrl: (p.imagenes && p.imagenes[0]) || this.BLANK_IMG,
+      brand: p.marca, name: p.nombre,
+      priceLabel: (p.p3 !== '' && p.p3 != null) ? 'Desde ' + this.fmt(Number(p.p3)) : ''
+    })) : [];
+    const reviewsLoop = this.REVIEWS.concat(this.REVIEWS);
     return {
-      topItems,
-      heroImg: this.state.heroImg, noHeroImg: !this.state.heroImg,
+      topItems, trackStyle, figureStyle,
+      trackClass: this.state.showAllTop ? 'top-track is-all' : 'top-track',
+      heroImg: heroBottles.length > 0, noHeroImg: heroBottles.length === 0, heroBottles,
       searchOpen: this.state.searchOpen,
+      cartCount: window.MarosCart.count(),
+      hasCart: window.MarosCart.count() > 0,
+      openCart: () => window.MarosCart.open(),
       openSearch: () => this.setState({ searchOpen: true }),
       closeSearch: () => this.setState({ searchOpen: false }),
       stopClick: (e) => e.stopPropagation(),
-      pageA: this.state.showAllTop || p === 0,
-      pageB: this.state.showAllTop || p === 1,
       showAllTop: this.state.showAllTop,
       notShowAllTop: !this.state.showAllTop,
       showAllTopLabel: this.state.showAllTop ? 'Ver menos' : 'Ver todos',
       toggleShowAllTop: () => this.setState(s => ({ showAllTop: !s.showAllTop })),
-      pageLabel: p === 0 ? '1 – 5' : '6 – 10',
-      prev: () => this.setState({ page: 0 }),
-      next: () => this.setState({ page: 1 }),
+      pageLabel: (start + 1) + ' – ' + Math.min(start + perView, all.length),
+      prev: () => { this.startTopTimer(); this.setState(s => ({ topStart: this.prevStart(s.topStart) })); },
+      next: () => { this.startTopTimer(); this.setState(s => ({ topStart: this.nextStart(s.topStart) })); },
+      reviewsLoop,
+      oc1Img: ocImg(0), oc2Img: ocImg(1), oc3Img: ocImg(2),
+      oc4Img: ocImg(3), oc5Img: ocImg(4), oc6Img: ocImg(5),
+      oc1Open: openOc(0), oc2Open: openOc(1), oc3Open: openOc(2),
+      oc4Open: openOc(3), oc5Open: openOc(4), oc6Open: openOc(5),
+      ocDialogOpen: selOc != null,
+      ocDialogTitle: selOc != null ? this.OC_NAMES[sel] : '',
+      ocDialogItems,
+      ocDialogEmpty: selOc != null && ocDialogItems.length === 0,
+      closeOcDialog: () => this.setState({ ocSel: null }),
       ocPageA: op === 0,
       ocPageB: op === 1,
       ocPageLabel: op === 0 ? '1 – 3' : '4 – 6',
