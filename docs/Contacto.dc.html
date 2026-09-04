@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
+<script src="./cart.js"></script>
 </head>
 <body>
 <x-dc>
@@ -35,7 +36,7 @@ html, body { height: auto; min-height: 100%; }
   <div style="display:flex;gap:6px;align-items:center">
     <button type="button" aria-label="Buscar" onClick="{{ openSearch }}" style="background:none;border:none;padding:6px;cursor:pointer;color:var(--color-accent-400);display:flex" style-hover="color:#f3f2f2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg></button>
 
-    <button type="button" aria-label="Carrito" style="background:none;border:none;padding:6px;cursor:pointer;color:var(--color-accent-400);display:flex" style-hover="color:#f3f2f2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5L6 7Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg></button>
+    <button type="button" aria-label="Carrito" onClick="{{ openCart }}" style="background:none;border:none;padding:6px;cursor:pointer;color:var(--color-accent-400);display:flex;position:relative" style-hover="color:#f3f2f2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5L6 7Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg><sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--color-accent);color:#1b1816;font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;font-feature-settings:'tnum' 1">{{ cartCount }}</span></sc-if></button>
   </div>
 </nav>
 
@@ -77,9 +78,13 @@ html, body { height: auto; min-height: 100%; }
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   state = { searchOpen: false };
+  componentDidMount() { window.MarosCart.onChange(() => this.forceUpdate()); }
   renderVals() {
     return {
       searchOpen: this.state.searchOpen,
+      cartCount: window.MarosCart.count(),
+      hasCart: window.MarosCart.count() > 0,
+      openCart: () => window.MarosCart.open(),
       openSearch: () => this.setState({ searchOpen: true }),
       closeSearch: () => this.setState({ searchOpen: false }),
       stopClick: (e) => e.stopPropagation()
