@@ -45,7 +45,7 @@ LINKS = {
     "Contacto.dc.html": "contacto/",
 }
 
-ASSETS = ["support.js", "cart.js", "supabase-config.js"]
+ASSETS = ["support.js", "cart.js", "nav.js", "supabase-config.js", "responsive.css"]
 
 NOINDEX = '<meta name="robots" content="noindex, nofollow">'
 
@@ -63,7 +63,10 @@ def rewrite(html, depth):
 
     # Recursos compartidos, que viven en la raíz de docs/.
     for asset in ASSETS:
-        html = html.replace('src="./%s"' % asset, 'src="%s%s"' % (up, asset))
+        for attr in ("src", "href"):
+            html = html.replace(
+                '%s="./%s"' % (attr, asset), '%s="%s%s"' % (attr, up, asset)
+            )
     html = html.replace('href="_ds/', 'href="%s_ds/' % up)
     html = html.replace('src="_ds/', 'src="%s_ds/' % up)
 

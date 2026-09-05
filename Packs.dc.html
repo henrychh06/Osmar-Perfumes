@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
 <script src="./cart.js"></script>
+<script src="./nav.js"></script>
 </head>
 <body>
 <x-dc>
@@ -36,6 +37,7 @@ html, body { height: auto; min-height: 100%; }
 .pack-thumb { width: 64px; height: 64px; object-fit: cover; background: #ffffff; cursor: pointer; padding: 0; display: block; transition: border-color .2s ease, opacity .2s ease; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.001s !important; animation-delay: 0s !important; transition-duration: 0.001s !important; } }
 </style>
+<link rel="stylesheet" href="./responsive.css">
 </helmet>
 
 <nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#1b1816;color:#f3f2f2">
@@ -55,24 +57,24 @@ html, body { height: auto; min-height: 100%; }
 </nav>
 
 <header data-screen-label="Packs — portada" style="background:#000000;color:#f3f2f2">
-  <div style="max-width:1280px;margin:0 auto;padding:0 40px">
-    <div style="display:grid;grid-template-columns:minmax(0,13fr) minmax(0,9fr);gap:52px;align-items:center;padding:56px 0 48px">
+  <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px">
+    <div class="mp-split" style="display:grid;grid-template-columns:minmax(0,13fr) minmax(0,9fr);gap:52px;align-items:center;padding:56px 0 48px">
       <div>
         <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(38px,4.2vw,58px);line-height:1;letter-spacing:0.02em;text-transform:uppercase;margin:0;color:#f3f2f2;animation:fadeUp .8s cubic-bezier(.2,.7,.2,1) both">Packs de decants</h1>
         <p style="font-size:16.5px;line-height:1.7;color:rgba(243,242,242,0.72);max-width:52ch;margin:20px 0 0;animation:fadeUp .85s cubic-bezier(.2,.7,.2,1) .16s both">Varios decants en un solo envío: llévate una selección ya armada o elige tú mismo qué fragancias quieres probar. Disponibles en 3, 5 y 10 ml, con descuento por combinar y pago contra entrega.</p>
-        <div style="display:flex;gap:14px;margin-top:30px;animation:fadeUp .85s cubic-bezier(.2,.7,.2,1) .26s both">
+        <div class="mp-cta-row" style="display:flex;gap:14px;margin-top:30px;animation:fadeUp .85s cubic-bezier(.2,.7,.2,1) .26s both">
           <a href="#listos" class="btn" style="color:var(--color-accent-400);border-color:var(--color-accent-400);letter-spacing:0.12em;text-transform:uppercase;font-size:13px;padding:12px 24px;text-decoration:none" style-hover="background:rgba(225,173,102,0.12)">Ver packs listos <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></a>
           <a href="Combo.dc.html" class="btn" style="color:rgba(243,242,242,0.85);border-color:rgba(243,242,242,0.3);letter-spacing:0.12em;text-transform:uppercase;font-size:13px;padding:12px 24px;text-decoration:none" style-hover="border-color:var(--color-accent-400);color:var(--color-accent-400)">Arma el tuyo</a>
         </div>
       </div>
       <figure style="margin:0;position:relative;display:flex;justify-content:center;align-items:center;animation:plateIn 1.15s cubic-bezier(.2,.7,.2,1) .15s both">
-        <div style="position:absolute;inset:-8% -6% -12%;background:radial-gradient(closest-side, rgba(225,173,102,0.20), rgba(225,173,102,0.05) 58%, rgba(225,173,102,0) 80%);pointer-events:none"></div>
+        <div class="mp-glow" style="position:absolute;inset:-8% -6% -12%;background:radial-gradient(closest-side, rgba(225,173,102,0.20), rgba(225,173,102,0.05) 58%, rgba(225,173,102,0) 80%);pointer-events:none"></div>
         <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Foto: varios decants juntos" style="position:relative;width:100%;aspect-ratio:5/4;filter:drop-shadow(0 26px 40px rgba(0,0,0,0.6));object-fit:contain;display:block">
       </figure>
     </div>
 
     <div style="height:1px;background:rgba(243,242,242,0.16)"></div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);padding:22px 0 24px">
+    <div class="mp-cols-4" style="display:grid;grid-template-columns:repeat(4,1fr);padding:22px 0 24px">
       <div style="display:flex;gap:14px;align-items:center;padding-right:24px">
         <span style="color:var(--color-accent-400)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.5"></circle><path d="M6 12h.01M18 12h.01"></path></svg></span>
         <div><div style="font-size:13.5px;font-weight:600">Pago contra entrega</div><div style="font-size:12.5px;color:rgba(243,242,242,0.6)">Previo adelanto</div></div>
@@ -93,13 +95,13 @@ html, body { height: auto; min-height: 100%; }
   </div>
 </header>
 
-<div style="max-width:1280px;margin:0 auto;padding:0 40px 80px">
+<div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px 80px">
 
   <section id="listos" data-screen-label="Packs listos" style="padding:48px 0 0">
     <h2 style="font-family:var(--font-heading);font-weight:600;font-size:28px;letter-spacing:0.06em;text-transform:uppercase;margin:0">Packs listos</h2>
     <p style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:8px 0 0">Selecciones cerradas con {{ packDiscountLabel }} de descuento. Entra al pack para elegir 3, 5 o 10 ml.</p>
 
-    <div style="display:flex;gap:22px;flex-wrap:wrap;margin:22px 0 24px;border-top:1px solid var(--color-divider);border-bottom:1px solid var(--color-divider);padding:12px 0">
+    <div class="mp-toolbar" style="display:flex;gap:22px;flex-wrap:wrap;margin:22px 0 24px;border-top:1px solid var(--color-divider);border-bottom:1px solid var(--color-divider);padding:12px 0">
       <sc-for list="{{ typeTabs }}" as="t" hint-placeholder-count="6">
         <button type="button" onClick="{{ t.select }}" style="background:none;border:none;border-bottom:1px solid {{ t.border }};padding:0 0 3px;cursor:pointer;font:inherit;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:{{ t.color }};transition:color .2s ease" style-hover="color:var(--color-accent-700)">{{ t.label }}</button>
       </sc-for>
@@ -107,7 +109,7 @@ html, body { height: auto; min-height: 100%; }
       <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 40%, transparent);font-feature-settings:'tnum' 1">{{ packCountLabel }}</span>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
+    <div class="mp-grid-3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
       <sc-for list="{{ curated }}" as="k" hint-placeholder-count="6">
         <div class="card" onClick="{{ k.open }}" style="padding:0;overflow:hidden;gap:0;cursor:pointer;transition:transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease, border-color .35s ease" style-hover="transform:translateY(-5px);box-shadow:var(--shadow-md);border-color:var(--color-accent)">
           <div style="position:relative;background:#f0efee">
@@ -142,8 +144,8 @@ html, body { height: auto; min-height: 100%; }
   <sc-if value="{{ selected }}" hint-placeholder-val="{{ false }}">
     <div class="dialog-backdrop" onClick="{{ close }}" style="position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px">
       <div class="dialog" onClick="{{ stop }}" style="max-width:1080px;width:100%;max-height:92vh;overflow:auto;padding:0">
-        <div style="display:grid;grid-template-columns:minmax(0,10fr) minmax(0,10fr)">
-          <div style="background:#f0efee;padding:28px;display:flex;flex-direction:column;gap:14px">
+        <div class="mp-modal-grid" style="display:grid;grid-template-columns:minmax(0,10fr) minmax(0,10fr)">
+          <div class="mp-modal-media" style="background:#f0efee;padding:28px;display:flex;flex-direction:column;gap:14px">
             <div style="flex:1;display:flex;align-items:center">
               <div id="pack-photo" class="pack-photo" style="width:100%">
                 <img src="{{ selectedImg }}" alt="{{ selectedImgAlt }}">
@@ -153,7 +155,7 @@ html, body { height: auto; min-height: 100%; }
                 </sc-if>
               </div>
             </div>
-            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <div class="mp-thumbs" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
               <sc-for list="{{ packImages }}" as="im" hint-placeholder-count="4">
                 <button type="button" onClick="{{ im.select }}" aria-label="{{ im.label }}" title="{{ im.label }}" style="border:{{ im.border }};background:none;padding:0;cursor:pointer;line-height:0">
                   <img src="{{ im.url }}" alt="{{ im.label }}" class="pack-thumb" style="opacity:{{ im.opacity }}">
@@ -165,7 +167,7 @@ html, body { height: auto; min-height: 100%; }
             </sc-if>
           </div>
 
-          <div style="padding:28px 32px 32px;display:flex;flex-direction:column">
+          <div class="mp-modal-info" style="padding:28px 32px 32px;display:flex;flex-direction:column">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
               <div>
                 <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ selectedType }}</div>
@@ -191,7 +193,7 @@ html, body { height: auto; min-height: 100%; }
               <span style="font-size:13px;font-weight:700;letter-spacing:0.06em">Elige el tamaño</span>
               <span style="flex:1;height:1px;background:var(--color-divider)"></span>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end">
+            <div class="mp-sizes" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end">
               <sc-for list="{{ sizeOptions }}" as="s" hint-placeholder-count="3">
                 <div style="min-width:0">
                   <sc-if value="{{ s.badge }}" hint-placeholder-val="{{ false }}">
@@ -211,7 +213,7 @@ html, body { height: auto; min-height: 100%; }
               <span style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">{{ selectedPerUnit }}</span>
             </div>
 
-            <div style="display:flex;gap:12px;margin-top:20px">
+            <div class="mp-actions" style="display:flex;gap:12px;margin-top:20px">
               <div style="display:flex;align-items:center;border:1px solid var(--color-divider);border-radius:999px">
                 <button type="button" onClick="{{ qtyMinus }}" aria-label="Menos" style="width:38px;height:42px;background:none;border:none;cursor:pointer;font-size:16px;color:var(--color-text)">−</button>
                 <span style="min-width:24px;text-align:center;font-size:14px;font-feature-settings:'tnum' 1">{{ qty }}</span>
@@ -228,14 +230,14 @@ html, body { height: auto; min-height: 100%; }
   </sc-if>
 
   <section id="armar" data-screen-label="Arma tu combo" style="padding:56px 0 0">
-    <div style="border-top:1px solid var(--color-divider);padding-top:36px;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:center">
+    <div class="mp-split" style="border-top:1px solid var(--color-divider);padding-top:36px;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:center">
       <div>
         <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-700)">A tu medida</div>
         <h2 style="font-family:var(--font-heading);font-weight:600;font-size:28px;letter-spacing:0.06em;text-transform:uppercase;margin:8px 0 0">¿Prefieres elegir tú mismo?</h2>
         <p style="font-size:14px;line-height:1.7;color:color-mix(in srgb, var(--color-text) 68%, transparent);max-width:62ch;margin:10px 0 0">Arma tu combo en tres pasos: categoría, tamaño y fragancias. El descuento sube según cuántos decants sumes y el pago sigue siendo contra entrega.</p>
         <a href="Combo.dc.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:22px;height:46px;padding:0 26px;background:#1b1816;color:#ffffff;border-radius:999px;font-size:12.5px;font-weight:600;letter-spacing:0.06em;text-decoration:none;transition:background .25s ease" style-hover="background:#33302d">Arma tu combo <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></a>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--color-divider)">
+      <div class="mp-cols-3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--color-divider)">
         <div style="padding:20px 16px;text-align:center"><div style="font-family:var(--font-heading);font-size:26px;font-weight:500;font-feature-settings:'tnum' 1">10%</div><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);margin-top:6px;font-feature-settings:'tnum' 1">2 – 3 decants</div></div>
         <div style="padding:20px 16px;text-align:center;border-left:1px solid var(--color-divider);border-right:1px solid var(--color-divider)"><div style="font-family:var(--font-heading);font-size:26px;font-weight:500;font-feature-settings:'tnum' 1">15%</div><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);margin-top:6px;font-feature-settings:'tnum' 1">4 – 5 decants</div></div>
         <div style="padding:20px 16px;text-align:center"><div style="font-family:var(--font-heading);font-size:26px;font-weight:500;font-feature-settings:'tnum' 1">20%</div><div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);margin-top:6px;font-feature-settings:'tnum' 1">6 o más</div></div>
@@ -249,7 +251,7 @@ html, body { height: auto; min-height: 100%; }
       <h2 style="font-family:var(--font-heading);font-weight:600;font-size:28px;letter-spacing:0.06em;text-transform:uppercase;margin:8px 0 0">Cómo funciona tu pedido</h2>
       <p style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:8px 0 0">Tres pasos desde que eliges hasta que recibes el pack en tu puerta.</p>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:28px">
+    <div class="mp-cols-3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:28px">
       <div>
         <div style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.16em;color:var(--color-accent-700);font-feature-settings:'tnum' 1">PASO 01</div>
         <div style="font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em;text-transform:uppercase;margin-top:8px">Eliges tamaño y fragancias</div>
