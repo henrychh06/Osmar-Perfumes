@@ -188,7 +188,7 @@
                       <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;">
                     </sc-if>
                     <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
-                      <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                      <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">{{ im.etiqueta }} — arrastra o haz clic</span>
                     </sc-if>
                   </label>
                 </div>
@@ -227,10 +227,11 @@
               <input value="{{ pd.subtitulo }}" onChange="{{ pdh.subtitulo }}">
             </label>
             <div>
-              <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> En la tarjeta del listado se recorta a 4:3, así que deja algo de aire alrededor del motivo.</p>
+              <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Fotos</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> En la tarjeta del listado se recorta a 4:3, así que deja algo de aire alrededor del motivo.</p>
               <div style="display: grid; gap: 9.2px;">
                 <sc-for list="{{ draftImagenesRows }}" as="im" hint-placeholder-count="3">
                   <div style="display: grid; gap: 4.6px;">
+                    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ im.etiqueta }}</div>
                     <div style="display: flex; gap: 9.2px; align-items: flex-start;">
                       <label onDragOver="{{ im.onDragOver }}" onDrop="{{ im.onDrop }}" style="{{ im.dropStyle }}">
                         <input type="file" accept="image/*" onChange="{{ im.onFileChange }}" style="display: none;">
@@ -238,7 +239,7 @@
                           <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                         </sc-if>
                         <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
-                          <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                          <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">{{ im.etiqueta }} — arrastra o haz clic</span>
                         </sc-if>
                       </label>
                       <sc-if value="{{ im.removable }}" hint-placeholder-val="{{ false }}">
@@ -297,10 +298,11 @@
                 <input value="{{ k.subtitulo }}" onChange="{{ k.setSubtitulo }}">
               </label>
               <div>
-                <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> En la tarjeta del listado se recorta a 4:3, así que deja algo de aire alrededor del motivo.</p>
+                <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Fotos</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> En la tarjeta del listado se recorta a 4:3, así que deja algo de aire alrededor del motivo.</p>
                 <div style="display: grid; gap: 9.2px;">
                   <sc-for list="{{ k.imagenesRows }}" as="im" hint-placeholder-count="3">
                     <div style="display: grid; gap: 4.6px;">
+                      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ im.etiqueta }}</div>
                       <div style="display: flex; gap: 9.2px; align-items: flex-start;">
                         <label onDragOver="{{ im.onDragOver }}" onDrop="{{ im.onDrop }}" style="{{ im.dropStyle }}">
                           <input type="file" accept="image/*" onChange="{{ im.onFileChange }}" style="display: none;">
@@ -308,7 +310,7 @@
                             <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                           </sc-if>
                           <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
-                            <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                            <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">{{ im.etiqueta }} — arrastra o haz clic</span>
                           </sc-if>
                         </label>
                         <sc-if value="{{ im.removable }}" hint-placeholder-val="{{ false }}">
@@ -546,7 +548,7 @@
                         <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;">
                       </sc-if>
                       <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
-                        <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                        <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">{{ im.etiqueta }} — arrastra o haz clic</span>
                       </sc-if>
                     </label>
                   </div>
@@ -633,11 +635,12 @@
 
         <div style="padding: 22px 27.6px 27.6px; display: grid; gap: 18.4px;">
           <div>
-            <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div>
+            <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Fotos</div>
             <p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en el listado, en el Top 10 y en las ocasiones), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. En la ficha de decants, al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> Según la vista se recorta a 4:5 o a 3:4, así que deja aire alrededor del frasco.</p>
             <div style="display: grid; gap: 9.2px;">
               <sc-for list="{{ imagenesRows }}" as="im" hint-placeholder-count="3">
                 <div style="display: grid; gap: 4.6px;">
+                  <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ im.etiqueta }}</div>
                   <div style="display: flex; gap: 9.2px; align-items: flex-start;">
                     <label onDragOver="{{ im.onDragOver }}" onDrop="{{ im.onDrop }}" style="{{ im.dropStyle }}">
                       <input type="file" accept="image/*" onChange="{{ im.onFileChange }}" style="display: none;">
@@ -645,7 +648,7 @@
                         <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                       </sc-if>
                       <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
-                        <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                        <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">{{ im.etiqueta }} — arrastra o haz clic</span>
                       </sc-if>
                     </label>
                     <sc-if value="{{ im.removable }}" hint-placeholder-val="{{ false }}">
@@ -838,6 +841,10 @@ const SEED = {
     contacto: { kicker: '', subtitulo: '' }
   }
 };
+
+// Mismo orden que el IMG_LABELS de Decants.dc.html y Packs.dc.html: si esto
+// se desincroniza, el panel y la tienda dejan de hablar del mismo hueco.
+const RANURAS_FOTO = ['Foto general', 'Foto del 3 ml', 'Foto del 5 ml', 'Foto del 10 ml'];
 
 const ESTADOS_PEDIDO = ['Nuevo', 'Confirmado', 'Entregado', 'Cancelado'];
 
@@ -1059,9 +1066,14 @@ class Component extends DCLogic {
       img.src = url;
     });
   }
-  imgRows(images, setter) {
-    let arr = (images && images.length ? images.slice() : ['', '', '']);
-    while (arr.length < 3) arr.push('');
+  /* Con `etiquetas` las ranuras son fijas y rotuladas: es el caso de decants y
+     packs, donde la 1ª es la foto general y las siguientes son la de cada
+     tamaño. Sin etiquetas se comporta como siempre (3 huecos genéricos), que es
+     lo que necesitan el hero, las ocasiones y las categorías del combo. */
+  imgRows(images, setter, etiquetas) {
+    const fijas = etiquetas ? etiquetas.length : 3;
+    let arr = (images && images.length ? images.slice() : []);
+    while (arr.length < fijas) arr.push('');
     const readFile = (file, i) => {
       this.aligera(file).then(({ blob, ext }) => {
         const base = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -1074,7 +1086,8 @@ class Component extends DCLogic {
       });
     };
     return arr.map((url, i) => ({
-      n: i + 1, url, empty: !url, removable: i >= 3,
+      n: i + 1, url, empty: !url, removable: i >= fijas,
+      etiqueta: (etiquetas && etiquetas[i]) || ('Foto ' + (i + 1)),
       onChange: e => setter(arr.map((v, j) => j === i ? e.target.value : v)),
       onFileChange: e => { const file = e.target.files && e.target.files[0]; if (file) readFile(file, i); },
       onDragOver: e => e.preventDefault(),
@@ -1208,7 +1221,7 @@ class Component extends DCLogic {
         nombre: k.nombre, tipo: k.tipo, etiqueta: k.etiqueta, subtitulo: k.subtitulo,
         setNombre: set('nombre'), setTipo: set('tipo'), setEtiqueta: set('etiqueta'), setSubtitulo: set('subtitulo'),
         resumen: items.length + (items.length === 1 ? ' perfume · ' : ' perfumes · ') + 'desde ' + this.money(price) + ' (antes ' + this.money(before) + ')',
-        imagenesRows: this.imgRows(k.imagenes, arr => { const data = this.clone(); data.packs[i].imagenes = arr; this.persist(data); }),
+        imagenesRows: this.imgRows(k.imagenes, arr => { const data = this.clone(); data.packs[i].imagenes = arr; this.persist(data); }, RANURAS_FOTO),
         addImage: () => { const data = this.clone(); data.packs[i].imagenes = (k.imagenes || ['', '', '']).concat(''); this.persist(data); },
         opciones: decantProducts.map(p => ({
           label: p.nombre + ' · ' + p.marca, on: k.productos.includes(p.id),
@@ -1331,7 +1344,7 @@ class Component extends DCLogic {
       mainStyle,
       lineTabs, packTabs, packCards, packsGridStyle, packDiscountGlobal: packDisc, setPackDiscount,
       packDraft: s.packDraft, pd, pdh, draftOpciones,
-      draftImagenesRows: this.imgRows(pd.imagenes, arr => this.setState({ packDraft: Object.assign({}, this.state.packDraft || EMPTY_PACK_DRAFT, { imagenes: arr }) })),
+      draftImagenesRows: this.imgRows(pd.imagenes, arr => this.setState({ packDraft: Object.assign({}, this.state.packDraft || EMPTY_PACK_DRAFT, { imagenes: arr }) }), RANURAS_FOTO),
       onAddDraftPackImage: () => {
         const cur = this.state.packDraft || EMPTY_PACK_DRAFT;
         this.setState({ packDraft: Object.assign({}, cur, { imagenes: (cur.imagenes || ['', '', '']).concat('') }) });
@@ -1479,7 +1492,7 @@ class Component extends DCLogic {
       }),
 
       panelOpen: !!s.draft, d, h,
-      imagenesRows: this.imgRows(d.imagenes, arr => this.setState({ draft: Object.assign({}, this.state.draft || EMPTY, { imagenes: arr }) })),
+      imagenesRows: this.imgRows(d.imagenes, arr => this.setState({ draft: Object.assign({}, this.state.draft || EMPTY, { imagenes: arr }) }), RANURAS_FOTO),
       onAddImage: () => {
         const cur = this.state.draft || EMPTY;
         this.setState({ draft: Object.assign({}, cur, { imagenes: (cur.imagenes || ['', '', '']).concat('') }) });
