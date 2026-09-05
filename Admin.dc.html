@@ -423,6 +423,24 @@
           <p style="margin: 0; font-size: 12px; color: var(--color-neutral-600);">Estos enlaces alimentan los íconos de contacto de la tienda.</p>
         </div>
 
+        <div style="border-top: 1px solid var(--color-divider); padding-top: 22px; display: grid; gap: 9.2px; max-width: 700px;">
+          <div style="font-family: var(--font-heading); font-size: 24px;">Optimizar fotos</div>
+          <p style="margin: 0; font-size: 13px; color: var(--color-neutral-600); line-height: 1.6;">
+            Las fotos que subas de ahora en adelante ya se comprimen solas. Este botón hace lo mismo con las que
+            <strong>ya estaban subidas</strong>: las reduce a 1400 px y las pasa a WebP, sin que se note en pantalla.
+            Suelen quedar unas <strong>25 veces más ligeras</strong>, y eso es lo que decide cuántas visitas al mes
+            aguanta el plan gratuito. Pruébalo y revisa una foto antes de dejarlo correr entero.
+          </p>
+          <label style="display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--color-neutral-700);">
+            <input type="checkbox" checked="{{ optiBorrar }}" onChange="{{ toggleOptiBorrar }}" style="width: auto;">
+            Borrar también las versiones antiguas (no se puede deshacer)
+          </label>
+          <div style="display: flex; align-items: center; gap: 13.8px; flex-wrap: wrap;">
+            <button onClick="{{ optimizaFotos }}" style="flex: none; padding: 9px 18.4px; background: transparent; border: 1px solid var(--color-accent); border-radius: var(--radius-md); color: var(--color-accent-700); font-size: 13px; cursor: {{ optiCursor }}; pointer-events: {{ optiEvents }}; opacity: {{ optiOpacity }};">{{ optiLabel }}</button>
+            <span style="font-size: 12.5px; color: var(--color-neutral-600); font-feature-settings: 'tnum' 1;">{{ optiEstado }}</span>
+          </div>
+        </div>
+
       </div>
       </sc-if>
 
@@ -551,7 +569,7 @@
                     </sc-for>
                   </select>
                   <label style="display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-neutral-700);">
-                    <input type="checkbox" checked="{{ o.visible }}" onChange="{{ o.toggleVisible }}"> Visible
+                    <input type="checkbox" checked="{{ o.visible }}" onChange="{{ o.toggleVisible }}" style="width: auto;"> Visible
                   </label>
                   <button onClick="{{ o.up }}" aria-label="Subir" title="Subir" style="flex: none; width: 28px; height: 28px; background: none; border: 1px solid var(--color-divider); border-radius: var(--radius-sm); cursor: pointer;">↑</button>
                   <button onClick="{{ o.down }}" aria-label="Bajar" title="Bajar" style="flex: none; width: 28px; height: 28px; background: none; border: 1px solid var(--color-divider); border-radius: var(--radius-sm); cursor: pointer;">↓</button>
@@ -573,7 +591,7 @@
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4.6px;">
                   <sc-for list="{{ o.opciones }}" as="op" hint-placeholder-count="4">
                     <label style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--color-neutral-700);">
-                      <input type="checkbox" checked="{{ op.on }}" onChange="{{ op.toggle }}">
+                      <input type="checkbox" checked="{{ op.on }}" onChange="{{ op.toggle }}" style="width: auto;">
                       {{ op.label }}
                     </label>
                   </sc-for>
@@ -846,6 +864,8 @@ const EMPTY = { nombre: '', marca: '', linea: 'Nicho', p3: '', p5: '', p10: '', 
 class Component extends DCLogic {
   state = {
     authed: false, user: '', pass: '', loginError: false, pedidos: null, pedidosError: '',
+    optiBorrar: false, optiEnCurso: false, optiHechas: 0, optiTotal: 0,
+    optiAntes: 0, optiDespues: 0, optiMsg: '',
     section: 'inicio', query: '', lineFilter: '',
     data: JSON.parse(JSON.stringify(SEED)),
     draft: null, editingId: null, confirmId: null, toast: '', dragFrom: null, dragOver: null, addTopId: '', newCat: '',
@@ -916,8 +936,99 @@ class Component extends DCLogic {
      Aquí se reducen a 1400 px y se pasan a WebP, que conserva la transparencia
      que necesitan las botellas de la portada. Si el resultado no fuera más
      ligero, o el navegador no supiera hacerlo, se sube el archivo original. */
-  aligera(file) {
-    const original = { blob: file, ext: (file.name.match(/\.[^.]+$/) || ['.png'])[0] };
+  /* Todas las URLs de imagen que hay guardadas, cada una con la forma de
+     escribir su reemplazo. Así el optimizador no necesita saber dónde vive
+     cada foto dentro del bloque de configuración. */
+  refsDeImagenes(data) {
+    const refs = [];
+    const anota = (url, set) => { if (url) refs.push({ url, set }); };
+    (data.products || []).forEach(p => (p.imagenes || []).forEach((u, i) => anota(u, n => { p.imagenes[i] = n; })));
+    (data.packs || []).forEach(k => (k.imagenes || []).forEach((u, i) => anota(u, n => { k.imagenes[i] = n; })));
+    (data.packsPortada || []).forEach((u, i) => anota(u, n => { data.packsPortada[i] = n; }));
+    const ini = data.inicio || {};
+    (ini.heroImagenes || []).forEach((u, i) => anota(u, n => { ini.heroImagenes[i] = n; }));
+    (ini.ocasiones || []).forEach(o => anota(o.imagen, n => { o.imagen = n; }));
+    Object.keys(data.imagenPorLinea || {}).forEach(k => anota(data.imagenPorLinea[k], n => { data.imagenPorLinea[k] = n; }));
+    return refs;
+  }
+  mb(bytes) { return (bytes / 1048576).toFixed(1) + ' MB'; }
+  async optimizaFotos() {
+    if (this.state.optiEnCurso) return;
+
+    const data = this.clone();
+    const refs = this.refsDeImagenes(data);
+
+    // Una misma foto puede estar referenciada en varios sitios: se procesa una
+    // vez y se actualizan todas sus referencias.
+    const porUrl = new Map();
+    refs.forEach(r => {
+      if (r.url.indexOf('/product-images/') === -1) return;   // enlaces externos
+      if (/\.webp($|\?)/i.test(r.url)) return;                // ya optimizada
+      if (!porUrl.has(r.url)) porUrl.set(r.url, []);
+      porUrl.get(r.url).push(r.set);
+    });
+
+    const urls = [...porUrl.keys()];
+    if (!urls.length) {
+      this.setState({ optiMsg: 'No hay fotos pendientes: ya están todas optimizadas.' });
+      return;
+    }
+
+    this.setState({ optiEnCurso: true, optiHechas: 0, optiTotal: urls.length, optiAntes: 0, optiDespues: 0, optiMsg: '' });
+
+    const viejas = [];
+    let antes = 0, despues = 0, cambiadas = 0;
+
+    for (const url of urls) {
+      try {
+        const blob = await fetch(url).then(r => r.ok ? r.blob() : Promise.reject(r.status));
+        const nombre = decodeURIComponent(url.split('/').pop().split('?')[0]);
+        const { blob: nuevo, ext } = await this.aligera(blob, nombre);
+
+        // aligera() devuelve el original cuando no consigue mejorarlo.
+        if (ext === '.webp' && nuevo.size < blob.size) {
+          const base = nombre.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+          const ruta = Date.now() + '-' + base + '.webp';
+          const { error } = await window.sb.storage.from('product-images').upload(ruta, nuevo, { contentType: 'image/webp' });
+          if (!error) {
+            const { data: pub } = window.sb.storage.from('product-images').getPublicUrl(ruta);
+            porUrl.get(url).forEach(set => set(pub.publicUrl));
+            viejas.push(nombre);
+            antes += blob.size;
+            despues += nuevo.size;
+            cambiadas++;
+          }
+        }
+      } catch (e) {
+        console.error('No se pudo optimizar', url, e);
+      }
+      this.setState(s => ({ optiHechas: s.optiHechas + 1, optiAntes: antes, optiDespues: despues }));
+    }
+
+    if (!cambiadas) {
+      this.setState({ optiEnCurso: false, optiMsg: 'Revisadas ' + urls.length + ', ninguna se pudo aligerar más.' });
+      return;
+    }
+
+    // Una sola escritura al final: si algo falló a mitad, la tienda no queda
+    // con enlaces a fotos que todavía no existen.
+    this.persist(data);
+
+    if (this.state.optiBorrar && viejas.length) {
+      const { error } = await window.sb.storage.from('product-images').remove(viejas);
+      if (error) console.error('No se pudieron borrar las versiones antiguas:', error);
+    }
+
+    this.setState({
+      optiEnCurso: false,
+      optiMsg: cambiadas + ' foto(s) optimizadas · ' + this.mb(antes) + ' → ' + this.mb(despues)
+    });
+  }
+  aligera(file, nombre) {
+    // Acepta tanto un File del selector como un Blob descargado del bucket
+    // (el botón de optimizar las fotos ya subidas), de ahí el nombre aparte.
+    const ref = nombre || file.name || '';
+    const original = { blob: file, ext: (ref.match(/\.[^.]+$/) || ['.png'])[0] };
     if (!/^image\//.test(file.type) || /svg/.test(file.type)) return Promise.resolve(original);
 
     return new Promise(resolve => {
@@ -1236,6 +1347,16 @@ class Component extends DCLogic {
       },
       onCancelPack: () => this.setState({ packDraft: null }),
       cats, tramos, tamanos, marcas,
+      optiBorrar: s.optiBorrar,
+      toggleOptiBorrar: () => this.setState(p => ({ optiBorrar: !p.optiBorrar })),
+      optimizaFotos: () => this.optimizaFotos(),
+      optiLabel: s.optiEnCurso ? 'Optimizando…' : 'Optimizar fotos',
+      optiCursor: s.optiEnCurso ? 'progress' : 'pointer',
+      optiEvents: s.optiEnCurso ? 'none' : 'auto',
+      optiOpacity: s.optiEnCurso ? 0.6 : 1,
+      optiEstado: s.optiEnCurso
+        ? (s.optiHechas + ' de ' + s.optiTotal + (s.optiAntes ? ' · ' + this.mb(s.optiAntes) + ' → ' + this.mb(s.optiDespues) : ''))
+        : s.optiMsg,
       hayPedidos: !!(s.pedidos && s.pedidos.length),
       sinPedidos: !(s.pedidos && s.pedidos.length),
       pedidosVacio: s.pedidosError
