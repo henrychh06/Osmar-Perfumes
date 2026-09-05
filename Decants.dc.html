@@ -26,6 +26,19 @@ a:hover { color: var(--color-accent-600); }
 /* sticky host */
 html, body { height: auto; min-height: 100%; }
 #dc-root, .sc-host { height: auto; min-height: 100%; }
+:root { --ease-out: cubic-bezier(0.23, 1, 0.32, 1); }
+/* Visor de fotos del decant, calcado del de packs: la lupa solo con mouse real. */
+.dec-photo { position: relative; overflow: hidden; background: #ffffff; }
+.dec-photo img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; transition: transform .35s var(--ease-out); transform-origin: center; }
+@media (hover: hover) and (pointer: fine) { .dec-photo:hover img { transform: scale(1.85); } }
+.dec-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(255,255,255,0.92); box-shadow: 0 2px 8px rgba(27,24,22,0.18); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #1b1816; opacity: 0; transition: opacity .2s ease; z-index: 2; }
+.dec-photo:hover .dec-nav, .dec-nav:focus-visible { opacity: 1; }
+@media (hover: none) { .dec-nav { opacity: 1; } }
+.dec-thumb { width: 64px; height: 64px; object-fit: cover; background: #ffffff; display: block; transition: border-color .2s ease, opacity .2s ease; }
+/* Ranura sin foto: se ve, pero no se puede pulsar. */
+.dec-thumb-vacia { width: 64px; height: 64px; box-sizing: border-box; border: 1.5px dashed var(--color-divider); background: #f7f6f5; display: grid; place-items: center; font-size: 10px; letter-spacing: 0.06em; color: color-mix(in srgb, var(--color-text) 42%, transparent); }
+.dec-thumb-rotulo { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; margin-top: 4px; }
+@media (prefers-reduced-motion: reduce) { .dec-photo img { transition-duration: 0.001s; } }
 </style>
 <link rel="stylesheet" href="./responsive.css">
 </helmet>
@@ -92,22 +105,35 @@ html, body { height: auto; min-height: 100%; }
       <div class="dialog" onClick="{{ stop }}" style="max-width:1180px;width:100%;max-height:92vh;overflow:auto;padding:0">
         <div class="mp-modal-grid" style="display:grid;grid-template-columns:minmax(0,11fr) minmax(0,9fr)">
 
-          <div class="mp-modal-media" style="background:#f0efee;padding:28px;display:flex;flex-direction:column;gap:14px;position:relative">
+          <div class="mp-modal-media" style="background:#f0efee;padding:28px;display:flex;flex-direction:column;gap:14px">
             <div style="flex:1;display:flex;align-items:center">
-              <img src="{{ selectedImg }}" alt="{{ selectedImgAlt }}" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block">
+              <div id="dec-photo" class="dec-photo" style="width:100%">
+                <img src="{{ selectedImg }}" alt="{{ selectedImgAlt }}">
+                <sc-if value="{{ hasPrevImg }}" hint-placeholder-val="{{ true }}">
+                  <button type="button" class="dec-nav" style="left:10px" aria-label="Foto anterior" onClick="{{ imgPrev }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg></button>
+                </sc-if>
+                <sc-if value="{{ hasNextImg }}" hint-placeholder-val="{{ true }}">
+                  <button type="button" class="dec-nav" style="right:10px" aria-label="Foto siguiente" onClick="{{ imgNext }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></button>
+                </sc-if>
+              </div>
             </div>
-            <sc-if value="{{ hasManyImgs }}" hint-placeholder-val="{{ true }}">
-            <button type="button" class="mp-arrow" aria-label="Foto anterior" onClick="{{ imgPrev }}" style="position:absolute;left:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text);opacity:{{ imgPrevOpacity }};pointer-events:{{ imgPrevEvents }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg></button>
-            <button type="button" class="mp-arrow" aria-label="Foto siguiente" onClick="{{ imgNext }}" style="position:absolute;right:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text);opacity:{{ imgNextOpacity }};pointer-events:{{ imgNextEvents }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></button>
-            </sc-if>
-            <sc-if value="{{ hasManyImgs }}" hint-placeholder-val="{{ true }}">
             <div class="mp-thumbs" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-              <sc-for list="{{ galleryImages }}" as="im" hint-placeholder-count="3">
-                <button type="button" onClick="{{ im.select }}" aria-label="{{ im.label }}" title="{{ im.label }}" style="border:{{ im.border }};background:none;padding:0;cursor:pointer;line-height:0">
-                  <img src="{{ im.url }}" alt="{{ im.label }}" style="width:64px;height:64px;object-fit:cover;background:#ffffff;display:block;opacity:{{ im.opacity }}">
-                </button>
+              <sc-for list="{{ galleryImages }}" as="im" hint-placeholder-count="4">
+                <div>
+                  <button type="button" onClick="{{ im.select }}" aria-label="{{ im.aria }}" title="{{ im.aria }}" style="border:{{ im.border }};background:none;padding:0;cursor:{{ im.cursor }};line-height:0;display:block">
+                    <sc-if value="{{ im.url }}" hint-placeholder-val="{{ true }}">
+                      <img src="{{ im.url }}" alt="{{ im.aria }}" class="dec-thumb" style="opacity:{{ im.opacity }}">
+                    </sc-if>
+                    <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ false }}">
+                      <span class="dec-thumb-vacia">Sin foto</span>
+                    </sc-if>
+                  </button>
+                  <div class="dec-thumb-rotulo" style="color:{{ im.labelColor }}">{{ im.label }}</div>
+                </div>
               </sc-for>
             </div>
+            <sc-if value="{{ hasManyImgs }}" hint-placeholder-val="{{ true }}">
+              <div style="text-align:center;font-size:11.5px;color:color-mix(in srgb, var(--color-text) 58%, transparent)">{{ selectedImgAlt }} · pasa el mouse sobre la foto para acercar</div>
             </sc-if>
           </div>
 
@@ -185,6 +211,7 @@ class Component extends DCLogic {
   };
   componentDidMount() {
     window.MarosCart.onChange(() => this.forceUpdate());
+    this.setupPhotoZoom();
     window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
       if (error || !row || !row.data) return;
       const admin = row.data;
@@ -218,6 +245,27 @@ class Component extends DCLogic {
      tamaño, en el mismo orden que los testers. Es lo mismo que hace la
      ficha de los packs. */
   IMG_LABELS = ['Foto general', '3 ml', '5 ml', '10 ml'];
+  // Lo que se lee debajo de cada miniatura, donde no cabe "Foto general".
+  IMG_ROTULOS = ['General', '3 ml', '5 ml', '10 ml'];
+  /* El zoom sigue al cursor moviendo transform-origin. El modal se monta y
+     desmonta condicionalmente, así que se re-engancha en cada actualización y se
+     marca el nodo para no duplicar listeners. Es el mismo de la ficha de packs. */
+  componentDidUpdate() { this.setupPhotoZoom(); }
+  setupPhotoZoom() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const box = document.getElementById('dec-photo');
+    if (!box || box.dataset.zoomWired) return;
+    box.dataset.zoomWired = '1';
+    const img = box.querySelector('img');
+    if (!img) return;
+    box.addEventListener('mousemove', (e) => {
+      const r = box.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 100;
+      const y = ((e.clientY - r.top) / r.height) * 100;
+      img.style.transformOrigin = x + '% ' + y + '%';
+    });
+    box.addEventListener('mouseleave', () => { img.style.transformOrigin = 'center'; });
+  }
   // Por debajo de este stock se avisa sin dar la cifra exacta.
   LOW_STOCK = 3;
   BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
@@ -253,14 +301,15 @@ class Component extends DCLogic {
     if (sort === 'desc') list = [...list].sort((a, b) => b.price - a.price);
     return list;
   }
-  imgList(prod) {
+  /* Las cuatro ranuras existen siempre, tenga foto o no: el cliente ve de un
+     vistazo que hay una foto por tamaño, y las que faltan salen en gris. Por eso
+     el índice que se guarda en mImg es el número de ranura, no una posición
+     dentro de una lista compactada. */
+  imgSlots(prod) {
     const raw = (prod && prod.imagenes) || [];
-    const etiquetas = this.IMG_LABELS || [];
-    const list = [];
-    raw.forEach((url, i) => {
-      if (url) list.push({ url, orig: i, label: etiquetas[i] || ('Foto ' + (list.length + 1)) });
-    });
-    return list;
+    return this.IMG_LABELS.map((label, i) => ({
+      slot: i, label, rotulo: this.IMG_ROTULOS[i] || label, url: raw[i] || ''
+    }));
   }
   stockView(prod) {
     if (!prod) return { label: '', bg: 'transparent', fg: 'transparent' };
@@ -299,10 +348,15 @@ class Component extends DCLogic {
     const { cat, sel, selSize, qty, onlyAvail, sort } = this.state;
     const list = this.filtered();
     const selected = this.data.find(p => p.id === sel) || null;
-    // Las fotos vacías se descartan, así que el visor admite cualquier
-    // número de imágenes y no pinta huecos transparentes.
-    const gal = this.imgList(selected);
-    const imgAt = gal.length ? Math.min(this.state.mImg, gal.length - 1) : 0;
+    const slots = this.imgSlots(selected);
+    const llenas = slots.filter(s => s.url);
+    // La ranura elegida puede estar vacía (se cambió de perfume, o el admin
+    // todavía no subió esa foto): entonces se cae a la primera que sí tenga.
+    const imgAt = (slots[this.state.mImg] && slots[this.state.mImg].url)
+      ? this.state.mImg
+      : (llenas.length ? llenas[0].slot : -1);
+    const prevSlot = llenas.filter(s => s.slot < imgAt).pop() || null;
+    const nextSlot = llenas.filter(s => s.slot > imgAt)[0] || null;
     const stockView = this.stockView(selected);
     const sizes = selected ? selected.sizes : [];
     const curSize = sizes[selSize] || sizes[0];
@@ -352,22 +406,27 @@ class Component extends DCLogic {
         open: () => this.setState({ sel: p.id, selSize: 0, qty: 1, mImg: 0 })
       })),
       selected,
-      selectedImg: gal.length ? gal[imgAt].url : this.BLANK_IMG,
-      selectedImgAlt: gal.length ? gal[imgAt].label : 'Foto del producto',
-      hasManyImgs: gal.length > 1,
-      galleryImages: gal.map((im, i) => ({
-        url: im.url, label: im.label,
-        border: i === imgAt ? '2px solid #1b1816' : '1px solid var(--color-divider)',
-        opacity: i === imgAt ? '1' : '0.62',
-        select: () => this.setState({ mImg: i })
+      selectedImg: imgAt === -1 ? this.BLANK_IMG : slots[imgAt].url,
+      selectedImgAlt: imgAt === -1 ? 'Foto del producto' : slots[imgAt].label,
+      hasManyImgs: llenas.length > 1,
+      galleryImages: slots.map(s => ({
+        url: s.url, label: s.rotulo, empty: !s.url,
+        aria: s.url ? s.label : s.label + ' (sin foto todavía)',
+        border: s.slot === imgAt ? '2px solid #1b1816' : '1px solid var(--color-divider)',
+        opacity: s.slot === imgAt ? '1' : '0.62',
+        cursor: s.url ? 'pointer' : 'default',
+        labelColor: s.url
+          ? 'color-mix(in srgb, var(--color-text) 70%, transparent)'
+          : 'color-mix(in srgb, var(--color-text) 38%, transparent)',
+        // Una ranura vacía no lleva a ningún sitio.
+        select: s.url ? () => this.setState({ mImg: s.slot }) : () => {}
       })),
-      // Se topan en los extremos: la última foto no salta al siguiente perfume.
-      imgPrev: () => this.setState(s => ({ mImg: Math.max(0, s.mImg - 1) })),
-      imgNext: () => this.setState(s => ({ mImg: Math.min(gal.length - 1, s.mImg + 1) })),
-      imgPrevOpacity: imgAt > 0 ? '1' : '0.35',
-      imgPrevEvents: imgAt > 0 ? 'auto' : 'none',
-      imgNextOpacity: imgAt < gal.length - 1 ? '1' : '0.35',
-      imgNextEvents: imgAt < gal.length - 1 ? 'auto' : 'none',
+      // Las flechas saltan de ranura llena a ranura llena y se topan en los
+      // extremos: la última foto no salta al siguiente perfume.
+      hasPrevImg: !!prevSlot,
+      hasNextImg: !!nextSlot,
+      imgPrev: () => { if (prevSlot) this.setState({ mImg: prevSlot.slot }); },
+      imgNext: () => { if (nextSlot) this.setState({ mImg: nextSlot.slot }); },
       sizeOptions: sizes.map((s, i) => ({
         priceLabel: this.fmt(s.price),
         ml: s.ml,
@@ -375,9 +434,10 @@ class Component extends DCLogic {
         border: i === selSize ? '2px solid #1b1816' : '1px solid var(--color-divider)',
         dot: i === selSize ? '#1b1816' : 'transparent',
         // Al elegir un tamaño se muestra su foto, si el admin la subió.
+        // Ranura 1 = 3 ml, 2 = 5 ml, 3 = 10 ml; la 0 es la foto general.
         select: () => {
-          const at = gal.findIndex(im => im.orig === i + 1);
-          this.setState(at === -1 ? { selSize: i } : { selSize: i, mImg: at });
+          const foto = slots[i + 1];
+          this.setState((foto && foto.url) ? { selSize: i, mImg: i + 1 } : { selSize: i });
         }
       })),
       qty,

@@ -176,6 +176,30 @@
           </label>
         </div>
 
+        <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: #fff; padding: 18.4px 22px; margin-bottom: 22px;">
+          <div style="font-family: var(--font-heading); font-size: 20px;">Portada de la página</div>
+          <div style="font-size: 12.5px; color: var(--color-neutral-600); margin-top: 4.6px;">Fotos de combos que van girando solas cada 5 segundos en la cabecera de «Packs de decants». Con una sola foto no gira. <strong>Tamaño recomendado: 1200 × 960 px (proporción 5:4)</strong>, PNG con fondo transparente.</div>
+          <div style="display: grid; gap: 9.2px; margin-top: 13.8px;">
+            <sc-for list="{{ portadaImagenesRows }}" as="im" hint-placeholder-count="3">
+              <div style="display: grid; gap: 4.6px;">
+                <div style="display: flex; gap: 9.2px; align-items: flex-start;">
+                  <label onDragOver="{{ im.onDragOver }}" onDrop="{{ im.onDrop }}" style="{{ im.dropStyle }}">
+                    <input type="file" accept="image/*" onChange="{{ im.onFileChange }}" style="display: none;">
+                    <sc-if value="{{ im.url }}" hint-placeholder-val="{{ false }}">
+                      <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;">
+                    </sc-if>
+                    <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
+                      <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">{{ im.etiqueta }} — arrastra o haz clic</span>
+                    </sc-if>
+                  </label>
+                </div>
+                <input value="{{ im.url }}" onChange="{{ im.onChange }}" placeholder="o pega un enlace de imagen" style="font-size: 12px; padding: 6px 10px;">
+              </div>
+            </sc-for>
+          </div>
+          <button onClick="{{ addPortadaImagen }}" style="margin-top: 9.2px; background: none; border: 1px dashed var(--color-divider); border-radius: var(--radius-sm); padding: 7px 13.8px; font-size: 12.5px; cursor: pointer; color: var(--color-neutral-700);">+ Añadir otra foto</button>
+        </div>
+
         <sc-if value="{{ packDraft }}" hint-placeholder-val="{{ false }}">
           <div style="border: 1px solid var(--color-accent); border-radius: var(--radius-md); background: #fff; padding: 18.4px 22px; margin-bottom: 22px; display: grid; gap: 13.8px; box-shadow: var(--shadow-md);">
             <div style="font-family: var(--font-heading); font-size: 20px; color: var(--color-accent-700);">Nuevo pack</div>
@@ -204,10 +228,11 @@
               <input value="{{ pd.subtitulo }}" onChange="{{ pdh.subtitulo }}">
             </label>
             <div>
-              <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. Recomendado: 800 × 800 px (cuadrada).</p>
+              <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Fotos</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> En la tarjeta del listado se recorta a 4:3, así que deja algo de aire alrededor del motivo.</p>
               <div style="display: grid; gap: 9.2px;">
                 <sc-for list="{{ draftImagenesRows }}" as="im" hint-placeholder-count="3">
                   <div style="display: grid; gap: 4.6px;">
+                    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ im.etiqueta }}</div>
                     <div style="display: flex; gap: 9.2px; align-items: flex-start;">
                       <label onDragOver="{{ im.onDragOver }}" onDrop="{{ im.onDrop }}" style="{{ im.dropStyle }}">
                         <input type="file" accept="image/*" onChange="{{ im.onFileChange }}" style="display: none;">
@@ -215,7 +240,7 @@
                           <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                         </sc-if>
                         <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
-                          <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                          <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">{{ im.etiqueta }} — arrastra o haz clic</span>
                         </sc-if>
                       </label>
                       <sc-if value="{{ im.removable }}" hint-placeholder-val="{{ false }}">
@@ -274,10 +299,11 @@
                 <input value="{{ k.subtitulo }}" onChange="{{ k.setSubtitulo }}">
               </label>
               <div>
-                <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. Recomendado: 800 × 800 px (cuadrada).</p>
+                <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Fotos</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> En la tarjeta del listado se recorta a 4:3, así que deja algo de aire alrededor del motivo.</p>
                 <div style="display: grid; gap: 9.2px;">
                   <sc-for list="{{ k.imagenesRows }}" as="im" hint-placeholder-count="3">
                     <div style="display: grid; gap: 4.6px;">
+                      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ im.etiqueta }}</div>
                       <div style="display: flex; gap: 9.2px; align-items: flex-start;">
                         <label onDragOver="{{ im.onDragOver }}" onDrop="{{ im.onDrop }}" style="{{ im.dropStyle }}">
                           <input type="file" accept="image/*" onChange="{{ im.onFileChange }}" style="display: none;">
@@ -285,7 +311,7 @@
                             <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                           </sc-if>
                           <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
-                            <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                            <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">{{ im.etiqueta }} — arrastra o haz clic</span>
                           </sc-if>
                         </label>
                         <sc-if value="{{ im.removable }}" hint-placeholder-val="{{ false }}">
@@ -316,6 +342,40 @@
             </div>
           </sc-for>
         </div>
+      </sc-if>
+
+      <sc-if value="{{ isPedidos }}" hint-placeholder-val="{{ false }}">
+        <p style="margin: 18.4px 0 0; font-size: 13px; color: var(--color-neutral-600); line-height: 1.6; max-width: 70ch;">
+          Cada vez que un cliente pulsa «Pedir por WhatsApp» queda registrado aquí. Es una <strong>intención de compra</strong>:
+          todavía tiene que enviarte el mensaje, así que confírmalo por WhatsApp antes de preparar el envío.
+        </p>
+
+        <sc-if value="{{ sinPedidos }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top: 27.6px; border: 1px dashed var(--color-divider); border-radius: var(--radius-md); padding: 36.8px; text-align: center; color: var(--color-neutral-600); font-size: 13.5px;">
+            {{ pedidosVacio }}
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hayPedidos }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 22px; display: grid; gap: 9.2px;">
+            <sc-for list="{{ pedidos }}" as="o" hint-placeholder-count="4">
+              <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: #fff; padding: 13.8px 18.4px; display: grid; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 13.8px; flex-wrap: wrap;">
+                  <span style="font-size: 12px; color: var(--color-neutral-600); font-feature-settings: 'tnum' 1;">{{ o.fecha }}</span>
+                  <span style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-500);">{{ o.canal }}</span>
+                  <span style="flex: 1;"></span>
+                  <strong style="font-size: 15px; font-feature-settings: 'tnum' 1;">{{ o.totalLabel }}</strong>
+                  <select value="{{ o.estado }}" onChange="{{ o.setEstado }}" aria-label="Estado del pedido" style="flex: none; font-size: 12px; padding: 5px 8px;">
+                    <sc-for list="{{ o.estados }}" as="es" hint-placeholder-count="4">
+                      <option value="{{ es }}">{{ es }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <div style="font-size: 13px; color: var(--color-neutral-800); line-height: 1.6;">{{ o.resumen }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
       </sc-if>
 
       <sc-if value="{{ isAjustes }}" hint-placeholder-val="{{ false }}">
@@ -364,6 +424,24 @@
             <input value="{{ redes.whatsapp }}" onChange="{{ setWhatsapp }}" placeholder="https://wa.me/51…">
           </label>
           <p style="margin: 0; font-size: 12px; color: var(--color-neutral-600);">Estos enlaces alimentan los íconos de contacto de la tienda.</p>
+        </div>
+
+        <div style="border-top: 1px solid var(--color-divider); padding-top: 22px; display: grid; gap: 9.2px; max-width: 700px;">
+          <div style="font-family: var(--font-heading); font-size: 24px;">Optimizar fotos</div>
+          <p style="margin: 0; font-size: 13px; color: var(--color-neutral-600); line-height: 1.6;">
+            Las fotos que subas de ahora en adelante ya se comprimen solas. Este botón hace lo mismo con las que
+            <strong>ya estaban subidas</strong>: las reduce a 1400 px y las pasa a WebP, sin que se note en pantalla.
+            Suelen quedar unas <strong>25 veces más ligeras</strong>, y eso es lo que decide cuántas visitas al mes
+            aguanta el plan gratuito. Pruébalo y revisa una foto antes de dejarlo correr entero.
+          </p>
+          <label style="display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--color-neutral-700);">
+            <input type="checkbox" checked="{{ optiBorrar }}" onChange="{{ toggleOptiBorrar }}" style="width: auto;">
+            Borrar también las versiones antiguas (no se puede deshacer)
+          </label>
+          <div style="display: flex; align-items: center; gap: 13.8px; flex-wrap: wrap;">
+            <button onClick="{{ optimizaFotos }}" style="flex: none; padding: 9px 18.4px; background: transparent; border: 1px solid var(--color-accent); border-radius: var(--radius-md); color: var(--color-accent-700); font-size: 13px; cursor: {{ optiCursor }}; pointer-events: {{ optiEvents }}; opacity: {{ optiOpacity }};">{{ optiLabel }}</button>
+            <span style="font-size: 12.5px; color: var(--color-neutral-600); font-feature-settings: 'tnum' 1;">{{ optiEstado }}</span>
+          </div>
         </div>
 
       </div>
@@ -427,29 +505,6 @@
           <p style="margin: 0; font-size: 13px; color: var(--color-neutral-600);">Los perfumes que se pueden elegir en cada categoría son los que tengan «Disponible en Arma tu combo» activado, dentro de su ficha en Perfumes o Decants.</p>
         </div>
       </sc-if>
-
-      <sc-if value="{{ isPedidos }}" hint-placeholder-val="{{ false }}">
-        <div style="margin-top: 18.4px; border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: #fff; overflow: hidden;">
-          <div style="display: grid; grid-template-columns: 90px 1.4fr 2fr 100px 150px; gap: 13.8px; padding: 11px 18.4px; background: var(--color-neutral-100); border-bottom: 1px solid var(--color-divider); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600);">
-            <span>Pedido</span><span>Cliente</span><span>Contenido</span><span style="text-align: right;">Total</span><span>Estado</span>
-          </div>
-          <sc-for list="{{ pedidos }}" as="o" hint-placeholder-count="4">
-            <div style="display: grid; grid-template-columns: 90px 1.4fr 2fr 100px 150px; gap: 13.8px; padding: 13.8px 18.4px; border-bottom: 1px solid var(--color-divider); align-items: center; font-size: 14px;">
-              <span style="font-feature-settings: 'tnum'; color: var(--color-neutral-600);">{{ o.id }}</span>
-              <span>{{ o.cliente }}</span>
-              <span style="font-size: 13px; color: var(--color-neutral-700);">{{ o.items }}</span>
-              <span style="text-align: right; font-feature-settings: 'tnum';">{{ o.total }}</span>
-              <select value="{{ o.estado }}" onChange="{{ o.setEstado }}">
-                <option value="Nuevo">Nuevo</option>
-                <option value="Preparando">Preparando</option>
-                <option value="En camino">En camino</option>
-                <option value="Entregado">Entregado</option>
-              </select>
-            </div>
-          </sc-for>
-        </div>
-      </sc-if>
-
       <sc-if value="{{ isInicio }}" hint-placeholder-val="{{ false }}">
         <div style="max-width: 620px; margin-top: 18.4px; display: grid; gap: 18.4px;">
           <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">Titular del hero
@@ -462,12 +517,8 @@
             <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">Texto del botón
               <input value="{{ inicio.cta }}" onChange="{{ setCta }}">
             </label>
-            <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">Aviso de la cinta superior
-              <input value="{{ inicio.aviso }}" onChange="{{ setAviso }}">
-            </label>
           </div>
           <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: var(--color-neutral-900); padding: 36.8px; text-align: center;">
-            <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent);">{{ inicio.aviso }}</div>
             <div style="font-family: var(--font-heading); font-weight: 400; font-size: 40px; line-height: 1.1; color: #f7f5f1; margin: 18.4px 0 9.2px;">{{ inicio.titular }}</div>
             <div style="font-size: 14px; line-height: 1.7; color: var(--color-neutral-400); max-width: 42ch; margin: 0 auto;">{{ inicio.bajada }}</div>
             <div style="display: inline-block; margin-top: 22px; padding: 10px 27.6px; border: 1px solid var(--color-accent); border-radius: var(--radius-md); color: var(--color-accent); font-family: var(--font-heading); font-size: 15px;">{{ inicio.cta }}</div>
@@ -498,7 +549,7 @@
                         <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;">
                       </sc-if>
                       <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
-                        <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                        <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">{{ im.etiqueta }} — arrastra o haz clic</span>
                       </sc-if>
                     </label>
                   </div>
@@ -510,10 +561,23 @@
 
           <div style="border-top: 1px solid var(--color-divider); padding-top: 22px; margin-top: 4.6px; display: grid; gap: 13.8px;">
             <div style="font-family: var(--font-heading); font-size: 22px;">Compra por ocasión</div>
-            <p style="margin: 0; font-size: 13px; color: var(--color-neutral-600); line-height: 1.5;">Las 6 tarjetas de la portada. Sube una foto para cada ocasión y marca qué fragancias se muestran al hacer clic en “Ver fragancias”.<br><strong>Tamaño recomendado: 600 × 800 px (proporción 3:4, vertical).</strong> La foto se recorta para llenar la tarjeta, así que deja el motivo principal al centro.</p>
+            <p style="margin: 0; font-size: 13px; color: var(--color-neutral-600); line-height: 1.5;">Las tarjetas de la portada. Puedes crearlas, ordenarlas, ocultarlas y elegir su icono. Sube una foto para cada ocasión y marca qué fragancias se muestran al hacer clic en “Ver fragancias”.<br><strong>Tamaño recomendado: 600 × 800 px (proporción 3:4, vertical).</strong> La foto se recorta para llenar la tarjeta, así que deja el motivo principal al centro.</p>
             <sc-for list="{{ ocasionCards }}" as="o" hint-placeholder-count="6">
               <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); padding: 13.8px 18.4px; display: grid; gap: 9.2px;">
-                <div style="font-size: 13px; font-weight: 600; color: var(--color-neutral-700);">{{ o.nombre }}</div>
+                <div style="display: flex; align-items: center; gap: 9.2px; flex-wrap: wrap;">
+                  <input value="{{ o.nombre }}" onChange="{{ o.setNombre }}" placeholder="Nombre de la ocasión" style="flex: 1; min-width: 150px; font-size: 13px; font-weight: 600; padding: 6px 10px;">
+                  <select value="{{ o.icono }}" onChange="{{ o.setIcono }}" aria-label="Icono" style="flex: none; font-size: 12px; padding: 6px 8px;">
+                    <sc-for list="{{ o.iconos }}" as="ic" hint-placeholder-count="7">
+                      <option value="{{ ic.id }}">{{ ic.label }}</option>
+                    </sc-for>
+                  </select>
+                  <label style="display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-neutral-700);">
+                    <input type="checkbox" checked="{{ o.visible }}" onChange="{{ o.toggleVisible }}" style="width: auto;"> Visible
+                  </label>
+                  <button onClick="{{ o.up }}" aria-label="Subir" title="Subir" style="flex: none; width: 28px; height: 28px; background: none; border: 1px solid var(--color-divider); border-radius: var(--radius-sm); cursor: pointer;">↑</button>
+                  <button onClick="{{ o.down }}" aria-label="Bajar" title="Bajar" style="flex: none; width: 28px; height: 28px; background: none; border: 1px solid var(--color-divider); border-radius: var(--radius-sm); cursor: pointer;">↓</button>
+                  <button onClick="{{ o.remove }}" aria-label="Eliminar" title="Eliminar" style="flex: none; width: 28px; height: 28px; background: none; border: 1px solid var(--color-divider); border-radius: var(--radius-sm); cursor: pointer; color: #a32020;">×</button>
+                </div>
                 <div style="display: grid; gap: 4.6px;">
                   <label onDragOver="{{ o.img.onDragOver }}" onDrop="{{ o.img.onDrop }}" style="{{ o.img.dropStyle }}">
                     <input type="file" accept="image/*" onChange="{{ o.img.onFileChange }}" style="display: none;">
@@ -521,7 +585,7 @@
                       <img src="{{ o.img.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                     </sc-if>
                     <sc-if value="{{ o.img.empty }}" hint-placeholder-val="{{ true }}">
-                      <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto de {{ o.nombre }} — arrastra o haz clic</span>
+                      <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto — arrastra o haz clic · 600 × 800 px (3:4)</span>
                     </sc-if>
                   </label>
                   <input value="{{ o.img.url }}" onChange="{{ o.img.onChange }}" placeholder="o pega un enlace de imagen" style="font-size: 12px; padding: 6px 10px;">
@@ -530,13 +594,14 @@
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4.6px;">
                   <sc-for list="{{ o.opciones }}" as="op" hint-placeholder-count="4">
                     <label style="display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--color-neutral-700);">
-                      <input type="checkbox" checked="{{ op.on }}" onChange="{{ op.toggle }}">
+                      <input type="checkbox" checked="{{ op.on }}" onChange="{{ op.toggle }}" style="width: auto;">
                       {{ op.label }}
                     </label>
                   </sc-for>
                 </div>
               </div>
             </sc-for>
+            <button onClick="{{ addOcasion }}" style="justify-self: start; background: none; border: 1px dashed var(--color-divider); border-radius: var(--radius-sm); padding: 8px 16px; font-size: 12.5px; cursor: pointer; color: var(--color-neutral-700);">+ Añadir ocasión</button>
           </div>
 
           <div style="border-top: 1px solid var(--color-divider); padding-top: 22px; margin-top: 4.6px; display: grid; gap: 13.8px;">
@@ -571,10 +636,17 @@
 
         <div style="padding: 22px 27.6px 27.6px; display: grid; gap: 18.4px;">
           <div>
-            <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div>
+            <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Fotos</div>
+            <sc-if value="{{ esDecant }}" hint-placeholder-val="{{ true }}">
+              <p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en el listado, en el Top 10 y en las ocasiones), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. En la ficha de decants, al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> Según la vista se recorta a 4:5 o a 3:4, así que deja aire alrededor del frasco.</p>
+            </sc-if>
+            <sc-if value="{{ noEsDecant }}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">La <strong>1ª</strong> es la que se ve en el listado, en el Top 10 y en las ocasiones; es la única que se muestra en la ficha del perfume. Las demás quedan guardadas por si más adelante lo vendes también en decants. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> Según la vista se recorta a 4:5 o a 3:4, así que deja aire alrededor del frasco.</p>
+            </sc-if>
             <div style="display: grid; gap: 9.2px;">
               <sc-for list="{{ imagenesRows }}" as="im" hint-placeholder-count="3">
                 <div style="display: grid; gap: 4.6px;">
+                  <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">{{ im.etiqueta }}</div>
                   <div style="display: flex; gap: 9.2px; align-items: flex-start;">
                     <label onDragOver="{{ im.onDragOver }}" onDrop="{{ im.onDrop }}" style="{{ im.dropStyle }}">
                       <input type="file" accept="image/*" onChange="{{ im.onFileChange }}" style="display: none;">
@@ -582,7 +654,7 @@
                         <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                       </sc-if>
                       <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
-                        <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                        <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">{{ im.etiqueta }} — arrastra o haz clic</span>
                       </sc-if>
                     </label>
                     <sc-if value="{{ im.removable }}" hint-placeholder-val="{{ false }}">
@@ -697,8 +769,6 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;moneda&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;S/. &quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Tienda&quot;},&quot;requiereLogin&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Acceso&quot;},&quot;filasCompactas&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Tabla&quot;}}">
-const KEY = 'maros:admin:v4';
-
 const SEED = {
   products: [
     { id: 'khamrah', nombre: 'Khamrah', marca: 'Lattafa', linea: 'Árabe', p3: 12, p5: 18, p10: 32, pFrasco: 15, stock: 22, etiqueta: 'HOT', notas: 'Canela, dátil, vainilla, tonka', imagenes: [], enDecants: true, enCatalogo: true, enCombo: true },
@@ -750,26 +820,24 @@ const SEED = {
   // "Arma tu combo". Va aparte para no tener que convertir `cats` (un array de
   // nombres) en objetos, que rompería todo lo que hoy lo usa como string.
   imagenPorLinea: {},
-  pedidos: [
-    { id: '#1042', cliente: 'Andrea Ríos', items: 'Khamrah 5 ml · Asad 5 ml', total: 130, estado: 'Nuevo' },
-    { id: '#1041', cliente: 'Luis Mendoza', items: 'Pack Iniciación', total: 120, estado: 'Preparando' },
-    { id: '#1040', cliente: 'Carla Vega', items: 'Baccarat Rouge 540 3 ml', total: 120, estado: 'En camino' },
-    { id: '#1039', cliente: 'Jorge Ponce', items: 'Combo de 5 · 15% desc.', total: 395, estado: 'Entregado' }
-  ],
   inicio: {
-    aviso: 'Pago contra entrega en toda la ciudad',
     titular: 'Perfumes originales, en la medida que quieras',
     bajada: 'Decants de 3, 5 y 10 ml de casas de nicho, diseñador y árabes. Prueba antes de comprar el frasco completo.',
     cta: 'Ver los decants',
     heroImagenes: ['', '', ''],
-    // 6 ocasiones fijas (Oficina, Citas, Fiesta, Verano, Invierno, Noche).
-    // El nombre y el ícono viven en la portada; aquí solo la foto y qué fragancias muestra.
+    // Las ocasiones se crean y ordenan desde el panel; estas son las que
+    // trae el sitio de fábrica.
     ocasiones: [
-      { imagen: '', productos: [] }, { imagen: '', productos: [] }, { imagen: '', productos: [] },
-      { imagen: '', productos: [] }, { imagen: '', productos: [] }, { imagen: '', productos: [] }
+      { nombre: 'Oficina',  icono: 'oficina',  imagen: '', productos: [], visible: true },
+      { nombre: 'Citas',    icono: 'citas',    imagen: '', productos: [], visible: true },
+      { nombre: 'Fiesta',   icono: 'fiesta',   imagen: '', productos: [], visible: true },
+      { nombre: 'Verano',   icono: 'verano',   imagen: '', productos: [], visible: true },
+      { nombre: 'Invierno', icono: 'invierno', imagen: '', productos: [], visible: true },
+      { nombre: 'Noche',    icono: 'noche',    imagen: '', productos: [], visible: true }
     ]
   },
   contacto: { telefono: '+51 987 654 321', correo: 'maros.perfumes@gmail.com' },
+  packsPortada: [],
   redes: { instagram: '', tiktok: 'https://www.tiktok.com/@maros.parfums1', facebook: '', whatsapp: 'https://wa.me/51987654321' },
   banners: {
     perfumes: { kicker: '', subtitulo: '' },
@@ -780,7 +848,30 @@ const SEED = {
   }
 };
 
-const OCASIONES = ['Oficina', 'Citas', 'Fiesta', 'Verano', 'Invierno', 'Noche'];
+// Mismo orden que el IMG_LABELS de Decants.dc.html y Packs.dc.html: si esto
+// se desincroniza, el panel y la tienda dejan de hablar del mismo hueco.
+const RANURAS_FOTO = ['Foto general', 'Foto del 3 ml', 'Foto del 5 ml', 'Foto del 10 ml'];
+
+// Cuatro huecos vacíos, que es como nace todo lo que usa RANURAS_FOTO.
+function ranurasVacias() { return RANURAS_FOTO.map(() => ''); }
+
+/* "Añadir foto" tiene que dejar un hueco *por encima* de las cuatro rotuladas;
+   si el registro venía con menos, primero se completan esas cuatro. Sin esto el
+   botón parecía no hacer nada en los registros viejos, que guardaban tres. */
+function conFotoExtra(imagenes) {
+  const arr = (imagenes || []).slice();
+  while (arr.length < RANURAS_FOTO.length) arr.push('');
+  return arr.concat('');
+}
+
+const ESTADOS_PEDIDO = ['Nuevo', 'Confirmado', 'Entregado', 'Cancelado'];
+
+const ICONOS_OCASION = [
+  { id: 'oficina', label: 'Maletín' }, { id: 'citas', label: 'Corazón' },
+  { id: 'fiesta', label: 'Globo' },    { id: 'verano', label: 'Sol' },
+  { id: 'invierno', label: 'Copo' },   { id: 'noche', label: 'Luna' },
+  { id: 'regalo', label: 'Regalo' }
+];
 
 const SECTIONS = [
   { id: 'inicio', label: 'Inicio', title: 'Inicio de la tienda', sub: 'Banner principal y el texto de cabecera de cada sección.' },
@@ -789,15 +880,17 @@ const SECTIONS = [
   { id: 'decants', label: 'Decants', title: 'Decants', sub: 'Lo que se vende por tamaño (3, 5 y 10 ml).' },
   { id: 'packs', label: 'Packs de decants', title: 'Packs de decants', sub: 'Selecciones ya armadas de la página de Packs.' },
   { id: 'combo', label: 'Arma tu combo', title: 'Arma tu combo', sub: 'Descuentos por cantidad y tamaños permitidos.' },
-  { id: 'pedidos', label: 'Pedidos', title: 'Pedidos', sub: 'Lo que entra por el carrito y por WhatsApp.' },
+  { id: 'pedidos', label: 'Pedidos', title: 'Pedidos', sub: 'Lo que los clientes envían por WhatsApp desde la tienda.' },
   { id: 'ajustes', label: 'Ajustes', title: 'Ajustes generales', sub: 'Líneas, contacto y redes sociales.' }
 ];
 
-const EMPTY = { nombre: '', marca: '', linea: 'Nicho', p3: '', p5: '', p10: '', pFrasco: '', stock: '', etiqueta: '', notas: '', imagenes: ['', '', ''], enDecants: true, enCatalogo: false, enCombo: true };
+const EMPTY = { nombre: '', marca: '', linea: 'Nicho', p3: '', p5: '', p10: '', pFrasco: '', stock: '', etiqueta: '', notas: '', imagenes: ranurasVacias(), enDecants: true, enCatalogo: false, enCombo: true };
 
 class Component extends DCLogic {
   state = {
-    authed: false, user: '', pass: '', loginError: false,
+    authed: false, user: '', pass: '', loginError: false, pedidos: null, pedidosError: '',
+    optiBorrar: false, optiEnCurso: false, optiHechas: 0, optiTotal: 0,
+    optiAntes: 0, optiDespues: 0, optiMsg: '',
     section: 'inicio', query: '', lineFilter: '',
     data: JSON.parse(JSON.stringify(SEED)),
     draft: null, editingId: null, confirmId: null, toast: '', dragFrom: null, dragOver: null, addTopId: '', newCat: '',
@@ -806,7 +899,7 @@ class Component extends DCLogic {
 
   componentDidMount() {
     window.sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) this.setState({ authed: true });
+      if (session) { this.setState({ authed: true }); this.cargaPedidos(); }
     });
     window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
       if (error) { console.error('No se pudo cargar site_data de Supabase:', error); return; }
@@ -816,11 +909,36 @@ class Component extends DCLogic {
       // estos campos traería un `inicio` incompleto y borraría los valores por
       // defecto. Rellenamos lo que falte sin pisar lo que el cliente ya guardó.
       merged.inicio = Object.assign(JSON.parse(JSON.stringify(SEED.inicio)), merged.inicio || {});
+      // Las ocasiones guardadas antes solo tenían foto y productos; se les
+      // rellena el nombre y el icono por su posición para no perder lo cargado.
       const prevOc = Array.isArray(merged.inicio.ocasiones) ? merged.inicio.ocasiones : [];
-      merged.inicio.ocasiones = SEED.inicio.ocasiones.map((d, i) => Object.assign({ imagen: '', productos: [] }, prevOc[i] || {}));
+      const base = SEED.inicio.ocasiones;
+      merged.inicio.ocasiones = (prevOc.length ? prevOc : base).map((o, i) => ({
+        nombre: o.nombre || (base[i] && base[i].nombre) || ('Ocasión ' + (i + 1)),
+        icono: o.icono || (base[i] && base[i].icono) || 'oficina',
+        imagen: o.imagen || '',
+        productos: Array.isArray(o.productos) ? o.productos : [],
+        visible: o.visible !== false
+      }));
       this.setState({ data: merged });
     });
-    if (this.props.requiereLogin === false) this.setState({ authed: true });
+    if (this.props.requiereLogin === false) { this.setState({ authed: true }); this.cargaPedidos(); }
+  }
+  /* Los pedidos viven en su propia tabla, no en el bloque site_data: así dos
+     pedidos a la vez no se pisan. Solo se pueden leer con sesión iniciada. */
+  cargaPedidos() {
+    window.sb.from('orders').select('*').order('created_at', { ascending: false }).limit(200)
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('No se pudieron cargar los pedidos:', error);
+          // El caso normal: todavía no se ha ejecutado el SQL que crea la tabla.
+          this.setState({ pedidos: [], pedidosError: /relation|does not exist|schema cache/i.test(error.message || '')
+            ? 'Falta crear la tabla de pedidos: ejecuta una vez el SQL de supabase/schema.sql en el editor de Supabase.'
+            : 'No se pudieron cargar los pedidos: ' + (error.message || 'error desconocido') });
+          return;
+        }
+        this.setState({ pedidos: data || [], pedidosError: '' });
+      });
   }
 
   persist(data) {
@@ -838,19 +956,156 @@ class Component extends DCLogic {
 
   clone() { return JSON.parse(JSON.stringify(this.state.data)); }
 
-  imgRows(images, setter) {
-    let arr = (images && images.length ? images.slice() : ['', '', '']);
-    while (arr.length < 3) arr.push('');
+  /* Las fotos originales pesan cerca de 1 MB cada una, y en el plan gratuito de
+     Supabase lo que se agota primero no es el espacio sino el tráfico mensual.
+     Aquí se reducen a 1400 px y se pasan a WebP, que conserva la transparencia
+     que necesitan las botellas de la portada. Si el resultado no fuera más
+     ligero, o el navegador no supiera hacerlo, se sube el archivo original. */
+  /* Todas las URLs de imagen que hay guardadas, cada una con la forma de
+     escribir su reemplazo. Así el optimizador no necesita saber dónde vive
+     cada foto dentro del bloque de configuración. */
+  refsDeImagenes(data) {
+    const refs = [];
+    const anota = (url, set) => { if (url) refs.push({ url, set }); };
+    (data.products || []).forEach(p => (p.imagenes || []).forEach((u, i) => anota(u, n => { p.imagenes[i] = n; })));
+    (data.packs || []).forEach(k => (k.imagenes || []).forEach((u, i) => anota(u, n => { k.imagenes[i] = n; })));
+    (data.packsPortada || []).forEach((u, i) => anota(u, n => { data.packsPortada[i] = n; }));
+    const ini = data.inicio || {};
+    (ini.heroImagenes || []).forEach((u, i) => anota(u, n => { ini.heroImagenes[i] = n; }));
+    (ini.ocasiones || []).forEach(o => anota(o.imagen, n => { o.imagen = n; }));
+    Object.keys(data.imagenPorLinea || {}).forEach(k => anota(data.imagenPorLinea[k], n => { data.imagenPorLinea[k] = n; }));
+    return refs;
+  }
+  mb(bytes) { return (bytes / 1048576).toFixed(1) + ' MB'; }
+  async optimizaFotos() {
+    if (this.state.optiEnCurso) return;
+
+    const data = this.clone();
+    const refs = this.refsDeImagenes(data);
+
+    // Una misma foto puede estar referenciada en varios sitios: se procesa una
+    // vez y se actualizan todas sus referencias.
+    const porUrl = new Map();
+    refs.forEach(r => {
+      if (r.url.indexOf('/product-images/') === -1) return;   // enlaces externos
+      if (/\.webp($|\?)/i.test(r.url)) return;                // ya optimizada
+      if (!porUrl.has(r.url)) porUrl.set(r.url, []);
+      porUrl.get(r.url).push(r.set);
+    });
+
+    const urls = [...porUrl.keys()];
+    if (!urls.length) {
+      this.setState({ optiMsg: 'No hay fotos pendientes: ya están todas optimizadas.' });
+      return;
+    }
+
+    this.setState({ optiEnCurso: true, optiHechas: 0, optiTotal: urls.length, optiAntes: 0, optiDespues: 0, optiMsg: '' });
+
+    const viejas = [];
+    let antes = 0, despues = 0, cambiadas = 0;
+
+    for (const url of urls) {
+      try {
+        const blob = await fetch(url).then(r => r.ok ? r.blob() : Promise.reject(r.status));
+        const nombre = decodeURIComponent(url.split('/').pop().split('?')[0]);
+        const { blob: nuevo, ext } = await this.aligera(blob, nombre);
+
+        // aligera() devuelve el original cuando no consigue mejorarlo.
+        if (ext === '.webp' && nuevo.size < blob.size) {
+          const base = nombre.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+          const ruta = Date.now() + '-' + base + '.webp';
+          const { error } = await window.sb.storage.from('product-images').upload(ruta, nuevo, { contentType: 'image/webp' });
+          if (!error) {
+            const { data: pub } = window.sb.storage.from('product-images').getPublicUrl(ruta);
+            porUrl.get(url).forEach(set => set(pub.publicUrl));
+            viejas.push(nombre);
+            antes += blob.size;
+            despues += nuevo.size;
+            cambiadas++;
+          }
+        }
+      } catch (e) {
+        console.error('No se pudo optimizar', url, e);
+      }
+      this.setState(s => ({ optiHechas: s.optiHechas + 1, optiAntes: antes, optiDespues: despues }));
+    }
+
+    if (!cambiadas) {
+      this.setState({ optiEnCurso: false, optiMsg: 'Revisadas ' + urls.length + ', ninguna se pudo aligerar más.' });
+      return;
+    }
+
+    // Una sola escritura al final: si algo falló a mitad, la tienda no queda
+    // con enlaces a fotos que todavía no existen.
+    this.persist(data);
+
+    if (this.state.optiBorrar && viejas.length) {
+      const { error } = await window.sb.storage.from('product-images').remove(viejas);
+      if (error) console.error('No se pudieron borrar las versiones antiguas:', error);
+    }
+
+    this.setState({
+      optiEnCurso: false,
+      optiMsg: cambiadas + ' foto(s) optimizadas · ' + this.mb(antes) + ' → ' + this.mb(despues)
+    });
+  }
+  aligera(file, nombre) {
+    // Acepta tanto un File del selector como un Blob descargado del bucket
+    // (el botón de optimizar las fotos ya subidas), de ahí el nombre aparte.
+    const ref = nombre || file.name || '';
+    const original = { blob: file, ext: (ref.match(/\.[^.]+$/) || ['.png'])[0] };
+    if (!/^image\//.test(file.type) || /svg/.test(file.type)) return Promise.resolve(original);
+
+    return new Promise(resolve => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const MAX = 1400;
+          const escala = Math.min(1, MAX / Math.max(img.width, img.height));
+          const lienzo = document.createElement('canvas');
+          lienzo.width = Math.round(img.width * escala);
+          lienzo.height = Math.round(img.height * escala);
+          lienzo.getContext('2d').drawImage(img, 0, 0, lienzo.width, lienzo.height);
+          lienzo.toBlob(blob => {
+            URL.revokeObjectURL(url);
+            if (blob && blob.type === 'image/webp' && blob.size < file.size) {
+              resolve({ blob, ext: '.webp' });
+            } else {
+              resolve(original);
+            }
+          }, 'image/webp', 0.82);
+        } catch (e) {
+          URL.revokeObjectURL(url);
+          resolve(original);
+        }
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(original); };
+      img.src = url;
+    });
+  }
+  /* Con `etiquetas` las ranuras son fijas y rotuladas: es el caso de decants y
+     packs, donde la 1ª es la foto general y las siguientes son la de cada
+     tamaño. Sin etiquetas se comporta como siempre (3 huecos genéricos), que es
+     lo que necesitan el hero, las ocasiones y las categorías del combo. */
+  imgRows(images, setter, etiquetas) {
+    const fijas = etiquetas ? etiquetas.length : 3;
+    let arr = (images && images.length ? images.slice() : []);
+    while (arr.length < fijas) arr.push('');
     const readFile = (file, i) => {
-      const path = Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      window.sb.storage.from('product-images').upload(path, file).then(({ error }) => {
-        if (error) { console.error('No se pudo subir la imagen:', error); this.flash('Error al subir la imagen'); return; }
-        const { data: pub } = window.sb.storage.from('product-images').getPublicUrl(path);
-        setter(arr.map((v, j) => j === i ? pub.publicUrl : v));
+      this.aligera(file).then(({ blob, ext }) => {
+        const base = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = Date.now() + '-' + base + ext;
+        window.sb.storage.from('product-images').upload(path, blob, { contentType: blob.type }).then(({ error }) => {
+          if (error) { console.error('No se pudo subir la imagen:', error); this.flash('Error al subir la imagen'); return; }
+          const { data: pub } = window.sb.storage.from('product-images').getPublicUrl(path);
+          setter(arr.map((v, j) => j === i ? pub.publicUrl : v));
+        });
       });
     };
     return arr.map((url, i) => ({
-      n: i + 1, url, empty: !url, removable: i >= 3,
+      n: i + 1, url, empty: !url, removable: i >= fijas,
+      etiqueta: (etiquetas && etiquetas[i]) || ('Foto ' + (i + 1)),
       onChange: e => setter(arr.map((v, j) => j === i ? e.target.value : v)),
       onFileChange: e => { const file = e.target.files && e.target.files[0]; if (file) readFile(file, i); },
       onDragOver: e => e.preventDefault(),
@@ -865,9 +1120,7 @@ class Component extends DCLogic {
         readFile(file, i);
       },
       remove: () => setter(arr.filter((v, j) => j !== i)),
-      dropStyle: 'width: 100%; height: 96px; box-sizing: border-box; border: 1.5px dashed var(--color-neutral-400); border-radius: var(--radius-md); background: var(--color-neutral-100); display: grid; place-items: center; overflow: hidden; cursor: pointer;',
-      dropStyleFilled: 'width: 100%; height: 96px; box-sizing: border-box; border: 1.5px solid var(--color-divider); border-radius: var(--radius-md); background: var(--color-neutral-100); display: grid; place-items: center; overflow: hidden; cursor: pointer;'
-    }));
+      dropStyle: 'width: 100%; height: 96px; box-sizing: border-box; border: 1.5px dashed var(--color-neutral-400); border-radius: var(--radius-md); background: var(--color-neutral-100); display: grid; place-items: center; overflow: hidden; cursor: pointer;',    }));
   }
 
   money(n) {
@@ -886,7 +1139,9 @@ class Component extends DCLogic {
       inicio: '', top: d0.top10.length,
       perfumes: d0.products.filter(p => p.enCatalogo).length, decants: d0.products.filter(p => p.enDecants).length,
       packs: d0.packs.length,
-      combo: d0.tramos.length, pedidos: d0.pedidos.filter(o => o.estado === 'Nuevo').length || '', ajustes: ''
+      combo: d0.tramos.length,
+      pedidos: (s.pedidos || []).filter(o => o.estado === 'Nuevo').length || '',
+      ajustes: ''
     };
 
     const navBtn = active => 'display: flex; align-items: center; justify-content: space-between; gap: 9px; width: 100%; text-align: left; padding: 10px 27.6px; background: ' +
@@ -984,8 +1239,8 @@ class Component extends DCLogic {
         nombre: k.nombre, tipo: k.tipo, etiqueta: k.etiqueta, subtitulo: k.subtitulo,
         setNombre: set('nombre'), setTipo: set('tipo'), setEtiqueta: set('etiqueta'), setSubtitulo: set('subtitulo'),
         resumen: items.length + (items.length === 1 ? ' perfume · ' : ' perfumes · ') + 'desde ' + this.money(price) + ' (antes ' + this.money(before) + ')',
-        imagenesRows: this.imgRows(k.imagenes, arr => { const data = this.clone(); data.packs[i].imagenes = arr; this.persist(data); }),
-        addImage: () => { const data = this.clone(); data.packs[i].imagenes = (k.imagenes || ['', '', '']).concat(''); this.persist(data); },
+        imagenesRows: this.imgRows(k.imagenes, arr => { const data = this.clone(); data.packs[i].imagenes = arr; this.persist(data); }, RANURAS_FOTO),
+        addImage: () => { const data = this.clone(); data.packs[i].imagenes = conFotoExtra(k.imagenes); this.persist(data); },
         opciones: decantProducts.map(p => ({
           label: p.nombre + ' · ' + p.marca, on: k.productos.includes(p.id),
           toggle: () => {
@@ -1000,7 +1255,7 @@ class Component extends DCLogic {
     });
     const setPackDiscount = e => { const data = this.clone(); data.packDiscountGlobal = Number(e.target.value); this.persist(data); };
 
-    const EMPTY_PACK_DRAFT = { nombre: '', tipo: d0.cats[0] || 'Nicho', etiqueta: '', subtitulo: '', productos: [], imagenes: ['', '', ''] };
+    const EMPTY_PACK_DRAFT = { nombre: '', tipo: d0.cats[0] || 'Nicho', etiqueta: '', subtitulo: '', productos: [], imagenes: ranurasVacias() };
     const pd = s.packDraft || EMPTY_PACK_DRAFT;
     const pdField = k => e => this.setState({ packDraft: Object.assign({}, this.state.packDraft || EMPTY_PACK_DRAFT, { [k]: e.target.value }) });
     const pdh = { nombre: pdField('nombre'), tipo: pdField('tipo'), etiqueta: pdField('etiqueta'), subtitulo: pdField('subtitulo') };
@@ -1054,11 +1309,6 @@ class Component extends DCLogic {
       })[0]
     }));
 
-    const pedidos = d0.pedidos.map((o, i) => ({
-      id: o.id, cliente: o.cliente, items: o.items, total: this.money(o.total), estado: o.estado,
-      setEstado: e => { const data = this.clone(); data.pedidos[i].estado = e.target.value; this.persist(data); }
-    }));
-
     const setInicio = field => e => { const data = this.clone(); data.inicio[field] = e.target.value; this.persist(data); };
 
     const d = s.draft || EMPTY;
@@ -1091,7 +1341,7 @@ class Component extends DCLogic {
       newLabel: s.section === 'packs' ? 'Nuevo pack' : 'Nuevo perfume',
       onNew: () => {
         if (s.section === 'packs') {
-          this.setState({ packDraft: { nombre: '', tipo: d0.cats[0] || 'Nicho', etiqueta: '', subtitulo: '', productos: [], imagenes: ['', '', ''] } });
+          this.setState({ packDraft: { nombre: '', tipo: d0.cats[0] || 'Nicho', etiqueta: '', subtitulo: '', productos: [], imagenes: ranurasVacias() } });
           return;
         }
         const dec = s.section === 'decants';
@@ -1112,10 +1362,10 @@ class Component extends DCLogic {
       mainStyle,
       lineTabs, packTabs, packCards, packsGridStyle, packDiscountGlobal: packDisc, setPackDiscount,
       packDraft: s.packDraft, pd, pdh, draftOpciones,
-      draftImagenesRows: this.imgRows(pd.imagenes, arr => this.setState({ packDraft: Object.assign({}, this.state.packDraft || EMPTY_PACK_DRAFT, { imagenes: arr }) })),
+      draftImagenesRows: this.imgRows(pd.imagenes, arr => this.setState({ packDraft: Object.assign({}, this.state.packDraft || EMPTY_PACK_DRAFT, { imagenes: arr }) }), RANURAS_FOTO),
       onAddDraftPackImage: () => {
         const cur = this.state.packDraft || EMPTY_PACK_DRAFT;
-        this.setState({ packDraft: Object.assign({}, cur, { imagenes: (cur.imagenes || ['', '', '']).concat('') }) });
+        this.setState({ packDraft: Object.assign({}, cur, { imagenes: conFotoExtra(cur.imagenes) }) });
       },
       onSavePack: () => {
         const draft = this.state.packDraft; if (!draft) return;
@@ -1127,7 +1377,54 @@ class Component extends DCLogic {
         this.flash('Pack añadido');
       },
       onCancelPack: () => this.setState({ packDraft: null }),
-      cats, tramos, tamanos, marcas, pedidos,
+      cats, tramos, tamanos, marcas,
+      optiBorrar: s.optiBorrar,
+      toggleOptiBorrar: () => this.setState(p => ({ optiBorrar: !p.optiBorrar })),
+      optimizaFotos: () => this.optimizaFotos(),
+      optiLabel: s.optiEnCurso ? 'Optimizando…' : 'Optimizar fotos',
+      optiCursor: s.optiEnCurso ? 'progress' : 'pointer',
+      optiEvents: s.optiEnCurso ? 'none' : 'auto',
+      optiOpacity: s.optiEnCurso ? 0.6 : 1,
+      optiEstado: s.optiEnCurso
+        ? (s.optiHechas + ' de ' + s.optiTotal + (s.optiAntes ? ' · ' + this.mb(s.optiAntes) + ' → ' + this.mb(s.optiDespues) : ''))
+        : s.optiMsg,
+      hayPedidos: !!(s.pedidos && s.pedidos.length),
+      sinPedidos: !(s.pedidos && s.pedidos.length),
+      pedidosVacio: s.pedidosError
+        ? s.pedidosError
+        : (s.pedidos === null
+          ? 'Cargando los pedidos…'
+          : 'Todavía no hay pedidos. Aparecerán aquí en cuanto alguien pulse «Pedir por WhatsApp» en la tienda.'),
+      pedidos: (s.pedidos || []).map(o => {
+        const items = Array.isArray(o.items) ? o.items : [];
+        return {
+          fecha: new Date(o.created_at).toLocaleString('es-PE', {
+            day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+          }),
+          canal: o.canal || 'whatsapp',
+          estado: o.estado || 'Nuevo',
+          estados: ESTADOS_PEDIDO,
+          totalLabel: (this.props.moneda || 'S/. ') + (Number(o.total) || 0).toFixed(2),
+          resumen: items.length
+            ? items.map(it => {
+                const partes = [it.nombre];
+                if (it.tamano) partes.push(it.tamano);
+                if (it.qty > 1) partes.push('x' + it.qty);
+                const linea = partes.join(' · ');
+                return it.detalle ? linea + ' (' + it.detalle + ')' : linea;
+              }).join('  |  ')
+            : 'Sin detalle',
+          setEstado: e => {
+            const estado = e.target.value;
+            window.sb.from('orders').update({ estado }).eq('id', o.id).then(({ error }) => {
+              if (error) { console.error('No se pudo cambiar el estado:', error); this.flash('No se pudo cambiar el estado'); return; }
+              this.setState(prev => ({
+                pedidos: (prev.pedidos || []).map(x => x.id === o.id ? Object.assign({}, x, { estado }) : x)
+              }));
+            });
+          }
+        };
+      }),
       newCat: s.newCat, onNewCat: e => this.setState({ newCat: e.target.value }),
       onAddCat: () => {
         const v = s.newCat.trim(); if (!v) return;
@@ -1135,14 +1432,44 @@ class Component extends DCLogic {
       },
 
       inicio: d0.inicio,
-      setTitular: setInicio('titular'), setBajada: setInicio('bajada'), setCta: setInicio('cta'), setAviso: setInicio('aviso'),
+      setTitular: setInicio('titular'), setBajada: setInicio('bajada'), setCta: setInicio('cta'),
+      portadaImagenesRows: this.imgRows(d0.packsPortada, arr => { const data = this.clone(); data.packsPortada = arr; this.persist(data); }),
+      addPortadaImagen: () => { const data = this.clone(); data.packsPortada = (data.packsPortada || ['', '', '']).concat(''); this.persist(data); },
       heroImagenesRows: this.imgRows(d0.inicio.heroImagenes, arr => { const data = this.clone(); data.inicio.heroImagenes = arr; this.persist(data); }),
 
-      ocasionCards: OCASIONES.map((nombre, i) => {
-        const oc = (d0.inicio.ocasiones && d0.inicio.ocasiones[i]) || { imagen: '', productos: [] };
+      addOcasion: () => {
+        const data = this.clone();
+        data.inicio.ocasiones = (data.inicio.ocasiones || []).concat({
+          nombre: 'Nueva ocasión', icono: 'oficina', imagen: '', productos: [], visible: true
+        });
+        this.persist(data);
+      },
+      ocasionCards: (d0.inicio.ocasiones || []).map((oc, i) => {
         const elegidos = oc.productos || [];
+        const mueve = (dir) => () => {
+          const data = this.clone();
+          const arr = data.inicio.ocasiones;
+          const j = i + dir;
+          if (j < 0 || j >= arr.length) return;
+          const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+          this.persist(data);
+        };
         return {
-          nombre,
+          nombre: oc.nombre || '',
+          icono: oc.icono || 'oficina',
+          visible: oc.visible !== false,
+          iconos: ICONOS_OCASION,
+          setNombre: e => { const data = this.clone(); data.inicio.ocasiones[i].nombre = e.target.value; this.persist(data); },
+          setIcono: e => { const data = this.clone(); data.inicio.ocasiones[i].icono = e.target.value; this.persist(data); },
+          toggleVisible: () => { const data = this.clone(); const o = data.inicio.ocasiones[i]; o.visible = o.visible === false; this.persist(data); },
+          up: mueve(-1),
+          down: mueve(1),
+          remove: () => {
+            if (!window.confirm('¿Eliminar la ocasión «' + (oc.nombre || '') + '»?')) return;
+            const data = this.clone();
+            data.inicio.ocasiones.splice(i, 1);
+            this.persist(data);
+          },
           countLabel: elegidos.length === 0 ? 'ninguna elegida' : (elegidos.length === 1 ? '1 elegida' : elegidos.length + ' elegidas'),
           // imgRows siempre devuelve al menos 3 filas; aquí solo se usa una foto
           // por ocasión, así que tomamos la primera y guardamos solo ese valor.
@@ -1183,29 +1510,19 @@ class Component extends DCLogic {
       }),
 
       panelOpen: !!s.draft, d, h,
-      imagenesRows: this.imgRows(d.imagenes, arr => this.setState({ draft: Object.assign({}, this.state.draft || EMPTY, { imagenes: arr }) })),
+      // Las ranuras por tamaño solo tienen sentido si el producto se vende en
+      // decants; de frasco entero son fotos sueltas, sin orden obligado.
+      esDecant: !!d.enDecants,
+      noEsDecant: !d.enDecants,
+      imagenesRows: this.imgRows(d.imagenes, arr => this.setState({ draft: Object.assign({}, this.state.draft || EMPTY, { imagenes: arr }) }), d.enDecants ? RANURAS_FOTO : null),
       onAddImage: () => {
         const cur = this.state.draft || EMPTY;
-        this.setState({ draft: Object.assign({}, cur, { imagenes: (cur.imagenes || ['', '', '']).concat('') }) });
+        this.setState({ draft: Object.assign({}, cur, { imagenes: conFotoExtra(cur.imagenes) }) });
       },
       moneda: this.props.moneda || 'S/. ',
       lineaOpts: d0.cats,
       panelKicker: s.editingId ? 'Editando' : 'Nuevo registro',
       panelTitle: s.editingId ? (d.nombre || 'Sin nombre') : 'Nuevo perfume',
-      dropStyle: 'border: 1px dashed var(--color-neutral-400); border-radius: var(--radius-md); background: var(--color-neutral-100); min-height: 132px; display: grid; place-items: center; padding: 13.8px; text-align: center;',
-      onImgDragOver: e => e.preventDefault(),
-      onImgDrop: e => {
-        e.preventDefault();
-        const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-        if (!file) {
-          const url = e.dataTransfer && e.dataTransfer.getData('text/uri-list');
-          if (url) this.setState({ draft: Object.assign({}, this.state.draft || EMPTY, { imagen: url }) });
-          return;
-        }
-        const r = new FileReader();
-        r.onload = () => this.setState({ draft: Object.assign({}, this.state.draft || EMPTY, { imagen: r.result }) });
-        r.readAsDataURL(file);
-      },
       onSave: () => {
         const draft = this.state.draft; if (!draft) return;
         if (!draft.nombre.trim()) { this.flash('Ponle un nombre al perfume'); return; }
@@ -1245,7 +1562,7 @@ class Component extends DCLogic {
     const email = (this.state.user || '').trim();
     window.sb.auth.signInWithPassword({ email, password: this.state.pass }).then(({ error }) => {
       if (error) this.setState({ loginError: true });
-      else this.setState({ authed: true, loginError: false, pass: '' });
+      else { this.setState({ authed: true, loginError: false, pass: '' }); this.cargaPedidos(); }
     });
   }
 }

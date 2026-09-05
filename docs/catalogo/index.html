@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="../support.js"></script>
 <script src="../cart.js"></script>
+<script src="../store.js"></script>
+<script src="../search.js"></script>
 <script src="../nav.js"></script>
 </head>
 <body>
@@ -55,7 +57,9 @@ html, body { height: auto; min-height: 100%; }
 </nav>
 
 <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px 72px" data-screen-label="Catálogo">
-  <h1 style="font-family:var(--font-heading);font-weight:500;font-size:44px;letter-spacing:0.03em;text-transform:uppercase;margin:36px 0 0">Perfumes</h1>
+  <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin-top:36px">{{ bannerKicker }}</div>
+  <h1 style="font-family:var(--font-heading);font-weight:500;font-size:44px;letter-spacing:0.03em;text-transform:uppercase;margin:6px 0 0">Perfumes</h1>
+  <p style="font-size:14px;color:color-mix(in srgb, var(--color-text) 65%, transparent);max-width:60ch;margin:10px 0 0">{{ bannerSub }}</p>
   <div class="mp-toolbar" style="display:flex;align-items:center;gap:14px;margin:22px 0 0;border-top:1px solid var(--color-divider);border-bottom:1px solid var(--color-divider);padding:9px 0">
     <button type="button" onClick="{{ toggleFilters }}" aria-expanded="{{ filtersOpen }}" style="display:flex;align-items:center;gap:7px;background:none;border:none;padding:0;cursor:pointer;font:inherit;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 42%, transparent);transition:color .2s" style-hover="color:var(--color-accent-700)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"></path></svg> Filtros</button>
     <sc-if value="{{ hasFilter }}" hint-placeholder-val="{{ false }}">
@@ -107,13 +111,7 @@ html, body { height: auto; min-height: 100%; }
 
           <div class="mp-modal-media" style="background:#f0efee;padding:28px;display:flex;flex-direction:column;gap:14px;position:relative">
             <div style="flex:1;display:flex;align-items:center">
-              <img src="{{ selectedImg }}" alt="Foto principal del producto" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block">
-            </div>
-            <button type="button" class="mp-arrow" aria-label="Anterior" onClick="{{ prevProd }}" style="position:absolute;left:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text)" style-hover="border-color:var(--color-accent)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg></button>
-            <button type="button" class="mp-arrow" aria-label="Siguiente" onClick="{{ nextProd }}" style="position:absolute;right:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text)" style-hover="border-color:var(--color-accent)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></button>
-            <div class="mp-thumbs" style="display:flex;gap:10px;justify-content:center">
-              <img src="{{ thumb1Img }}" alt="Foto 2" style="width:64px;height:64px;object-fit:cover;background:#ffffff">
-              <img src="{{ thumb2Img }}" alt="Foto 3" style="width:64px;height:64px;object-fit:cover;background:#ffffff">
+              <img src="{{ selectedImg }}" alt="{{ selectedImgAlt }}" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block">
             </div>
           </div>
 
@@ -125,7 +123,7 @@ html, body { height: auto; min-height: 100%; }
               </div>
               <button type="button" class="btn btn-ghost btn-icon" aria-label="Cerrar" onClick="{{ close }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
             </div>
-            <span class="tag {{ stockTagClass }}" style="align-self:flex-start;margin-top:10px;font-feature-settings:'tnum' 1">{{ stockLabel }}</span>
+            <span class="tag" style="align-self:flex-start;margin-top:10px;font-weight:600;background:{{ stockBg }};color:{{ stockFg }}">{{ stockLabel }}</span>
 
             <div style="display:flex;align-items:center;gap:14px;margin:22px 0 12px">
               <span style="flex:1;height:1px;background:var(--color-divider)"></span>
@@ -148,12 +146,11 @@ html, body { height: auto; min-height: 100%; }
               </div>
               <button type="button" onClick="{{ addToCart }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#1b1816;color:#ffffff;border:none;border-radius:999px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background .25s ease" style-hover="background:#33302d"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5L6 7Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg> {{ cartBtnLabel }}</button>
             </div>
-            <a href="{{ waHref }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;height:44px;background:#ffffff;color:#1b1816;border:1.5px solid #1b1816;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none" style-hover="background:#f6f5f4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg> Pedir por WhatsApp</a>
+            <a href="{{ waHref }}" data-pedido="{{ waPedido }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;height:44px;background:#ffffff;color:#1b1816;border:1.5px solid #1b1816;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none" style-hover="background:#f6f5f4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg> Pedir por WhatsApp</a>
 
             <div style="margin-top:12px;background:#22a447;color:#ffffff;display:flex;align-items:center;justify-content:center;gap:7px;padding:7px 12px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:0.08em"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m9 12 2 2 4-4"></path></svg> PAGO CONTRA ENTREGA · PREVIO ADELANTO</div>
-            <div class="mp-trust" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;text-align:center">
+            <div class="mp-trust" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:20px;text-align:center">
               <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5M12 22V12"></path></svg><span style="font-size:11.5px;font-weight:600;line-height:1.4">Envío gratis (+S/. 200)</span></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"></path></svg><span style="font-size:11.5px;font-weight:600;line-height:1.4">3 días de derecho de devolución</span></div>
               <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1Z"></path><path d="m9 12 2 2 4-4"></path></svg><span style="font-size:11.5px;font-weight:600;line-height:1.4">Perfumes 100% Originales</span></div>
             </div>
 
@@ -174,36 +171,21 @@ html, body { height: auto; min-height: 100%; }
 
 <a href="https://wa.me/51987654321" aria-label="Escríbenos por WhatsApp" style="position:fixed;right:24px;bottom:24px;width:56px;height:56px;border-radius:50%;background:#25d366;color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);z-index:50" style-hover="background:#1fb958"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg></a>
 
-<sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
-<div style="position:fixed;inset:0;background:rgba(27,24,22,0.55);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding-top:14vh" onClick="{{ closeSearch }}">
-  <div style="background:#ffffff;width:min(760px, 92vw);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);padding:34px 40px" onClick="{{ stopClick }}">
-    <div style="display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--color-divider);padding-bottom:20px">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" style="color:color-mix(in srgb, var(--color-text) 55%, transparent)"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
-      <input type="text" placeholder="Buscar" autoFocus="{{ true }}" style="flex:1;border:none;outline:none;font-size:20px;font-family:var(--font-body);color:var(--color-text)"></input>
-      <button type="button" class="btn btn-ghost btn-icon" aria-label="Cerrar" onClick="{{ closeSearch }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg></button>
-    </div>
-    <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);margin-top:26px;text-align:center">Productos</div>
-    <div style="display:flex;flex-wrap:wrap;gap:24px;margin-top:20px;justify-content:center">
-      <div style="width:130px;text-align:center"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Botella" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block"><div style="font-size:13px;margin-top:10px">212 Vip Black Carolina Herrera</div><div style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">S/. 30.00</div></div>
-      <div style="width:130px;text-align:center"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Botella" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block"><div style="font-size:13px;margin-top:10px">9PM Night Out</div><div style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">S/. 15.00</div></div>
-      <div style="width:130px;text-align:center"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Botella" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block"><div style="font-size:13px;margin-top:10px">Acqua Di Gio Parfum</div><div style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">S/. 30.00</div></div>
-      <div style="width:130px;text-align:center"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Botella" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block"><div style="font-size:13px;margin-top:10px">Acqua Di Gio Profondo EDP</div><div style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">S/. 30.00</div></div>
-    </div>
-  </div>
-</div>
-</sc-if>
 
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { cat: 'todos', sel: null, qty: 1, onlyAvail: false, sort: 'none' , searchOpen: false, filtersOpen: false };
+  state = { cat: 'todos', sel: null,
+    bannerKicker: 'Frasco completo', bannerSub: 'Perfumes originales sellados, listos para enviar.', qty: 1, onlyAvail: false, sort: 'none' , searchOpen: false, filtersOpen: false };
   componentDidMount() {
     window.MarosCart.onChange(() => this.forceUpdate());
     window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
       if (error || !row || !row.data) return;
       const admin = row.data;
+      const catsAdmin = (admin.cats || []).map(c => ({ key: this.slugCat(c), label: c, title: 'Perfumes ' + c }));
+      if (catsAdmin.length) this.cats = [this.cats[0]].concat(catsAdmin);
+      this.aplicaBanner(admin, 'perfumes');
       if (!admin.products) return;
-      const catMap = { 'Nicho': 'nicho', 'Diseñador': 'disenador', 'Árabe': 'arabes', 'Damas': 'damas' };
       const split3 = (s) => {
         const parts = (s || '').split(',').map(x => x.trim()).filter(Boolean);
         if (!parts.length) return ['—', '—', '—'];
@@ -212,12 +194,15 @@ class Component extends DCLogic {
       };
       const list = admin.products.filter(p => p.enCatalogo && p.pFrasco !== '' && p.pFrasco != null).map(p => {
         const [top, heart, base] = split3(p.notas);
-        return { id: p.id, tag: p.etiqueta || '', brand: p.marca, name: p.nombre, cat: catMap[p.linea] || 'nicho', price: Number(p.pFrasco), stock: Number(p.stock) || 0, desc: 'Notas: ' + (p.notas || '—') + '.', top, heart, base, ml: '100 ml', imagenes: p.imagenes || [] };
+        return { id: p.id, tag: p.etiqueta || '', brand: p.marca, name: p.nombre, cat: this.slugCat(p.linea), price: Number(p.pFrasco), stock: Number(p.stock) || 0, desc: 'Notas: ' + (p.notas || '—') + '.', top, heart, base, ml: '100 ml', imagenes: p.imagenes || [] };
       });
       if (list.length) this.data = list;
       this.forceUpdate();
+      this.abreDesdeUrl(null);
     });
   }
+  // Por debajo de este stock se avisa sin dar la cifra exacta.
+  LOW_STOCK = 3;
   BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   data = [
     { id: 'khamrah', tag: 'HOT', brand: 'Lattafa', name: 'Lattafa Khamrah', cat: 'arabes', price: 15, stock: 12, desc: 'Oriental gourmand cálido y especiado, con una dulzura envolvente ideal para noche y clima frío. Excelente proyección y duración.', top: 'Canela, nuez moscada, bergamota', heart: 'Dátiles, praliné, nardo', base: 'Vainilla, haba tonka, benjuí', ml: '100 ml' },
@@ -258,10 +243,54 @@ class Component extends DCLogic {
     if (sort === 'desc') list = [...list].sort((a, b) => b.price - a.price);
     return list;
   }
+  stockView(prod) {
+    if (!prod) return { label: '', bg: 'transparent', fg: 'transparent' };
+    const n = Number(prod.stock) || 0;
+    if (n === 0) return { label: 'Agotado', bg: '#fdecec', fg: '#a32020' };
+    if (n <= this.LOW_STOCK) return { label: 'Últimas unidades', bg: '#fdf3e3', fg: '#8a5a10' };
+    return { label: 'Disponible', bg: '#e8f5ec', fg: '#1a7d38' };
+  }
+  aplicaBanner(admin, clave) {
+    const b = (admin.banners || {})[clave];
+    if (!b) return;
+    this.setState({
+      bannerKicker: b.kicker || this.state.bannerKicker,
+      bannerSub: b.subtitulo || this.state.bannerSub
+    });
+  }
+  /* La clave de cada categoría se deriva del nombre, en vez de una tabla fija
+     de cuatro entradas: así crear o renombrar una en el panel deja de mandar
+     los productos a "Nicho" en silencio. */
+  slugCat(nombre) {
+    const base = String(nombre || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '');
+    // 'Árabe' se guardó siempre como 'arabes'; se respeta para no invalidar lo ya elegido.
+    return base === 'arabe' ? 'arabes' : (base || 'otros');
+  }
+  /* El buscador enlaza a ?p=<id>; al llegar se abre esa ficha directamente. */
+  abreFicha(id, extra) {
+    if (!id) return false;
+    const lista = this.data;
+    if (!lista.some(x => String(x.id) === String(id))) return false;
+    this.setState(Object.assign({ sel: id, qty: 1 }, extra || {}));
+    return true;
+  }
+  abreDesdeUrl(extra) {
+    // El buscador enlaza a ?p=<id>; también deja abrir la ficha sin
+    // recargar cuando el resultado ya es de esta misma página.
+    this.registraAperturaFicha(extra);
+    this.abreFicha(new URLSearchParams(window.location.search).get('p'), extra);
+  }
+  registraAperturaFicha(extra) {
+    window.MarosAbreFicha = (id) => this.abreFicha(id, extra);
+  }
   renderVals() {
     const { cat, sel, qty, onlyAvail, sort } = this.state;
     const list = this.filtered();
     const selected = this.data.find(p => p.id === sel) || null;
+    // Las fotos vacías se descartan, así que el visor admite cualquier
+    // número de imágenes y no pinta huecos transparentes.
+    const stockView = this.stockView(selected);
     const catDef = this.cats.find(c => c.key === cat);
     const now = new Date();
     let cut = new Date(now); cut.setHours(18, 0, 0, 0);
@@ -280,6 +309,7 @@ class Component extends DCLogic {
       'Pago contra entrega (previo adelanto). Quedo atento para coordinar la entrega.'
     ].join('\n')) : '';
     return {
+      bannerKicker: this.state.bannerKicker, bannerSub: this.state.bannerSub,
       hasFilter: cat !== 'todos' || this.state.onlyAvail || this.state.sort !== 'none',
       filterSummary: [
         cat === 'todos' ? null : catDef.label,
@@ -319,16 +349,21 @@ class Component extends DCLogic {
         open: () => this.setState({ sel: p.id, qty: 1 })
       })),
       selected,
-      selectedImg: (selected && selected.imagenes && selected.imagenes[0]) || this.BLANK_IMG,
-      thumb1Img: (selected && selected.imagenes && selected.imagenes[1]) || this.BLANK_IMG,
-      thumb2Img: (selected && selected.imagenes && selected.imagenes[2]) || this.BLANK_IMG,
+      // El catálogo vende el frasco entero: una sola foto, sin galería.
+      selectedImg: (selected && (selected.imagenes || []).filter(Boolean)[0]) || this.BLANK_IMG,
+      selectedImgAlt: selected ? (selected.brand + ' ' + selected.name) : 'Foto del producto',
       priceLabel: selected ? this.fmt(selected.price) : '',
       qty,
       qtyMinus: () => this.setState(s => ({ qty: Math.max(1, s.qty - 1) })),
       qtyPlus: () => this.setState(s => ({ qty: s.qty + 1 })),
-      stockLabel: selected ? (selected.stock > 0 ? 'Disponible · ' + selected.stock + ' unidades' : 'Agotado — consulta reposición') : '',
-      stockTagClass: selected && selected.stock > 0 ? 'tag-accent' : 'tag-neutral',
-      waHref: 'https://wa.me/51987654321?text=' + waMsg,
+      stockLabel: stockView.label,
+      stockBg: stockView.bg,
+      stockFg: stockView.fg,
+      waPedido: selected ? JSON.stringify({
+        canal: 'perfume', total: selected.price * qty,
+        items: [{ nombre: selected.brand + ' ' + selected.name, tamano: 'Botella ' + (selected.ml || '100 ml'), qty, precio: selected.price }]
+      }) : '',
+      waHref: 'https://wa.me/' + (window.MAROS_WHATSAPP || '51987654321') + '?text=' + waMsg,
       cutoff: String(Math.floor(diff / 60)).padStart(2, '0') + ' h ' + String(diff % 60).padStart(2, '0') + ' min',
       shipDate: dFmt(ship),
       deliverDate: dFmt(deliver),
@@ -338,21 +373,12 @@ class Component extends DCLogic {
       toggleSort: () => this.setState(s => ({ sort: s.sort === 'none' ? 'asc' : s.sort === 'asc' ? 'desc' : 'none' })),
       close: () => this.setState({ sel: null }),
       stop: (e) => e.stopPropagation(),
-      prevProd: () => this.nav(-1),
-      nextProd: () => this.nav(1),
       goPerfumes: (e) => { e.preventDefault(); this.setState({ cat: 'todos', sel: null }); },
       searchOpen: this.state.searchOpen,
       openSearch: () => this.setState({ searchOpen: true }),
       closeSearch: () => this.setState({ searchOpen: false }),
       stopClick: (e) => e.stopPropagation(),
     };
-  }
-  nav(dir) {
-    const list = this.filtered();
-    const i = list.findIndex(p => p.id === this.state.sel);
-    if (i < 0) return;
-    const next = list[(i + dir + list.length) % list.length];
-    this.setState({ sel: next.id, qty: 1 });
   }
 }
 </script>

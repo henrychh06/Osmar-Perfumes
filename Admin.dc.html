@@ -851,6 +851,18 @@ const SEED = {
 // se desincroniza, el panel y la tienda dejan de hablar del mismo hueco.
 const RANURAS_FOTO = ['Foto general', 'Foto del 3 ml', 'Foto del 5 ml', 'Foto del 10 ml'];
 
+// Cuatro huecos vacíos, que es como nace todo lo que usa RANURAS_FOTO.
+function ranurasVacias() { return RANURAS_FOTO.map(() => ''); }
+
+/* "Añadir foto" tiene que dejar un hueco *por encima* de las cuatro rotuladas;
+   si el registro venía con menos, primero se completan esas cuatro. Sin esto el
+   botón parecía no hacer nada en los registros viejos, que guardaban tres. */
+function conFotoExtra(imagenes) {
+  const arr = (imagenes || []).slice();
+  while (arr.length < RANURAS_FOTO.length) arr.push('');
+  return arr.concat('');
+}
+
 const ESTADOS_PEDIDO = ['Nuevo', 'Confirmado', 'Entregado', 'Cancelado'];
 
 const ICONOS_OCASION = [
@@ -871,7 +883,7 @@ const SECTIONS = [
   { id: 'ajustes', label: 'Ajustes', title: 'Ajustes generales', sub: 'Líneas, contacto y redes sociales.' }
 ];
 
-const EMPTY = { nombre: '', marca: '', linea: 'Nicho', p3: '', p5: '', p10: '', pFrasco: '', stock: '', etiqueta: '', notas: '', imagenes: ['', '', ''], enDecants: true, enCatalogo: false, enCombo: true };
+const EMPTY = { nombre: '', marca: '', linea: 'Nicho', p3: '', p5: '', p10: '', pFrasco: '', stock: '', etiqueta: '', notas: '', imagenes: ranurasVacias(), enDecants: true, enCatalogo: false, enCombo: true };
 
 class Component extends DCLogic {
   state = {
@@ -1227,7 +1239,7 @@ class Component extends DCLogic {
         setNombre: set('nombre'), setTipo: set('tipo'), setEtiqueta: set('etiqueta'), setSubtitulo: set('subtitulo'),
         resumen: items.length + (items.length === 1 ? ' perfume · ' : ' perfumes · ') + 'desde ' + this.money(price) + ' (antes ' + this.money(before) + ')',
         imagenesRows: this.imgRows(k.imagenes, arr => { const data = this.clone(); data.packs[i].imagenes = arr; this.persist(data); }, RANURAS_FOTO),
-        addImage: () => { const data = this.clone(); data.packs[i].imagenes = (k.imagenes || ['', '', '']).concat(''); this.persist(data); },
+        addImage: () => { const data = this.clone(); data.packs[i].imagenes = conFotoExtra(k.imagenes); this.persist(data); },
         opciones: decantProducts.map(p => ({
           label: p.nombre + ' · ' + p.marca, on: k.productos.includes(p.id),
           toggle: () => {
@@ -1242,7 +1254,7 @@ class Component extends DCLogic {
     });
     const setPackDiscount = e => { const data = this.clone(); data.packDiscountGlobal = Number(e.target.value); this.persist(data); };
 
-    const EMPTY_PACK_DRAFT = { nombre: '', tipo: d0.cats[0] || 'Nicho', etiqueta: '', subtitulo: '', productos: [], imagenes: ['', '', ''] };
+    const EMPTY_PACK_DRAFT = { nombre: '', tipo: d0.cats[0] || 'Nicho', etiqueta: '', subtitulo: '', productos: [], imagenes: ranurasVacias() };
     const pd = s.packDraft || EMPTY_PACK_DRAFT;
     const pdField = k => e => this.setState({ packDraft: Object.assign({}, this.state.packDraft || EMPTY_PACK_DRAFT, { [k]: e.target.value }) });
     const pdh = { nombre: pdField('nombre'), tipo: pdField('tipo'), etiqueta: pdField('etiqueta'), subtitulo: pdField('subtitulo') };
@@ -1328,7 +1340,7 @@ class Component extends DCLogic {
       newLabel: s.section === 'packs' ? 'Nuevo pack' : 'Nuevo perfume',
       onNew: () => {
         if (s.section === 'packs') {
-          this.setState({ packDraft: { nombre: '', tipo: d0.cats[0] || 'Nicho', etiqueta: '', subtitulo: '', productos: [], imagenes: ['', '', ''] } });
+          this.setState({ packDraft: { nombre: '', tipo: d0.cats[0] || 'Nicho', etiqueta: '', subtitulo: '', productos: [], imagenes: ranurasVacias() } });
           return;
         }
         const dec = s.section === 'decants';
@@ -1352,7 +1364,7 @@ class Component extends DCLogic {
       draftImagenesRows: this.imgRows(pd.imagenes, arr => this.setState({ packDraft: Object.assign({}, this.state.packDraft || EMPTY_PACK_DRAFT, { imagenes: arr }) }), RANURAS_FOTO),
       onAddDraftPackImage: () => {
         const cur = this.state.packDraft || EMPTY_PACK_DRAFT;
-        this.setState({ packDraft: Object.assign({}, cur, { imagenes: (cur.imagenes || ['', '', '']).concat('') }) });
+        this.setState({ packDraft: Object.assign({}, cur, { imagenes: conFotoExtra(cur.imagenes) }) });
       },
       onSavePack: () => {
         const draft = this.state.packDraft; if (!draft) return;
@@ -1504,7 +1516,7 @@ class Component extends DCLogic {
       imagenesRows: this.imgRows(d.imagenes, arr => this.setState({ draft: Object.assign({}, this.state.draft || EMPTY, { imagenes: arr }) }), d.enDecants ? RANURAS_FOTO : null),
       onAddImage: () => {
         const cur = this.state.draft || EMPTY;
-        this.setState({ draft: Object.assign({}, cur, { imagenes: (cur.imagenes || ['', '', '']).concat('') }) });
+        this.setState({ draft: Object.assign({}, cur, { imagenes: conFotoExtra(cur.imagenes) }) });
       },
       moneda: this.props.moneda || 'S/. ',
       lineaOpts: d0.cats,

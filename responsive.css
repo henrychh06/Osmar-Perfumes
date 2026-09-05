@@ -163,7 +163,8 @@ body.mp-no-scroll { overflow: hidden !important; }
   .mp-modal-media { padding: 20px !important; }
   .mp-modal-info { padding: 22px 20px 24px !important; }
   .mp-thumbs img,
-  .mp-thumbs .pack-thumb { width: 54px !important; height: 54px !important; }
+  .mp-thumbs .pack-thumb,
+  .mp-thumbs .dec-thumb-vacia { width: 54px !important; height: 54px !important; }
 
   /* Landing (antes 860px). */
   .hero-grid {
@@ -222,10 +223,13 @@ body.mp-no-scroll { overflow: hidden !important; }
 
   .mp-modal-media { padding: 14px 14px 10px !important; }
   /* Sin espacio para flechas de 40px encima de la foto: quedan los thumbs. */
-  .mp-arrow, .pack-nav { display: none !important; }
+  .mp-arrow, .pack-nav, .dec-nav { display: none !important; }
   .mp-thumbs { overflow-x: auto; justify-content: flex-start !important; padding-bottom: 2px; }
+  /* En decants cada miniatura va envuelta con su rótulo debajo. */
+  .mp-thumbs > div { flex: 0 0 auto; }
   .mp-thumbs img,
-  .mp-thumbs .pack-thumb { width: 48px !important; height: 48px !important; flex: 0 0 auto; }
+  .mp-thumbs .pack-thumb,
+  .mp-thumbs .dec-thumb-vacia { width: 48px !important; height: 48px !important; flex: 0 0 auto; }
 
   .mp-modal-info { padding: 18px 16px 16px !important; }
 
