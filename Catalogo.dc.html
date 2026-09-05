@@ -113,19 +113,6 @@ html, body { height: auto; min-height: 100%; }
             <div style="flex:1;display:flex;align-items:center">
               <img src="{{ selectedImg }}" alt="{{ selectedImgAlt }}" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block">
             </div>
-            <sc-if value="{{ hasManyImgs }}" hint-placeholder-val="{{ true }}">
-            <button type="button" class="mp-arrow" aria-label="Foto anterior" onClick="{{ imgPrev }}" style="position:absolute;left:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text);opacity:{{ imgPrevOpacity }};pointer-events:{{ imgPrevEvents }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg></button>
-            <button type="button" class="mp-arrow" aria-label="Foto siguiente" onClick="{{ imgNext }}" style="position:absolute;right:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text);opacity:{{ imgNextOpacity }};pointer-events:{{ imgNextEvents }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></button>
-            </sc-if>
-            <sc-if value="{{ hasManyImgs }}" hint-placeholder-val="{{ true }}">
-            <div class="mp-thumbs" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-              <sc-for list="{{ galleryImages }}" as="im" hint-placeholder-count="3">
-                <button type="button" onClick="{{ im.select }}" aria-label="{{ im.label }}" title="{{ im.label }}" style="border:{{ im.border }};background:none;padding:0;cursor:pointer;line-height:0">
-                  <img src="{{ im.url }}" alt="{{ im.label }}" style="width:64px;height:64px;object-fit:cover;background:#ffffff;display:block;opacity:{{ im.opacity }}">
-                </button>
-              </sc-for>
-            </div>
-            </sc-if>
           </div>
 
           <div class="mp-modal-info" style="padding:28px 32px 32px;display:flex;flex-direction:column">
@@ -188,7 +175,7 @@ html, body { height: auto; min-height: 100%; }
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { cat: 'todos', sel: null, mImg: 0,
+  state = { cat: 'todos', sel: null,
     bannerKicker: 'Frasco completo', bannerSub: 'Perfumes originales sellados, listos para enviar.', qty: 1, onlyAvail: false, sort: 'none' , searchOpen: false, filtersOpen: false };
   componentDidMount() {
     window.MarosCart.onChange(() => this.forceUpdate());
@@ -256,12 +243,6 @@ class Component extends DCLogic {
     if (sort === 'desc') list = [...list].sort((a, b) => b.price - a.price);
     return list;
   }
-  imgList(prod) {
-    const raw = (prod && prod.imagenes) || [];
-    const list = [];
-    raw.forEach(url => { if (url) list.push({ url, label: 'Foto ' + (list.length + 1) }); });
-    return list;
-  }
   stockView(prod) {
     if (!prod) return { label: '', bg: 'transparent', fg: 'transparent' };
     const n = Number(prod.stock) || 0;
@@ -291,7 +272,7 @@ class Component extends DCLogic {
     if (!id) return false;
     const lista = this.data;
     if (!lista.some(x => String(x.id) === String(id))) return false;
-    this.setState(Object.assign({ sel: id, qty: 1, mImg: 0 }, extra || {}));
+    this.setState(Object.assign({ sel: id, qty: 1 }, extra || {}));
     return true;
   }
   abreDesdeUrl(extra) {
@@ -309,8 +290,6 @@ class Component extends DCLogic {
     const selected = this.data.find(p => p.id === sel) || null;
     // Las fotos vacías se descartan, así que el visor admite cualquier
     // número de imágenes y no pinta huecos transparentes.
-    const gal = this.imgList(selected);
-    const imgAt = gal.length ? Math.min(this.state.mImg, gal.length - 1) : 0;
     const stockView = this.stockView(selected);
     const catDef = this.cats.find(c => c.key === cat);
     const now = new Date();
@@ -367,25 +346,12 @@ class Component extends DCLogic {
         imgFilter: p.stock === 0 ? 'grayscale(1)' : 'none',
         textOpacity: p.stock === 0 ? 0.5 : 1,
         priceLabel: this.fmt(p.price) + ' PEN',
-        open: () => this.setState({ sel: p.id, qty: 1, mImg: 0 })
+        open: () => this.setState({ sel: p.id, qty: 1 })
       })),
       selected,
-      selectedImg: gal.length ? gal[imgAt].url : this.BLANK_IMG,
-      selectedImgAlt: gal.length ? gal[imgAt].label : 'Foto del producto',
-      hasManyImgs: gal.length > 1,
-      galleryImages: gal.map((im, i) => ({
-        url: im.url, label: im.label,
-        border: i === imgAt ? '2px solid #1b1816' : '1px solid var(--color-divider)',
-        opacity: i === imgAt ? '1' : '0.62',
-        select: () => this.setState({ mImg: i })
-      })),
-      // Se topan en los extremos: la última foto no salta al siguiente perfume.
-      imgPrev: () => this.setState(s => ({ mImg: Math.max(0, s.mImg - 1) })),
-      imgNext: () => this.setState(s => ({ mImg: Math.min(gal.length - 1, s.mImg + 1) })),
-      imgPrevOpacity: imgAt > 0 ? '1' : '0.35',
-      imgPrevEvents: imgAt > 0 ? 'auto' : 'none',
-      imgNextOpacity: imgAt < gal.length - 1 ? '1' : '0.35',
-      imgNextEvents: imgAt < gal.length - 1 ? 'auto' : 'none',
+      // El catálogo vende el frasco entero: una sola foto, sin galería.
+      selectedImg: (selected && (selected.imagenes || []).filter(Boolean)[0]) || this.BLANK_IMG,
+      selectedImgAlt: selected ? (selected.brand + ' ' + selected.name) : 'Foto del producto',
       priceLabel: selected ? this.fmt(selected.price) : '',
       qty,
       qtyMinus: () => this.setState(s => ({ qty: Math.max(1, s.qty - 1) })),
