@@ -75,7 +75,12 @@
   function withClient(cb, tries) {
     if (window.sb) { cb(window.sb); return; }
     if ((tries || 0) > 200) {
+      // Sin cliente no hay datos; se da por cargado con lo que hay (nada) para
+      // que quien espera no se quede colgado en un "cargando" eterno.
       console.error('MarosData: no apareció el cliente de Supabase.');
+      data = {};
+      loaded = true;
+      notify();
       return;
     }
     setTimeout(function () { withClient(cb, (tries || 0) + 1); }, 50);

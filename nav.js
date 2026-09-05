@@ -163,7 +163,8 @@
   function wantsLock() {
     return isOpen ||
       !!document.querySelector('.dialog-backdrop') ||
-      !!document.querySelector('.mc-panel');
+      !!document.querySelector('.mc-panel') ||
+      !!document.querySelector('.ms-back:not([hidden])');
   }
 
   function setExpanded(v) {
@@ -283,5 +284,7 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 
-  window.MarosNav = { open: open, close: close };
+  // El buscador abre y cierra cambiando un atributo, que el observador de
+  // childList no ve; avisa por aquí para que el bloqueo se recalcule.
+  window.MarosNav = { open: open, close: close, syncLock: applyLock };
 })();

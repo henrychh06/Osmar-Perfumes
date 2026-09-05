@@ -6,6 +6,7 @@
 <script src="./support.js"></script>
 <script src="./cart.js"></script>
 <script src="./store.js"></script>
+<script src="./search.js"></script>
 <script src="./nav.js"></script>
 </head>
 <body>
@@ -85,14 +86,17 @@ html, body { height: auto; min-height: 100%; }
   </div>
 </nav>
 
+<sc-if value="{{ hasAviso }}" hint-placeholder-val="{{ false }}">
+  <div style="background:var(--color-accent);color:#1b1816;text-align:center;padding:8px 16px;font-size:12px;font-weight:600;letter-spacing:0.06em">{{ heroAviso }}</div>
+</sc-if>
 <header id="inicio" data-screen-label="Hero" style="color: #f3f2f2; background-color: #000000">
   <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px">
     <div class="hero-grid" style="display:grid;grid-template-columns:minmax(0,10fr) minmax(0,14fr);gap:48px;align-items:center;padding:72px 0 64px">
       <div>
-        <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(44px,4.8vw,68px);line-height:1.08;letter-spacing:0.015em;margin:0;text-transform:uppercase;color:#f3f2f2"><span class="hero-word" style="animation-delay:0s">ENCUENTRA</span> <span class="hero-word" style="animation-delay:.08s">TU</span> <span class="hero-word" style="animation-delay:.16s">PRÓXIMA</span> <span class="hero-word" style="animation-delay:.24s">FRAGANCIA</span></h1>
-        <p class="hero-subhead" style="font-size: 17px; line-height: 1.65; color: rgba(243,242,242,0.72); max-width: 38ch; width: 100%; margin: 22px 0 0; animation: fadeUp .6s var(--ease-out) .4s both">Más de 200 fragancias originales para cada ocasión</p>
+        <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(44px,4.8vw,68px);line-height:1.08;letter-spacing:0.015em;margin:0;text-transform:uppercase;color:#f3f2f2"><sc-for list="{{ heroWords }}" as="hw" hint-placeholder-count="4"><span class="hero-word" style="animation-delay:{{ hw.delay }}">{{ hw.text }}</span> </sc-for></h1>
+        <p class="hero-subhead" style="font-size: 17px; line-height: 1.65; color: rgba(243,242,242,0.72); max-width: 38ch; width: 100%; margin: 22px 0 0; animation: fadeUp .6s var(--ease-out) .4s both">{{ heroSub }}</p>
         <div style="display:flex;gap:14px;margin-top:34px">
-          <a href="#top10" class="btn hero-cta" style="color:var(--color-accent-400);border-color:var(--color-accent-400);letter-spacing:0.12em;text-transform:uppercase;font-size:13px;padding:12px 24px;text-decoration:none" style-hover="background:rgba(225,173,102,0.12)">Quiero descubrirla <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></a>
+          <a href="#top10" class="btn hero-cta" style="color:var(--color-accent-400);border-color:var(--color-accent-400);letter-spacing:0.12em;text-transform:uppercase;font-size:13px;padding:12px 24px;text-decoration:none" style-hover="background:rgba(225,173,102,0.12)">{{ heroCta }} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></a>
         </div>
       </div>
       <figure style="margin:0;display:flex;justify-content:center;align-items:center">
@@ -251,18 +255,11 @@ html, body { height: auto; min-height: 100%; }
         <button type="button" class="btn btn-ghost btn-icon" aria-label="Siguientes" onClick="{{ ocNext }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></button>
       </div>
     </div>
-    <sc-if value="{{ ocPageA }}" hint-placeholder-val="{{ true }}">
+    <sc-if value="{{ hasOcasiones }}" hint-placeholder-val="{{ true }}">
     <div class="oc-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
-      <div data-reveal data-reveal-delay="0" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc1Img }}" alt="Oficina" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="1"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">OFICINA</div><a href="#top10" onClick="{{ oc1Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
-      <div data-reveal data-reveal-delay="90" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc2Img }}" alt="Citas" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A4.5 4.5 0 0 0 17.5 4c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A4.5 4.5 0 0 0 4 8.5c0 2.3 1.5 4 3 5.5l6 6Z"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">CITAS</div><a href="#top10" onClick="{{ oc2Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
-      <div data-reveal data-reveal-delay="180" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc3Img }}" alt="Fiesta" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9S14.5 18.5 12 21c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3Z"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">FIESTA</div><a href="#top10" onClick="{{ oc3Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
-    </div>
-    </sc-if>
-    <sc-if value="{{ ocPageB }}" hint-placeholder-val="{{ false }}">
-    <div class="oc-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
-      <div data-reveal data-reveal-delay="0" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc4Img }}" alt="Verano" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">VERANO</div><a href="#top10" onClick="{{ oc4Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
-      <div data-reveal data-reveal-delay="90" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc5Img }}" alt="Invierno" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">INVIERNO</div><a href="#top10" onClick="{{ oc5Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
-      <div data-reveal data-reveal-delay="180" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc6Img }}" alt="Noche" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13.5A8.5 8.5 0 1 1 10.5 3a7 7 0 0 0 10.5 10.5Z"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">NOCHE</div><a href="#top10" onClick="{{ oc6Open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
+      <sc-for list="{{ ocCards }}" as="oc" hint-placeholder-count="3">
+        <div data-reveal data-reveal-delay="{{ oc.delay }}" style="position:relative;border-radius:var(--radius-md);overflow:hidden"><img src="{{ oc.img }}" alt="{{ oc.nombre }}" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:36px 12px 12px;background:linear-gradient(to top, rgba(27,24,22,0.82), rgba(27,24,22,0));text-align:center;color:#f3f2f2;pointer-events:none"><div style="display:flex;justify-content:center;margin-bottom:5px;color:var(--color-accent-400)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="{{ oc.icon1 }}"></path><path d="{{ oc.icon2 }}"></path></svg></div><div style="font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.1em">{{ oc.nombre }}</div><a href="#top10" onClick="{{ oc.open }}" style="font-size:11px;letter-spacing:0.04em;color:rgba(243,242,242,0.8);pointer-events:auto;cursor:pointer">Ver fragancias</a></div></div>
+      </sc-for>
     </div>
     </sc-if>
   </section>
@@ -299,10 +296,10 @@ html, body { height: auto; min-height: 100%; }
         <div style="font-size:9px;letter-spacing:0.26em;text-transform:uppercase;color:var(--color-accent-400);margin-top:2px">Perfumes &amp; Decants</div>
         <p style="font-size:13px;line-height:1.7;color:rgba(243,242,242,0.65);margin:16px 0 0;max-width:26ch">Tu tienda de fragancias exclusivas. Descubre, prueba y elige tu esencia.</p>
         <div style="display:flex;gap:14px;margin-top:18px;color:rgba(243,242,242,0.8)">
-          <a href="Contacto.dc.html" aria-label="Instagram" style="color:inherit" style-hover="color:var(--color-accent-400)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"></circle></svg></a>
-          <a href="Contacto.dc.html" aria-label="TikTok" style="color:inherit" style-hover="color:var(--color-accent-400)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4c.5 2.5 2.5 4.5 5 5"></path></svg></a>
-          <a href="Contacto.dc.html" aria-label="Facebook" style="color:inherit" style-hover="color:var(--color-accent-400)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3Z"></path></svg></a>
-          <a href="Contacto.dc.html" aria-label="WhatsApp" style="color:inherit" style-hover="color:var(--color-accent-400)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg></a>
+          <a href="{{ redInstagram }}" target="_blank" rel="noopener" aria-label="Instagram" style="color:inherit;display:{{ redInstagramShow }}" style-hover="color:var(--color-accent-400)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"></circle></svg></a>
+          <a href="{{ redTiktok }}" target="_blank" rel="noopener" aria-label="TikTok" style="color:inherit;display:{{ redTiktokShow }}" style-hover="color:var(--color-accent-400)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4c.5 2.5 2.5 4.5 5 5"></path></svg></a>
+          <a href="{{ redFacebook }}" target="_blank" rel="noopener" aria-label="Facebook" style="color:inherit;display:{{ redFacebookShow }}" style-hover="color:var(--color-accent-400)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3Z"></path></svg></a>
+          <a href="{{ redWhatsapp }}" target="_blank" rel="noopener" aria-label="WhatsApp" style="color:inherit;display:{{ redWhatsappShow }}" style-hover="color:var(--color-accent-400)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg></a>
         </div>
       </div>
       <div>
@@ -315,7 +312,7 @@ html, body { height: auto; min-height: 100%; }
       </div>
       <div>
         <div style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-400);margin-bottom:16px">Atención</div>
-        <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:rgba(243,242,242,0.75);font-feature-settings:'tnum' 1"><span>WhatsApp</span><span>+51 987 654 321</span><span>Lun – Sáb: 10am – 8pm</span><span>maros.perfumes@gmail.com</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:rgba(243,242,242,0.75);font-feature-settings:'tnum' 1"><span>WhatsApp</span><span>{{ contactoTel }}</span><span>Lun – Sáb: 10am – 8pm</span><span>{{ contactoMail }}</span></div>
       </div>
       <div>
         <div style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-400);margin-bottom:16px">Suscríbete</div>
@@ -360,24 +357,6 @@ html, body { height: auto; min-height: 100%; }
 </div>
 </sc-if>
 
-<sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
-<div style="position:fixed;inset:0;background:rgba(27,24,22,0.55);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding-top:14vh" onClick="{{ closeSearch }}">
-  <div style="background:#ffffff;width:min(760px, 92vw);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);padding:34px 40px" onClick="{{ stopClick }}">
-    <div style="display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--color-divider);padding-bottom:20px">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" style="color:color-mix(in srgb, var(--color-text) 55%, transparent)"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
-      <input type="text" placeholder="Buscar" autoFocus="{{ true }}" style="flex:1;border:none;outline:none;font-size:20px;font-family:var(--font-body);color:var(--color-text)"></input>
-      <button type="button" class="btn btn-ghost btn-icon" aria-label="Cerrar" onClick="{{ closeSearch }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg></button>
-    </div>
-    <div style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);margin-top:26px;text-align:center">Productos</div>
-    <div style="display:flex;flex-wrap:wrap;gap:24px;margin-top:20px;justify-content:center">
-      <div style="width:130px;text-align:center"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Botella" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block"><div style="font-size:13px;margin-top:10px">212 Vip Black Carolina Herrera</div><div style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">S/. 30.00</div></div>
-      <div style="width:130px;text-align:center"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Botella" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block"><div style="font-size:13px;margin-top:10px">9PM Night Out</div><div style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">S/. 15.00</div></div>
-      <div style="width:130px;text-align:center"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Botella" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block"><div style="font-size:13px;margin-top:10px">Acqua Di Gio Parfum</div><div style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">S/. 30.00</div></div>
-      <div style="width:130px;text-align:center"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Botella" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block"><div style="font-size:13px;margin-top:10px">Acqua Di Gio Profondo EDP</div><div style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">S/. 30.00</div></div>
-    </div>
-  </div>
-</div>
-</sc-if>
 
 </x-dc>
 <script type="text/x-dc" data-dc-script>
@@ -398,6 +377,9 @@ class Component extends DCLogic {
   state = { topStart: 0, ocPage: 0, searchOpen: false, showAllTop: false, heroImgs: [], heroTrims: null, heroTick: 0, ocSel: null };
   topProducts = null;
   ocasiones = null;
+  inicioTxt = null;
+  contacto = null;
+  redes = null;
   _perView = 5;
   componentDidMount() {
     const s = document.createElement('script');
@@ -431,12 +413,27 @@ class Component extends DCLogic {
       if (admin.inicio && admin.inicio.ocasiones && admin.products) {
         const byId = {};
         admin.products.forEach(p => { byId[p.id] = p; });
-        this.ocasiones = admin.inicio.ocasiones.map(o => ({
-          imagen: o.imagen || '',
-          productos: (o.productos || []).map(id => byId[id]).filter(Boolean)
-        }));
+        const legado = ['Oficina', 'Citas', 'Fiesta', 'Verano', 'Invierno', 'Noche'];
+        this.ocasiones = admin.inicio.ocasiones
+          .map((o, i) => ({
+            nombre: o.nombre || legado[i] || ('Ocasión ' + (i + 1)),
+            icono: o.icono || (legado[i] || '').toLowerCase(),
+            imagen: o.imagen || '',
+            visible: o.visible !== false,
+            productos: (o.productos || []).map(id => byId[id]).filter(Boolean)
+          }))
+          .filter(o => o.visible);
         this.forceUpdate();
       }
+      // Textos de la portada y datos de contacto, que hasta ahora el panel
+      // guardaba sin que nadie los leyera.
+      this.inicioTxt = (admin.inicio && {
+        titular: admin.inicio.titular || '', bajada: admin.inicio.bajada || '',
+        cta: admin.inicio.cta || '', aviso: admin.inicio.aviso || ''
+      }) || null;
+      this.contacto = admin.contacto || null;
+      this.redes = admin.redes || null;
+      this.forceUpdate();
     });
   }
   componentWillUnmount() {
@@ -483,7 +480,18 @@ class Component extends DCLogic {
   nextStart(cur) { const max = this.maxStart(); return cur >= max ? 0 : Math.min(cur + this._perView, max); }
   prevStart(cur) { return cur <= 0 ? this.maxStart() : Math.max(cur - this._perView, 0); }
   BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-  OC_NAMES = ['Oficina', 'Citas', 'Fiesta', 'Verano', 'Invierno', 'Noche'];
+  // Los iconos se dibujan con dos trazados como mucho, para poder elegirlos
+  // desde el panel sin tener que incrustar SVG distintos en cada tarjeta.
+  ICONOS = {
+    oficina:  { d1: 'M4 7h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z', d2: 'M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' },
+    citas:    { d1: 'M19 14c1.5-1.5 3-3.2 3-5.5A4.5 4.5 0 0 0 17.5 4c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A4.5 4.5 0 0 0 4 8.5c0 2.3 1.5 4 3 5.5l6 6Z', d2: '' },
+    fiesta:   { d1: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0', d2: 'M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9S14.5 18.5 12 21c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3Z' },
+    verano:   { d1: 'M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0', d2: 'M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4' },
+    invierno: { d1: 'M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1', d2: '' },
+    noche:    { d1: 'M21 13.5A8.5 8.5 0 1 1 10.5 3a7 7 0 0 0 10.5 10.5Z', d2: '' },
+    regalo:   { d1: 'M20 12v9H4v-9', d2: 'M2 7h20v5H2zM12 21V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z' }
+  };
+  OC_POR_PAGINA = 3;
   /* Los frascos rotan de puesto cada 5s. Arranca recién a los 2.2s para no
      encimarse con la animación de entrada, que termina cerca de 1.25s. */
   startHeroRotation(count) {
@@ -677,7 +685,9 @@ class Component extends DCLogic {
     }).concat([420]));
     const figureStyle = 'position:relative;width:100%;max-width:760px;height:clamp(300px, ' + (heroH / 14.4).toFixed(2) + 'vw, ' + heroH + 'px)';
     const ocs = this.ocasiones || [];
-    const ocImg = i => (ocs[i] && ocs[i].imagen) || this.BLANK_IMG;
+    const ocPaginas = Math.max(1, Math.ceil(ocs.length / this.OC_POR_PAGINA));
+    const ocPag = Math.min(op, ocPaginas - 1);
+    const ocDesde = ocPag * this.OC_POR_PAGINA;
     const openOc = i => (e) => { e.preventDefault(); this.setState({ ocSel: i }); };
     const sel = this.state.ocSel;
     const selOc = (sel != null && ocs[sel]) ? ocs[sel] : null;
@@ -706,20 +716,41 @@ class Component extends DCLogic {
       prev: () => { this.startTopTimer(); this.setState(s => ({ topStart: this.prevStart(s.topStart) })); },
       next: () => { this.startTopTimer(); this.setState(s => ({ topStart: this.nextStart(s.topStart) })); },
       reviewsLoop,
-      oc1Img: ocImg(0), oc2Img: ocImg(1), oc3Img: ocImg(2),
-      oc4Img: ocImg(3), oc5Img: ocImg(4), oc6Img: ocImg(5),
-      oc1Open: openOc(0), oc2Open: openOc(1), oc3Open: openOc(2),
-      oc4Open: openOc(3), oc5Open: openOc(4), oc6Open: openOc(5),
+      hasOcasiones: ocs.length > 0,
+      ocCards: ocs.slice(ocDesde, ocDesde + this.OC_POR_PAGINA).map((o, k) => {
+        const ico = this.ICONOS[o.icono] || this.ICONOS.oficina;
+        return {
+          nombre: o.nombre, img: o.imagen || this.BLANK_IMG,
+          icon1: ico.d1, icon2: ico.d2, delay: String(k * 90),
+          open: openOc(ocDesde + k)
+        };
+      }),
       ocDialogOpen: selOc != null,
-      ocDialogTitle: selOc != null ? this.OC_NAMES[sel] : '',
+      ocDialogTitle: selOc != null ? selOc.nombre : '',
       ocDialogItems,
       ocDialogEmpty: selOc != null && ocDialogItems.length === 0,
       closeOcDialog: () => this.setState({ ocSel: null }),
-      ocPageA: op === 0,
-      ocPageB: op === 1,
-      ocPageLabel: op === 0 ? '1 – 3' : '4 – 6',
-      ocPrev: () => this.setState({ ocPage: 0 }),
-      ocNext: () => this.setState({ ocPage: 1 })
+      ocPageLabel: (ocDesde + 1) + ' – ' + Math.min(ocDesde + this.OC_POR_PAGINA, ocs.length),
+      ocPrev: () => this.setState({ ocPage: (ocPag - 1 + ocPaginas) % ocPaginas }),
+      ocNext: () => this.setState({ ocPage: (ocPag + 1) % ocPaginas }),
+      // --- textos y contacto del panel ---
+      heroWords: ((this.inicioTxt && this.inicioTxt.titular) || 'Encuentra tu próxima fragancia')
+        .split(/\s+/).filter(Boolean)
+        .map((tx, i) => ({ text: tx, delay: (i * 0.08).toFixed(2) + 's' })),
+      heroSub: (this.inicioTxt && this.inicioTxt.bajada) || 'Más de 200 fragancias originales para cada ocasión',
+      heroCta: (this.inicioTxt && this.inicioTxt.cta) || 'Quiero descubrirla',
+      heroAviso: (this.inicioTxt && this.inicioTxt.aviso) || '',
+      hasAviso: !!(this.inicioTxt && this.inicioTxt.aviso),
+      contactoTel: (this.contacto && this.contacto.telefono) || '+51 987 654 321',
+      contactoMail: (this.contacto && this.contacto.correo) || 'maros.perfumes@gmail.com',
+      redInstagram: (this.redes && this.redes.instagram) || '',
+      redInstagramShow: (this.redes && this.redes.instagram) ? 'inline-flex' : 'none',
+      redTiktok: (this.redes && this.redes.tiktok) || '',
+      redTiktokShow: (this.redes && this.redes.tiktok) ? 'inline-flex' : 'none',
+      redFacebook: (this.redes && this.redes.facebook) || '',
+      redFacebookShow: (this.redes && this.redes.facebook) ? 'inline-flex' : 'none',
+      redWhatsapp: (this.redes && this.redes.whatsapp) || 'https://wa.me/51987654321',
+      redWhatsappShow: 'inline-flex'
     };
   }
 }
