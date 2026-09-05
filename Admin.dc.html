@@ -341,6 +341,40 @@
         </div>
       </sc-if>
 
+      <sc-if value="{{ isPedidos }}" hint-placeholder-val="{{ false }}">
+        <p style="margin: 18.4px 0 0; font-size: 13px; color: var(--color-neutral-600); line-height: 1.6; max-width: 70ch;">
+          Cada vez que un cliente pulsa «Pedir por WhatsApp» queda registrado aquí. Es una <strong>intención de compra</strong>:
+          todavía tiene que enviarte el mensaje, así que confírmalo por WhatsApp antes de preparar el envío.
+        </p>
+
+        <sc-if value="{{ sinPedidos }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top: 27.6px; border: 1px dashed var(--color-divider); border-radius: var(--radius-md); padding: 36.8px; text-align: center; color: var(--color-neutral-600); font-size: 13.5px;">
+            {{ pedidosVacio }}
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hayPedidos }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 22px; display: grid; gap: 9.2px;">
+            <sc-for list="{{ pedidos }}" as="o" hint-placeholder-count="4">
+              <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: #fff; padding: 13.8px 18.4px; display: grid; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 13.8px; flex-wrap: wrap;">
+                  <span style="font-size: 12px; color: var(--color-neutral-600); font-feature-settings: 'tnum' 1;">{{ o.fecha }}</span>
+                  <span style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-500);">{{ o.canal }}</span>
+                  <span style="flex: 1;"></span>
+                  <strong style="font-size: 15px; font-feature-settings: 'tnum' 1;">{{ o.totalLabel }}</strong>
+                  <select value="{{ o.estado }}" onChange="{{ o.setEstado }}" aria-label="Estado del pedido" style="flex: none; font-size: 12px; padding: 5px 8px;">
+                    <sc-for list="{{ o.estados }}" as="es" hint-placeholder-count="4">
+                      <option value="{{ es }}">{{ es }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <div style="font-size: 13px; color: var(--color-neutral-800); line-height: 1.6;">{{ o.resumen }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </sc-if>
+
       <sc-if value="{{ isAjustes }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top: 18.4px; display: grid; gap: 36.8px; max-width: 900px;">
 
@@ -462,12 +496,8 @@
             <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">Texto del botón
               <input value="{{ inicio.cta }}" onChange="{{ setCta }}">
             </label>
-            <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">Aviso de la cinta superior
-              <input value="{{ inicio.aviso }}" onChange="{{ setAviso }}">
-            </label>
           </div>
           <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: var(--color-neutral-900); padding: 36.8px; text-align: center;">
-            <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent);">{{ inicio.aviso }}</div>
             <div style="font-family: var(--font-heading); font-weight: 400; font-size: 40px; line-height: 1.1; color: #f7f5f1; margin: 18.4px 0 9.2px;">{{ inicio.titular }}</div>
             <div style="font-size: 14px; line-height: 1.7; color: var(--color-neutral-400); max-width: 42ch; margin: 0 auto;">{{ inicio.bajada }}</div>
             <div style="display: inline-block; margin-top: 22px; padding: 10px 27.6px; border: 1px solid var(--color-accent); border-radius: var(--radius-md); color: var(--color-accent); font-family: var(--font-heading); font-size: 15px;">{{ inicio.cta }}</div>
@@ -586,7 +616,7 @@
         <div style="padding: 22px 27.6px 27.6px; display: grid; gap: 18.4px;">
           <div>
             <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Imágenes (mínimo 3)</div>
-            <p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">La <strong>1ª</strong> es la que se ve en el listado, en el Top 10 y en las ocasiones; las demás salen como miniaturas en la ficha. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> Según la vista se recorta a 4:5 o a 3:4, así que deja aire alrededor del frasco.</p>
+            <p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en el listado, en el Top 10 y en las ocasiones), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. En la ficha de decants, al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> Según la vista se recorta a 4:5 o a 3:4, así que deja aire alrededor del frasco.</p>
             <div style="display: grid; gap: 9.2px;">
               <sc-for list="{{ imagenesRows }}" as="im" hint-placeholder-count="3">
                 <div style="display: grid; gap: 4.6px;">
@@ -764,7 +794,6 @@ const SEED = {
   // nombres) en objetos, que rompería todo lo que hoy lo usa como string.
   imagenPorLinea: {},
   inicio: {
-    aviso: 'Pago contra entrega en toda la ciudad',
     titular: 'Perfumes originales, en la medida que quieras',
     bajada: 'Decants de 3, 5 y 10 ml de casas de nicho, diseñador y árabes. Prueba antes de comprar el frasco completo.',
     cta: 'Ver los decants',
@@ -792,6 +821,8 @@ const SEED = {
   }
 };
 
+const ESTADOS_PEDIDO = ['Nuevo', 'Confirmado', 'Entregado', 'Cancelado'];
+
 const ICONOS_OCASION = [
   { id: 'oficina', label: 'Maletín' }, { id: 'citas', label: 'Corazón' },
   { id: 'fiesta', label: 'Globo' },    { id: 'verano', label: 'Sol' },
@@ -806,6 +837,7 @@ const SECTIONS = [
   { id: 'decants', label: 'Decants', title: 'Decants', sub: 'Lo que se vende por tamaño (3, 5 y 10 ml).' },
   { id: 'packs', label: 'Packs de decants', title: 'Packs de decants', sub: 'Selecciones ya armadas de la página de Packs.' },
   { id: 'combo', label: 'Arma tu combo', title: 'Arma tu combo', sub: 'Descuentos por cantidad y tamaños permitidos.' },
+  { id: 'pedidos', label: 'Pedidos', title: 'Pedidos', sub: 'Lo que los clientes envían por WhatsApp desde la tienda.' },
   { id: 'ajustes', label: 'Ajustes', title: 'Ajustes generales', sub: 'Líneas, contacto y redes sociales.' }
 ];
 
@@ -813,7 +845,7 @@ const EMPTY = { nombre: '', marca: '', linea: 'Nicho', p3: '', p5: '', p10: '', 
 
 class Component extends DCLogic {
   state = {
-    authed: false, user: '', pass: '', loginError: false,
+    authed: false, user: '', pass: '', loginError: false, pedidos: null, pedidosError: '',
     section: 'inicio', query: '', lineFilter: '',
     data: JSON.parse(JSON.stringify(SEED)),
     draft: null, editingId: null, confirmId: null, toast: '', dragFrom: null, dragOver: null, addTopId: '', newCat: '',
@@ -822,7 +854,7 @@ class Component extends DCLogic {
 
   componentDidMount() {
     window.sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) this.setState({ authed: true });
+      if (session) { this.setState({ authed: true }); this.cargaPedidos(); }
     });
     window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
       if (error) { console.error('No se pudo cargar site_data de Supabase:', error); return; }
@@ -845,7 +877,23 @@ class Component extends DCLogic {
       }));
       this.setState({ data: merged });
     });
-    if (this.props.requiereLogin === false) this.setState({ authed: true });
+    if (this.props.requiereLogin === false) { this.setState({ authed: true }); this.cargaPedidos(); }
+  }
+  /* Los pedidos viven en su propia tabla, no en el bloque site_data: así dos
+     pedidos a la vez no se pisan. Solo se pueden leer con sesión iniciada. */
+  cargaPedidos() {
+    window.sb.from('orders').select('*').order('created_at', { ascending: false }).limit(200)
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('No se pudieron cargar los pedidos:', error);
+          // El caso normal: todavía no se ha ejecutado el SQL que crea la tabla.
+          this.setState({ pedidos: [], pedidosError: /relation|does not exist|schema cache/i.test(error.message || '')
+            ? 'Falta crear la tabla de pedidos: ejecuta una vez el SQL de supabase/schema.sql en el editor de Supabase.'
+            : 'No se pudieron cargar los pedidos: ' + (error.message || 'error desconocido') });
+          return;
+        }
+        this.setState({ pedidos: data || [], pedidosError: '' });
+      });
   }
 
   persist(data) {
@@ -863,15 +911,55 @@ class Component extends DCLogic {
 
   clone() { return JSON.parse(JSON.stringify(this.state.data)); }
 
+  /* Las fotos originales pesan cerca de 1 MB cada una, y en el plan gratuito de
+     Supabase lo que se agota primero no es el espacio sino el tráfico mensual.
+     Aquí se reducen a 1400 px y se pasan a WebP, que conserva la transparencia
+     que necesitan las botellas de la portada. Si el resultado no fuera más
+     ligero, o el navegador no supiera hacerlo, se sube el archivo original. */
+  aligera(file) {
+    const original = { blob: file, ext: (file.name.match(/\.[^.]+$/) || ['.png'])[0] };
+    if (!/^image\//.test(file.type) || /svg/.test(file.type)) return Promise.resolve(original);
+
+    return new Promise(resolve => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const MAX = 1400;
+          const escala = Math.min(1, MAX / Math.max(img.width, img.height));
+          const lienzo = document.createElement('canvas');
+          lienzo.width = Math.round(img.width * escala);
+          lienzo.height = Math.round(img.height * escala);
+          lienzo.getContext('2d').drawImage(img, 0, 0, lienzo.width, lienzo.height);
+          lienzo.toBlob(blob => {
+            URL.revokeObjectURL(url);
+            if (blob && blob.type === 'image/webp' && blob.size < file.size) {
+              resolve({ blob, ext: '.webp' });
+            } else {
+              resolve(original);
+            }
+          }, 'image/webp', 0.82);
+        } catch (e) {
+          URL.revokeObjectURL(url);
+          resolve(original);
+        }
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(original); };
+      img.src = url;
+    });
+  }
   imgRows(images, setter) {
     let arr = (images && images.length ? images.slice() : ['', '', '']);
     while (arr.length < 3) arr.push('');
     const readFile = (file, i) => {
-      const path = Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      window.sb.storage.from('product-images').upload(path, file).then(({ error }) => {
-        if (error) { console.error('No se pudo subir la imagen:', error); this.flash('Error al subir la imagen'); return; }
-        const { data: pub } = window.sb.storage.from('product-images').getPublicUrl(path);
-        setter(arr.map((v, j) => j === i ? pub.publicUrl : v));
+      this.aligera(file).then(({ blob, ext }) => {
+        const base = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = Date.now() + '-' + base + ext;
+        window.sb.storage.from('product-images').upload(path, blob, { contentType: blob.type }).then(({ error }) => {
+          if (error) { console.error('No se pudo subir la imagen:', error); this.flash('Error al subir la imagen'); return; }
+          const { data: pub } = window.sb.storage.from('product-images').getPublicUrl(path);
+          setter(arr.map((v, j) => j === i ? pub.publicUrl : v));
+        });
       });
     };
     return arr.map((url, i) => ({
@@ -909,7 +997,9 @@ class Component extends DCLogic {
       inicio: '', top: d0.top10.length,
       perfumes: d0.products.filter(p => p.enCatalogo).length, decants: d0.products.filter(p => p.enDecants).length,
       packs: d0.packs.length,
-      combo: d0.tramos.length, ajustes: ''
+      combo: d0.tramos.length,
+      pedidos: (s.pedidos || []).filter(o => o.estado === 'Nuevo').length || '',
+      ajustes: ''
     };
 
     const navBtn = active => 'display: flex; align-items: center; justify-content: space-between; gap: 9px; width: 100%; text-align: left; padding: 10px 27.6px; background: ' +
@@ -1104,7 +1194,7 @@ class Component extends DCLogic {
 
       nav, title: sec.title, subtitle: sec.sub,
       isProducts: s.section === 'perfumes' || s.section === 'decants', isTop: s.section === 'top', isPacks: s.section === 'packs',
-      isAjustes: s.section === 'ajustes', isCombo: s.section === 'combo', isInicio: s.section === 'inicio',
+      isAjustes: s.section === 'ajustes', isCombo: s.section === 'combo', isPedidos: s.section === 'pedidos', isInicio: s.section === 'inicio',
       showNew: s.section === 'perfumes' || s.section === 'decants' || s.section === 'packs',
       newLabel: s.section === 'packs' ? 'Nuevo pack' : 'Nuevo perfume',
       onNew: () => {
@@ -1146,6 +1236,43 @@ class Component extends DCLogic {
       },
       onCancelPack: () => this.setState({ packDraft: null }),
       cats, tramos, tamanos, marcas,
+      hayPedidos: !!(s.pedidos && s.pedidos.length),
+      sinPedidos: !(s.pedidos && s.pedidos.length),
+      pedidosVacio: s.pedidosError
+        ? s.pedidosError
+        : (s.pedidos === null
+          ? 'Cargando los pedidos…'
+          : 'Todavía no hay pedidos. Aparecerán aquí en cuanto alguien pulse «Pedir por WhatsApp» en la tienda.'),
+      pedidos: (s.pedidos || []).map(o => {
+        const items = Array.isArray(o.items) ? o.items : [];
+        return {
+          fecha: new Date(o.created_at).toLocaleString('es-PE', {
+            day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+          }),
+          canal: o.canal || 'whatsapp',
+          estado: o.estado || 'Nuevo',
+          estados: ESTADOS_PEDIDO,
+          totalLabel: (this.props.moneda || 'S/. ') + (Number(o.total) || 0).toFixed(2),
+          resumen: items.length
+            ? items.map(it => {
+                const partes = [it.nombre];
+                if (it.tamano) partes.push(it.tamano);
+                if (it.qty > 1) partes.push('x' + it.qty);
+                const linea = partes.join(' · ');
+                return it.detalle ? linea + ' (' + it.detalle + ')' : linea;
+              }).join('  |  ')
+            : 'Sin detalle',
+          setEstado: e => {
+            const estado = e.target.value;
+            window.sb.from('orders').update({ estado }).eq('id', o.id).then(({ error }) => {
+              if (error) { console.error('No se pudo cambiar el estado:', error); this.flash('No se pudo cambiar el estado'); return; }
+              this.setState(prev => ({
+                pedidos: (prev.pedidos || []).map(x => x.id === o.id ? Object.assign({}, x, { estado }) : x)
+              }));
+            });
+          }
+        };
+      }),
       newCat: s.newCat, onNewCat: e => this.setState({ newCat: e.target.value }),
       onAddCat: () => {
         const v = s.newCat.trim(); if (!v) return;
@@ -1153,7 +1280,7 @@ class Component extends DCLogic {
       },
 
       inicio: d0.inicio,
-      setTitular: setInicio('titular'), setBajada: setInicio('bajada'), setCta: setInicio('cta'), setAviso: setInicio('aviso'),
+      setTitular: setInicio('titular'), setBajada: setInicio('bajada'), setCta: setInicio('cta'),
       portadaImagenesRows: this.imgRows(d0.packsPortada, arr => { const data = this.clone(); data.packsPortada = arr; this.persist(data); }),
       addPortadaImagen: () => { const data = this.clone(); data.packsPortada = (data.packsPortada || ['', '', '']).concat(''); this.persist(data); },
       heroImagenesRows: this.imgRows(d0.inicio.heroImagenes, arr => { const data = this.clone(); data.inicio.heroImagenes = arr; this.persist(data); }),
@@ -1279,7 +1406,7 @@ class Component extends DCLogic {
     const email = (this.state.user || '').trim();
     window.sb.auth.signInWithPassword({ email, password: this.state.pass }).then(({ error }) => {
       if (error) this.setState({ loginError: true });
-      else this.setState({ authed: true, loginError: false, pass: '' });
+      else { this.setState({ authed: true, loginError: false, pass: '' }); this.cargaPedidos(); }
     });
   }
 }

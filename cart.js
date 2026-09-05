@@ -218,7 +218,12 @@
     html += '<div class="mc-foot">';
     html += '<div class="mc-total"><span>Total</span><span>' + esc(fmt(total())) + '</span></div>';
     if (items.length) {
-      html += '<a class="mc-wa" href="' + esc(waHref()) + '" target="_blank" rel="noopener">';
+      // El detalle del pedido viaja en el atributo; store.js lo registra al pulsar.
+      var pedido = { canal: 'carrito', total: total(), items: items.map(function (it) {
+        return { nombre: it.nombre, tamano: it.tamano, detalle: it.detalle, qty: it.qty, precio: it.precio };
+      }) };
+      html += '<a class="mc-wa" href="' + esc(waHref()) + '" target="_blank" rel="noopener"'
+        + ' data-pedido="' + esc(JSON.stringify(pedido)) + '">';
       html += '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg>';
       html += 'Pedir por WhatsApp</a>';
       html += '<p class="mc-note">Se abre WhatsApp con tu pedido detallado listo para enviar.</p>';

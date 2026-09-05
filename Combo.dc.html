@@ -76,8 +76,13 @@ html, body { height: auto; min-height: 100%; }
     <div style="min-width:0">
       <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
         <div style="animation:stepIn .35s ease-out both">
-          <h2 style="font-family:var(--font-heading);font-weight:600;font-size:22px;letter-spacing:0.08em;text-transform:uppercase;margin:0">Elige una categoría</h2>
-          <p style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:8px 0 0">Puedes cambiarla en cualquier momento sin perder tu selección.</p>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+            <div>
+              <h2 style="font-family:var(--font-heading);font-weight:600;font-size:22px;letter-spacing:0.08em;text-transform:uppercase;margin:0">Elige una categoría</h2>
+              <p style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:8px 0 0">Puedes cambiarla en cualquier momento sin perder tu selección.</p>
+            </div>
+            <button type="button" onClick="{{ back }}" aria-label="Volver al paso anterior" style="display:flex;align-items:center;gap:7px;flex:0 0 auto;background:none;border:1px solid var(--color-divider);border-radius:999px;padding:7px 14px;font:inherit;font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:{{ backColor }};cursor:{{ backCursor }};pointer-events:{{ backEvents }};opacity:{{ backOpacity }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m11 18-6-6 6-6"></path></svg> Atrás</button>
+          </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:20px">
             <sc-for list="{{ catCards }}" as="c" hint-placeholder-count="4">
               <button type="button" onClick="{{ c.select }}" class="card" style="text-align:left;font:inherit;cursor:pointer;padding:0;overflow:hidden;gap:0;display:flex;flex-direction:row;align-items:stretch;border-color:{{ c.border }};overflow-wrap:anywhere;transition:transform .3s cubic-bezier(.2,.7,.2,1), box-shadow .3s ease, border-color .3s ease" style-hover="transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--color-accent)">
@@ -98,8 +103,13 @@ html, body { height: auto; min-height: 100%; }
 
       <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
         <div style="animation:stepIn .35s ease-out both">
-          <h2 style="font-family:var(--font-heading);font-weight:600;font-size:22px;letter-spacing:0.08em;text-transform:uppercase;margin:0">Elige el tamaño</h2>
-          <p style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:8px 0 0">Todos los decants del combo van en el mismo tamaño.</p>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+            <div>
+              <h2 style="font-family:var(--font-heading);font-weight:600;font-size:22px;letter-spacing:0.08em;text-transform:uppercase;margin:0">Elige el tamaño</h2>
+              <p style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:8px 0 0">Se aplica a las fragancias que elijas a continuación; luego puedes cambiarlo una a una.</p>
+            </div>
+            <button type="button" onClick="{{ back }}" aria-label="Volver al paso anterior" style="display:flex;align-items:center;gap:7px;flex:0 0 auto;background:none;border:1px solid var(--color-divider);border-radius:999px;padding:7px 14px;font:inherit;font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:{{ backColor }};cursor:{{ backCursor }};pointer-events:{{ backEvents }};opacity:{{ backOpacity }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m11 18-6-6 6-6"></path></svg> Atrás</button>
+          </div>
           <div class="mp-cols-3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:20px">
             <sc-for list="{{ sizeCards }}" as="s" hint-placeholder-count="3">
               <button type="button" onClick="{{ s.select }}" style="background:#ffffff;border:{{ s.border }};padding:24px 18px 22px;cursor:pointer;font:inherit;text-align:center;position:relative;transition:border-color .25s ease, transform .3s cubic-bezier(.2,.7,.2,1)" style-hover="border-color:var(--color-accent);transform:translateY(-3px)">
@@ -123,7 +133,7 @@ html, body { height: auto; min-height: 100%; }
               <h2 style="font-family:var(--font-heading);font-weight:600;font-size:22px;letter-spacing:0.08em;text-transform:uppercase;margin:0">Elige tus perfumes</h2>
               <p style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:8px 0 0">{{ pickHint }}</p>
             </div>
-            <button type="button" onClick="{{ back }}" aria-label="Volver al paso anterior" style="display:flex;align-items:center;gap:7px;flex:0 0 auto;background:none;border:1px solid var(--color-divider);border-radius:999px;padding:7px 14px;font:inherit;font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text);cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m11 18-6-6 6-6"></path></svg> Atrás</button>
+            <button type="button" onClick="{{ back }}" aria-label="Volver al paso anterior" style="display:flex;align-items:center;gap:7px;flex:0 0 auto;background:none;border:1px solid var(--color-divider);border-radius:999px;padding:7px 14px;font:inherit;font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:{{ backColor }};cursor:{{ backCursor }};pointer-events:{{ backEvents }};opacity:{{ backOpacity }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m11 18-6-6 6-6"></path></svg> Atrás</button>
           </div>
           <div class="mp-cols-3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px">
             <sc-for list="{{ options }}" as="o" hint-placeholder-count="9">
@@ -147,8 +157,7 @@ html, body { height: auto; min-height: 100%; }
       </sc-if>
 
       <sc-if value="{{ showStepNav }}" hint-placeholder-val="{{ true }}">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:28px;border-top:1px solid var(--color-divider);padding-top:20px">
-        <button type="button" onClick="{{ back }}" style="display:flex;align-items:center;gap:8px;background:none;border:none;padding:0;font:inherit;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:{{ backColor }};cursor:{{ backCursor }};pointer-events:{{ backEvents }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m11 18-6-6 6-6"></path></svg> Atrás</button>
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;margin-top:28px;border-top:1px solid var(--color-divider);padding-top:20px">
         <button type="button" onClick="{{ next }}" style="display:flex;align-items:center;gap:8px;background:#1b1816;color:#ffffff;border:none;border-radius:999px;padding:12px 26px;font:inherit;font-size:12.5px;font-weight:600;letter-spacing:0.06em;cursor:{{ nextCursor }};opacity:{{ nextOpacity }};pointer-events:{{ nextEvents }};transition:background .25s ease" style-hover="background:#33302d">{{ nextLabel }} <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></button>
       </div>
       </sc-if>
@@ -197,7 +206,7 @@ html, body { height: auto; min-height: 100%; }
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;border-top:1px solid var(--color-divider);padding-top:16px"><span style="font-size:12.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase">Total a pagar</span><span style="font-family:var(--font-heading);font-size:30px;font-weight:500;font-feature-settings:'tnum' 1">{{ totalLabel }}</span></div>
 
         <button type="button" onClick="{{ addToCart }}" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:18px;height:46px;background:#1b1816;color:#ffffff;border:none;border-radius:999px;font:inherit;font-size:13px;font-weight:600;cursor:{{ ctaCursor }};opacity:{{ ctaOpacity }};pointer-events:{{ ctaEvents }};transition:background .25s ease" style-hover="background:#33302d"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5L6 7Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg> {{ ctaLabel }}</button>
-        <a href="{{ waHref }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;height:44px;background:#ffffff;color:#1b1816;border:1.5px solid #1b1816;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none;pointer-events:{{ ctaEvents }};opacity:{{ ctaOpacity }}" style-hover="background:#f6f5f4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg> Pedir por WhatsApp</a>
+        <a href="{{ waHref }}" data-pedido="{{ waPedido }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;height:44px;background:#ffffff;color:#1b1816;border:1.5px solid #1b1816;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none;pointer-events:{{ ctaEvents }};opacity:{{ ctaOpacity }}" style-hover="background:#f6f5f4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg> Pedir por WhatsApp</a>
         <div style="margin-top:12px;background:#22a447;color:#ffffff;display:flex;align-items:center;justify-content:center;gap:7px;padding:7px 12px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:0.08em"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m9 12 2 2 4-4"></path></svg> PAGO CONTRA ENTREGA · PREVIO ADELANTO</div>
       </div>
     </div>
@@ -476,11 +485,17 @@ class Component extends DCLogic {
           precio: total, qty: 1
         });
       },
+      waPedido: n ? JSON.stringify({
+        canal: 'combo', total,
+        items: [{ nombre: 'Combo de ' + n + ' decants', tamano: sizeSummary, qty: 1, precio: total,
+          detalle: pickedItems.map(x => x.t.brand + ' ' + x.t.name + ' (' + this.sizes[x.si].ml + ')').join(', ') }]
+      }) : '',
       waHref: 'https://wa.me/' + wa + '?text=' + msg,
       back: () => this.setState(s => ({ step: Math.max(1, s.step - 1) })),
       backColor: step > 1 ? 'var(--color-text)' : 'color-mix(in srgb, var(--color-text) 30%, transparent)',
       backCursor: step > 1 ? 'pointer' : 'not-allowed',
       backEvents: step > 1 ? 'auto' : 'none',
+      backOpacity: step > 1 ? '1' : '0.45',
       next: () => { if (step < 3) this.setState({ step: step + 1 }); },
       // En el paso 3 no hay "siguiente": el botón que cierra el combo es
       // "Añadir al carrito", en la ficha lateral. La barra entera se oculta y

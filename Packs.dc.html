@@ -237,7 +237,7 @@ html, body { height: auto; min-height: 100%; }
               </div>
               <button type="button" onClick="{{ addToCart }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#1b1816;color:#ffffff;border:none;border-radius:999px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background .25s ease" style-hover="background:#33302d"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5L6 7Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg> Añadir al carrito</button>
             </div>
-            <a href="{{ selectedWa }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;height:44px;background:#ffffff;color:#1b1816;border:1.5px solid #1b1816;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none" style-hover="background:#f6f5f4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg> Pedir por WhatsApp</a>
+            <a href="{{ selectedWa }}" data-pedido="{{ waPedido }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;height:44px;background:#ffffff;color:#1b1816;border:1.5px solid #1b1816;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none" style-hover="background:#f6f5f4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg> Pedir por WhatsApp</a>
             <div style="margin-top:12px;background:#22a447;color:#ffffff;display:flex;align-items:center;justify-content:center;gap:7px;padding:7px 12px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:0.08em"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m9 12 2 2 4-4"></path></svg> PAGO CONTRA ENTREGA · PREVIO ADELANTO</div>
           </div>
         </div>
@@ -450,12 +450,21 @@ class Component extends DCLogic {
     return base === 'arabe' ? 'arabes' : (base || 'otros');
   }
   /* El buscador enlaza a ?p=<id>; al llegar se abre esa ficha directamente. */
-  abreDesdeUrl(extra) {
-    const id = new URLSearchParams(window.location.search).get('p');
-    if (!id) return;
+  abreFicha(id, extra) {
+    if (!id) return false;
     const lista = this.packs;
-    if (!lista.some(x => String(x.id) === String(id))) return;
+    if (!lista.some(x => String(x.id) === String(id))) return false;
     this.setState(Object.assign({ sel: id, qty: 1, mImg: 0 }, extra || {}));
+    return true;
+  }
+  abreDesdeUrl(extra) {
+    // El buscador enlaza a ?p=<id>; también deja abrir la ficha sin
+    // recargar cuando el resultado ya es de esta misma página.
+    this.registraAperturaFicha(extra);
+    this.abreFicha(new URLSearchParams(window.location.search).get('p'), extra);
+  }
+  registraAperturaFicha(extra) {
+    window.MarosAbreFicha = (id) => this.abreFicha(id, extra);
   }
   renderVals() {
     const { cat, type, size, picked, sel, mSize, qty } = this.state;
@@ -552,6 +561,11 @@ class Component extends DCLogic {
       selectedBefore: selCalc ? this.fmt(selCalc.before) : '',
       selectedSave: selCalc ? 'Ahorras ' + this.fmt(selCalc.before - selCalc.price) : '',
       selectedPerUnit: selCalc ? this.fmt(selCalc.price / selCalc.items.length) + ' por decant' : '',
+      waPedido: (selPack && selCalc) ? JSON.stringify({
+        canal: 'pack', total: selCalc.total,
+        items: [{ nombre: selPack.name, tamano: (this.sizes[mSize] || this.sizes[0]).label, qty: 1, precio: selCalc.total,
+          detalle: selCalc.items.map(t => t.brand + ' ' + t.name).join(', ') }]
+      }) : '',
       selectedWa: selPack && selCalc ? 'https://wa.me/' + wa + '?text=' + encodeURIComponent([
         'Hola! Quiero pedir este pack:', '',
         '· Pack: ' + selPack.name,

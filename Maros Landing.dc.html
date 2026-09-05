@@ -86,9 +86,6 @@ html, body { height: auto; min-height: 100%; }
   </div>
 </nav>
 
-<sc-if value="{{ hasAviso }}" hint-placeholder-val="{{ false }}">
-  <div style="background:var(--color-accent);color:#1b1816;text-align:center;padding:8px 16px;font-size:12px;font-weight:600;letter-spacing:0.06em">{{ heroAviso }}</div>
-</sc-if>
 <header id="inicio" data-screen-label="Hero" style="color: #f3f2f2; background-color: #000000">
   <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px">
     <div class="hero-grid" style="display:grid;grid-template-columns:minmax(0,10fr) minmax(0,14fr);gap:48px;align-items:center;padding:72px 0 64px">
@@ -429,7 +426,7 @@ class Component extends DCLogic {
       // guardaba sin que nadie los leyera.
       this.inicioTxt = (admin.inicio && {
         titular: admin.inicio.titular || '', bajada: admin.inicio.bajada || '',
-        cta: admin.inicio.cta || '', aviso: admin.inicio.aviso || ''
+        cta: admin.inicio.cta || ''
       }) || null;
       this.contacto = admin.contacto || null;
       this.redes = admin.redes || null;
@@ -739,8 +736,6 @@ class Component extends DCLogic {
         .map((tx, i) => ({ text: tx, delay: (i * 0.08).toFixed(2) + 's' })),
       heroSub: (this.inicioTxt && this.inicioTxt.bajada) || 'Más de 200 fragancias originales para cada ocasión',
       heroCta: (this.inicioTxt && this.inicioTxt.cta) || 'Quiero descubrirla',
-      heroAviso: (this.inicioTxt && this.inicioTxt.aviso) || '',
-      hasAviso: !!(this.inicioTxt && this.inicioTxt.aviso),
       contactoTel: (this.contacto && this.contacto.telefono) || '+51 987 654 321',
       contactoMail: (this.contacto && this.contacto.correo) || 'maros.perfumes@gmail.com',
       redInstagram: (this.redes && this.redes.instagram) || '',

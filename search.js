@@ -33,11 +33,15 @@
     return isFinite(x) ? 'S/. ' + x.toFixed(2) : '';
   }
 
-  // El <nav> ya tiene los enlaces con la ruta correcta para este despliegue.
-  function urlDe(texto) {
-    var links = document.querySelectorAll('nav.nav > a');
+  /* El <nav> ya tiene los enlaces con la ruta correcta para este despliegue.
+     Se excluye la marca: su bajada dice "Perfumes & Decants", así que buscando
+     por subcadena se llevaba todos los decants a la portada. Y se compara el
+     texto completo, no un trozo, para que "decants" no case con "packs de
+     decants". */
+  function urlDe(clave) {
+    var links = document.querySelectorAll('nav.nav > a:not(.nav-brand)');
     for (var i = 0; i < links.length; i++) {
-      if (norm(links[i].textContent).indexOf(norm(texto)) !== -1) {
+      if (norm(links[i].textContent).trim() === clave) {
         return links[i].getAttribute('href') || '';
       }
     }
@@ -49,6 +53,9 @@
   function injectStyles() {
     if (document.getElementById('ms-styles')) return;
     var css = [
+      // Sin esta regla, el display:flex de abajo le gana al [hidden] del
+      // navegador y el panel se queda pintado al cerrarlo.
+      '.ms-back[hidden]{display:none}',
       '.ms-back{position:fixed;inset:0;background:rgba(27,24,22,0.55);z-index:1100;display:flex;',
       'align-items:flex-start;justify-content:center;padding:12vh 16px 16px}',
       ".ms-panel{background:#fff;width:min(720px,100%);max-height:76vh;display:flex;flex-direction:column;",
@@ -152,11 +159,17 @@
     return out;
   }
 
-  var DESTINOS = { decants: 'decants', catalogo: 'catálogo', packs: 'packs de decants' };
+  var DESTINOS = { decants: 'decants', catalogo: 'catalogo', packs: 'packs de decants' };
 
   function go(item) {
     var base = urlDe(DESTINOS[item.destino] || item.destino);
-    if (!base) { close(); return; }
+    // Sin enlace, o con href="#", el destino es esta misma página: el Catálogo
+    // enlaza así a sí mismo. Se abre la ficha en el sitio en vez de navegar.
+    if (!base || base === '#') {
+      close();
+      if (window.MarosAbreFicha) window.MarosAbreFicha(item.id);
+      return;
+    }
     window.location.href = base + (base.indexOf('?') === -1 ? '?' : '&') + 'p=' + encodeURIComponent(item.id);
   }
 

@@ -62,6 +62,59 @@
     applyWhatsapp();
   }
 
+  /* -------------------------------------------------- pedidos */
+
+  var ultimaFirma = '', ultimaHora = 0;
+
+  /* Se registra al pulsar "Pedir por WhatsApp", que es la única caja del sitio.
+     Es una intención de compra: el cliente todavía tiene que enviar el mensaje.
+     Va con fetch + keepalive en vez del cliente de Supabase porque el clic
+     navega a wa.me acto seguido y una petición normal se cancelaría. */
+  function registraPedido(pedido) {
+    if (!pedido || !(pedido.items || []).length) return;
+    if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) return;
+
+    var cuerpo = {
+      canal: pedido.canal || 'whatsapp',
+      items: pedido.items,
+      total: Number(pedido.total) || 0
+    };
+
+    // Pulsar dos veces seguidas no debe crear dos pedidos iguales.
+    var firma = JSON.stringify(cuerpo);
+    var ahora = Date.now();
+    if (firma === ultimaFirma && ahora - ultimaHora < 60000) return;
+    ultimaFirma = firma;
+    ultimaHora = ahora;
+
+    try {
+      fetch(window.SUPABASE_URL + '/rest/v1/orders', {
+        method: 'POST',
+        keepalive: true,
+        headers: {
+          'apikey': window.SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(cuerpo)
+      }).catch(function (e) { console.error('MarosData: no se pudo registrar el pedido:', e); });
+    } catch (e) {
+      console.error('MarosData: no se pudo registrar el pedido:', e);
+    }
+  }
+
+  // Los enlaces de pedido llevan el detalle en data-pedido; el botón flotante
+  // no lleva mensaje ni detalle, así que se ignora.
+  function alPulsarPedido(e) {
+    var a = e.target && e.target.closest && e.target.closest('a[href*="wa.me/"]');
+    if (!a) return;
+    if ((a.getAttribute('href') || '').indexOf('text=') === -1) return;
+    var raw = a.getAttribute('data-pedido');
+    if (!raw) return;
+    try { registraPedido(JSON.parse(raw)); } catch (err) { /* atributo mal formado */ }
+  }
+
   /* -------------------------------------------------- carga */
 
   function notify() {
@@ -102,6 +155,7 @@
 
   function init() {
     load();
+    document.addEventListener('click', alPulsarPedido, true);
     // El runtime x-dc vuelve a pintar la página y repone los enlaces con el
     // número escrito a mano; hay que reaplicar. Reescribir un href no altera
     // childList, así que esto no se retroalimenta con su propio observador.
@@ -122,6 +176,7 @@
       if (loaded) fn(data); else waiting.push(fn);
     },
     get: function () { return data; },
-    whatsapp: whatsapp
+    whatsapp: whatsapp,
+    registraPedido: registraPedido
   };
 })();
