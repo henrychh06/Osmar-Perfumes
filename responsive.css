@@ -173,6 +173,9 @@ body.mp-no-scroll { overflow: hidden !important; }
     text-align: center;
   }
   .hero-grid figure { order: -1; }
+  /* Los frascos van en capas absolutas y al encogerse sobresalen unos pocos
+     píxeles por la derecha; se recortan para no provocar scroll horizontal. */
+  .hero-grid figure { overflow-x: clip; }
   .hero-grid > div:first-child { display: flex; flex-direction: column; align-items: center; }
   .hero-subhead { margin-left: auto !important; margin-right: auto !important; }
   .trust-badges { grid-template-columns: repeat(2, 1fr) !important; row-gap: 18px; }

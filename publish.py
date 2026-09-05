@@ -45,7 +45,7 @@ LINKS = {
     "Contacto.dc.html": "contacto/",
 }
 
-ASSETS = ["support.js", "cart.js", "nav.js", "supabase-config.js", "responsive.css"]
+ASSETS = ["support.js", "cart.js", "nav.js", "store.js", "search.js", "supabase-config.js", "responsive.css"]
 
 NOINDEX = '<meta name="robots" content="noindex, nofollow">'
 

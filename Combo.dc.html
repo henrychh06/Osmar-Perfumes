@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
 <script src="./cart.js"></script>
+<script src="./store.js"></script>
 <script src="./nav.js"></script>
 </head>
 <body>
@@ -116,11 +117,12 @@ html, body { height: auto; min-height: 100%; }
 
       <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
         <div style="animation:stepIn .35s ease-out both">
-          <div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
             <div>
               <h2 style="font-family:var(--font-heading);font-weight:600;font-size:22px;letter-spacing:0.08em;text-transform:uppercase;margin:0">Elige tus perfumes</h2>
               <p style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:8px 0 0">{{ pickHint }}</p>
             </div>
+            <button type="button" onClick="{{ back }}" aria-label="Volver al paso anterior" style="display:flex;align-items:center;gap:7px;flex:0 0 auto;background:none;border:1px solid var(--color-divider);border-radius:999px;padding:7px 14px;font:inherit;font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text);cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m11 18-6-6 6-6"></path></svg> Atrás</button>
           </div>
           <div class="mp-cols-3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px">
             <sc-for list="{{ options }}" as="o" hint-placeholder-count="9">
@@ -143,10 +145,12 @@ html, body { height: auto; min-height: 100%; }
         </div>
       </sc-if>
 
+      <sc-if value="{{ showStepNav }}" hint-placeholder-val="{{ true }}">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:28px;border-top:1px solid var(--color-divider);padding-top:20px">
         <button type="button" onClick="{{ back }}" style="display:flex;align-items:center;gap:8px;background:none;border:none;padding:0;font:inherit;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:{{ backColor }};cursor:{{ backCursor }};pointer-events:{{ backEvents }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m11 18-6-6 6-6"></path></svg> Atrás</button>
         <button type="button" onClick="{{ next }}" style="display:flex;align-items:center;gap:8px;background:#1b1816;color:#ffffff;border:none;border-radius:999px;padding:12px 26px;font:inherit;font-size:12.5px;font-weight:600;letter-spacing:0.06em;cursor:{{ nextCursor }};opacity:{{ nextOpacity }};pointer-events:{{ nextEvents }};transition:background .25s ease" style-hover="background:#33302d">{{ nextLabel }} <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></button>
       </div>
+      </sc-if>
     </div>
 
     <div class="card mp-summary" style="padding:0;gap:0;position:sticky;top:150px;overflow:hidden">
@@ -175,6 +179,7 @@ html, body { height: auto; min-height: 100%; }
             <sc-for list="{{ pickedList }}" as="p" hint-placeholder-count="3">
               <div style="display:flex;align-items:center;gap:10px;font-size:13px">
                 <span style="flex:1;min-width:0"><span style="display:block;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">{{ p.brand }}</span>{{ p.name }}</span>
+                <button type="button" onClick="{{ p.cycleSize }}" aria-label="Cambiar el tamaño de esta fragancia" title="Cambiar tamaño" style="flex:0 0 auto;background:#faf7f1;border:1px solid var(--color-divider);border-radius:999px;padding:3px 9px;font:inherit;font-size:11px;font-weight:600;font-feature-settings:'tnum' 1;cursor:pointer;white-space:nowrap;color:var(--color-text)">{{ p.sizeLabel }}</button>
                 <span style="font-feature-settings:'tnum' 1;color:color-mix(in srgb, var(--color-text) 62%, transparent);white-space:nowrap">{{ p.priceLabel }}</span>
                 <button type="button" onClick="{{ p.remove }}" aria-label="Quitar" style="background:none;border:none;padding:2px;cursor:pointer;color:color-mix(in srgb, var(--color-text) 40%, transparent);display:flex" style-hover="color:var(--color-text)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
               </div>
@@ -238,6 +243,8 @@ const DEFAULT_TRAMOS = [
 ];
 
 class Component extends DCLogic {
+  // picked guarda { id, size }: el tamaño se fija al elegir la fragancia, no
+  // al final, para que un combo pueda mezclar tamaños de varias categorías.
   state = { step: 1, cat: null, size: null, picked: [], searchOpen: false };
   tramosAdmin = null;
   sizesOn = null;
@@ -321,30 +328,42 @@ class Component extends DCLogic {
     const { step, cat, size, picked } = this.state;
     const ship = this.props.freeShipping ?? 200;
     const min = this.props.minCombo ?? 2;
-    const wa = this.props.whatsapp ?? '51987654321';
-    const sz = size === null ? this.sizes[0] : this.sizes[size];
-    const unit = t => Math.round(t.price * sz.mult);
+    const wa = window.MAROS_WHATSAPP || this.props.whatsapp || '51987654321';
+    const sizeOn = i => !this.sizesOn || this.sizesOn[this.sizes[i].ml] !== false;
+    const enabled = this.sizes.map((s, i) => i).filter(sizeOn);
+    // El tamaño del paso 2 es el que se aplica a las siguientes fragancias que
+    // se elijan; las ya elegidas conservan el suyo.
+    const curSize = size === null ? (enabled.length ? enabled[0] : 0) : size;
+    const unit = (t, si) => Math.round(t.price * this.sizes[si].mult);
     const catDef = this.cats.find(c => c.key === cat) || null;
     const list = cat ? this.testers.filter(t => t.cat === cat) : [];
-    const pickedItems = picked.map(id => this.tester(id)).filter(Boolean);
+    const pickedItems = picked.map(it => {
+      const t = this.tester(it.id);
+      return t ? { t, si: sizeOn(it.size) ? it.size : curSize } : null;
+    }).filter(Boolean);
     const n = pickedItems.length;
-    const subtotal = pickedItems.reduce((a, t) => a + unit(t), 0);
+    const subtotal = pickedItems.reduce((a, x) => a + unit(x.t, x.si), 0);
+    const sizesUsed = pickedItems.reduce((acc, x) => {
+      const ml = this.sizes[x.si].ml;
+      return acc.includes(ml) ? acc : acc.concat(ml);
+    }, []);
+    const sizeSummary = sizesUsed.length === 1 ? sizesUsed[0] : 'Tamaños mixtos';
     const pct = this.tier(n);
     const saving = Math.round(subtotal * pct / 100);
     const total = subtotal - saving;
     const missing = Math.max(0, ship - total);
     const stepDef = [
       { n: '1', label: 'Categoría', value: catDef ? catDef.label : 'Sin elegir', to: 1, on: true },
-      { n: '2', label: 'Tamaño', value: size === null ? 'Sin elegir' : this.sizes[size].ml, to: 2, on: !!cat },
+      { n: '2', label: 'Tamaño', value: n ? sizeSummary : (size === null ? 'Sin elegir' : this.sizes[size].ml), to: 2, on: !!cat },
       { n: '3', label: 'Perfumes', value: n ? n + (n === 1 ? ' elegido' : ' elegidos') : 'Sin elegir', to: 3, on: !!cat && size !== null }
     ];
     const canNext = step === 1 ? !!cat : step === 2 ? size !== null : n >= min;
     const msg = encodeURIComponent([
       'Hola! Armé mi combo de decants:', '',
-      '· Tamaño: ' + sz.ml + ' (' + sz.sprays + ')',
+      '· Tamaños: ' + sizesUsed.join(' y '),
       '· Fragancias (' + pickedItems.length + '):'
     ].concat(
-      pickedItems.map((t, i) => '   ' + (i + 1) + '. ' + t.brand + ' ' + t.name + ' — ' + this.fmt(unit(t)))
+      pickedItems.map((x, i) => '   ' + (i + 1) + '. ' + x.t.brand + ' ' + x.t.name + ' — ' + this.sizes[x.si].ml + ' — ' + this.fmt(unit(x.t, x.si)))
     ).concat([
       '',
       '· Subtotal: ' + this.fmt(subtotal),
@@ -400,11 +419,11 @@ class Component extends DCLogic {
       })),
       pickHint: n >= min ? 'Descuento del ' + pct + '% aplicado. Sigue sumando para llegar al siguiente tramo.' : 'Selecciona mínimo ' + min + ' fragancias para activar el descuento.',
       options: list.map(t => {
-        const on = picked.includes(t.id);
+        const on = picked.some(it => it.id === t.id);
         return {
           brand: t.brand, name: t.name,
           imgUrl: (t.imagenes && t.imagenes[0]) || this.BLANK_IMG,
-          priceLabel: this.fmt(unit(t)),
+          priceLabel: this.fmt(unit(t, curSize)),
           badge: t.tag || '',
           badgeBg: this.tagColor(t.tag),
           bg: on ? '#faf7f1' : '#ffffff',
@@ -412,7 +431,11 @@ class Component extends DCLogic {
           markBg: on ? 'var(--color-accent)' : '#ffffff',
           markColor: on ? '#ffffff' : 'transparent',
           markBorder: on ? 'var(--color-accent)' : 'var(--color-divider)',
-          toggle: () => this.setState(s => ({ picked: s.picked.includes(t.id) ? s.picked.filter(x => x !== t.id) : [...s.picked, t.id] }))
+          toggle: () => this.setState(s => ({
+            picked: s.picked.some(it => it.id === t.id)
+              ? s.picked.filter(it => it.id !== t.id)
+              : [...s.picked, { id: t.id, size: curSize }]
+          }))
         };
       }),
       itemsLabel: n + (n === 1 ? ' item' : ' items'),
@@ -420,10 +443,16 @@ class Component extends DCLogic {
       discountHint: pct ? (pct < 20 ? 'Suma ' + (n <= 3 ? (4 - n) : (6 - n)) + ' decant(s) más y sube al ' + (n <= 3 ? '15' : '20') + '%.' : 'Estás en el descuento máximo del 20%.') : 'Selecciona ' + (min - n) + ' fragancia(s) más para activar el 10%.',
       shipPct: Math.min(100, ship ? Math.round(total / ship * 100) : 100) + '%',
       shipLabel: missing > 0 ? 'Agrega ' + this.fmt(missing) + ' para envío gratis' : 'Envío gratis conseguido',
-      pickedList: pickedItems.map(t => ({
-        brand: t.brand, name: t.name,
-        priceLabel: this.fmt(unit(t)),
-        remove: () => this.setState(s => ({ picked: s.picked.filter(x => x !== t.id) }))
+      pickedList: pickedItems.map(x => ({
+        brand: x.t.brand, name: x.t.name,
+        sizeLabel: this.sizes[x.si].ml,
+        priceLabel: this.fmt(unit(x.t, x.si)),
+        cycleSize: () => this.setState(s => ({
+          picked: s.picked.map(it => it.id === x.t.id
+            ? { id: it.id, size: enabled[(enabled.indexOf(it.size) + 1) % enabled.length] }
+            : it)
+        })),
+        remove: () => this.setState(s => ({ picked: s.picked.filter(it => it.id !== x.t.id) }))
       })),
       hasPicked: n > 0,
       isEmpty: n === 0,
@@ -440,8 +469,8 @@ class Component extends DCLogic {
         if (n < min) return;
         window.MarosCart.add({
           tipo: 'combo', nombre: 'Combo de ' + pickedItems.length + ' decants',
-          tamano: sz.ml + (pct ? ' · ' + pct + '% dscto.' : ''),
-          detalle: pickedItems.map(t => t.brand + ' ' + t.name).join(', '),
+          tamano: sizeSummary + (pct ? ' · ' + pct + '% dscto.' : ''),
+          detalle: pickedItems.map(x => x.t.brand + ' ' + x.t.name + ' (' + this.sizes[x.si].ml + ')').join(', '),
           precio: total, qty: 1
         });
       },
@@ -451,10 +480,14 @@ class Component extends DCLogic {
       backCursor: step > 1 ? 'pointer' : 'not-allowed',
       backEvents: step > 1 ? 'auto' : 'none',
       next: () => { if (step < 3) this.setState({ step: step + 1 }); },
-      nextLabel: step === 1 ? 'Continuar al tamaño' : step === 2 ? 'Elegir perfumes' : 'Combo listo',
-      nextCursor: canNext && step < 3 ? 'pointer' : 'not-allowed',
-      nextEvents: canNext && step < 3 ? 'auto' : 'none',
-      nextOpacity: canNext && step < 3 ? 1 : 0.45,
+      // En el paso 3 no hay "siguiente": el botón que cierra el combo es
+      // "Añadir al carrito", en la ficha lateral. La barra entera se oculta y
+      // el "Atrás" vive arriba a la derecha del box de perfumes.
+      showStepNav: step < 3,
+      nextLabel: step === 1 ? 'Continuar al tamaño' : 'Elegir perfumes',
+      nextCursor: canNext ? 'pointer' : 'not-allowed',
+      nextEvents: canNext ? 'auto' : 'none',
+      nextOpacity: canNext ? 1 : 0.45,
       searchOpen: this.state.searchOpen,
       openSearch: () => this.setState({ searchOpen: true }),
       closeSearch: () => this.setState({ searchOpen: false }),

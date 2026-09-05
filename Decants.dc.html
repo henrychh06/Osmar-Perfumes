@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
 <script src="./cart.js"></script>
+<script src="./store.js"></script>
 <script src="./nav.js"></script>
 </head>
 <body>
@@ -92,14 +93,21 @@ html, body { height: auto; min-height: 100%; }
 
           <div class="mp-modal-media" style="background:#f0efee;padding:28px;display:flex;flex-direction:column;gap:14px;position:relative">
             <div style="flex:1;display:flex;align-items:center">
-              <img src="{{ selectedImg }}" alt="Foto principal del producto" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block">
+              <img src="{{ selectedImg }}" alt="{{ selectedImgAlt }}" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block">
             </div>
-            <button type="button" class="mp-arrow" aria-label="Anterior" onClick="{{ prevProd }}" style="position:absolute;left:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text)" style-hover="border-color:var(--color-accent)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg></button>
-            <button type="button" class="mp-arrow" aria-label="Siguiente" onClick="{{ nextProd }}" style="position:absolute;right:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text)" style-hover="border-color:var(--color-accent)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></button>
-            <div class="mp-thumbs" style="display:flex;gap:10px;justify-content:center">
-              <img src="{{ thumb1Img }}" alt="Foto 2" style="width:64px;height:64px;object-fit:cover;background:#ffffff">
-              <img src="{{ thumb2Img }}" alt="Foto 3" style="width:64px;height:64px;object-fit:cover;background:#ffffff">
+            <sc-if value="{{ hasManyImgs }}" hint-placeholder-val="{{ true }}">
+            <button type="button" class="mp-arrow" aria-label="Foto anterior" onClick="{{ imgPrev }}" style="position:absolute;left:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text);opacity:{{ imgPrevOpacity }};pointer-events:{{ imgPrevEvents }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg></button>
+            <button type="button" class="mp-arrow" aria-label="Foto siguiente" onClick="{{ imgNext }}" style="position:absolute;right:16px;top:45%;width:40px;height:40px;border-radius:50%;background:#ffffff;border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text);opacity:{{ imgNextOpacity }};pointer-events:{{ imgNextEvents }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></button>
+            </sc-if>
+            <sc-if value="{{ hasManyImgs }}" hint-placeholder-val="{{ true }}">
+            <div class="mp-thumbs" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+              <sc-for list="{{ galleryImages }}" as="im" hint-placeholder-count="3">
+                <button type="button" onClick="{{ im.select }}" aria-label="{{ im.label }}" title="{{ im.label }}" style="border:{{ im.border }};background:none;padding:0;cursor:pointer;line-height:0">
+                  <img src="{{ im.url }}" alt="{{ im.label }}" style="width:64px;height:64px;object-fit:cover;background:#ffffff;display:block;opacity:{{ im.opacity }}">
+                </button>
+              </sc-for>
             </div>
+            </sc-if>
           </div>
 
           <div class="mp-modal-info" style="padding:28px 32px 32px;display:flex;flex-direction:column">
@@ -110,14 +118,13 @@ html, body { height: auto; min-height: 100%; }
               </div>
               <button type="button" class="btn btn-ghost btn-icon" aria-label="Cerrar" onClick="{{ close }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
             </div>
-            <span class="tag {{ stockTagClass }}" style="align-self:flex-start;margin-top:10px;font-feature-settings:'tnum' 1">{{ stockLabel }}</span>
+            <span class="tag" style="align-self:flex-start;margin-top:10px;font-weight:600;background:{{ stockBg }};color:{{ stockFg }}">{{ stockLabel }}</span>
 
             <div style="display:flex;align-items:center;gap:14px;margin:22px 0 12px">
               <span style="flex:1;height:1px;background:var(--color-divider)"></span>
               <span style="font-size:13px;font-weight:700;letter-spacing:0.06em">Elige tu tester</span>
               <span style="flex:1;height:1px;background:var(--color-divider)"></span>
             </div>
-            <div style="display:flex;align-items:center;gap:7px;margin:-2px 0 12px;font-size:11.5px;letter-spacing:0.04em;color:#1a7d38"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m9 12 2 2 4-4"></path></svg> Pago contra entrega: paga cuando recibas tu tester (previo adelanto).</div>
             <div class="mp-sizes" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end">
               <sc-for list="{{ sizeOptions }}" as="s" hint-placeholder-count="3">
                 <div style="min-width:0">
@@ -144,9 +151,8 @@ html, body { height: auto; min-height: 100%; }
             <a href="{{ waHref }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;height:44px;background:#ffffff;color:#1b1816;border:1.5px solid #1b1816;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none" style-hover="background:#f6f5f4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"></path></svg> Pedir por WhatsApp</a>
 
             <div style="margin-top:12px;background:#22a447;color:#ffffff;display:flex;align-items:center;justify-content:center;gap:7px;padding:7px 12px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:0.08em"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m9 12 2 2 4-4"></path></svg> PAGO CONTRA ENTREGA · PREVIO ADELANTO</div>
-            <div class="mp-trust" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;text-align:center">
+            <div class="mp-trust" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:20px;text-align:center">
               <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5M12 22V12"></path></svg><span style="font-size:11.5px;font-weight:600;line-height:1.4">Envío gratis (+S/. 200)</span></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"></path></svg><span style="font-size:11.5px;font-weight:600;line-height:1.4">3 días de derecho de devolución</span></div>
               <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1Z"></path><path d="m9 12 2 2 4-4"></path></svg><span style="font-size:11.5px;font-weight:600;line-height:1.4">Perfumes 100% Originales</span></div>
             </div>
 
@@ -190,7 +196,7 @@ html, body { height: auto; min-height: 100%; }
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   state = {
-    cat: 'todos', sel: null, selSize: 0, qty: 1, onlyAvail: false, sort: 'none' , searchOpen: false,
+    cat: 'todos', sel: null, mImg: 0, selSize: 0, qty: 1, onlyAvail: false, sort: 'none' , searchOpen: false,
     bannerKicker: 'Antes de comprar tu botella',
     bannerSub: 'Prueba fragancias originales en formato pequeño antes de invertir en la botella completa. Sellados y etiquetados al momento de tu pedido.'
   };
@@ -223,6 +229,8 @@ class Component extends DCLogic {
       this.forceUpdate();
     });
   }
+  // Por debajo de este stock se avisa sin dar la cifra exacta.
+  LOW_STOCK = 3;
   BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   cats = [
     { key: 'todos', label: 'Todos' },
@@ -256,10 +264,28 @@ class Component extends DCLogic {
     if (sort === 'desc') list = [...list].sort((a, b) => b.price - a.price);
     return list;
   }
+  imgList(prod) {
+    const raw = (prod && prod.imagenes) || [];
+    const list = [];
+    raw.forEach(url => { if (url) list.push({ url, label: 'Foto ' + (list.length + 1) }); });
+    return list;
+  }
+  stockView(prod) {
+    if (!prod) return { label: '', bg: 'transparent', fg: 'transparent' };
+    const n = Number(prod.stock) || 0;
+    if (n === 0) return { label: 'Agotado', bg: '#fdecec', fg: '#a32020' };
+    if (n <= this.LOW_STOCK) return { label: 'Últimas unidades', bg: '#fdf3e3', fg: '#8a5a10' };
+    return { label: 'Disponible', bg: '#e8f5ec', fg: '#1a7d38' };
+  }
   renderVals() {
     const { cat, sel, selSize, qty, onlyAvail, sort } = this.state;
     const list = this.filtered();
     const selected = this.data.find(p => p.id === sel) || null;
+    // Las fotos vacías se descartan, así que el visor admite cualquier
+    // número de imágenes y no pinta huecos transparentes.
+    const gal = this.imgList(selected);
+    const imgAt = gal.length ? Math.min(this.state.mImg, gal.length - 1) : 0;
+    const stockView = this.stockView(selected);
     const sizes = selected ? selected.sizes : [];
     const curSize = sizes[selSize] || sizes[0];
     const now = new Date();
@@ -305,12 +331,25 @@ class Component extends DCLogic {
         imgFilter: p.stock === 0 ? 'grayscale(1)' : 'none',
         textOpacity: p.stock === 0 ? 0.5 : 1,
         priceLabel: 'Desde ' + this.fmt(p.price) + ' PEN',
-        open: () => this.setState({ sel: p.id, selSize: 0, qty: 1 })
+        open: () => this.setState({ sel: p.id, selSize: 0, qty: 1, mImg: 0 })
       })),
       selected,
-      selectedImg: (selected && selected.imagenes && selected.imagenes[0]) || this.BLANK_IMG,
-      thumb1Img: (selected && selected.imagenes && selected.imagenes[1]) || this.BLANK_IMG,
-      thumb2Img: (selected && selected.imagenes && selected.imagenes[2]) || this.BLANK_IMG,
+      selectedImg: gal.length ? gal[imgAt].url : this.BLANK_IMG,
+      selectedImgAlt: gal.length ? gal[imgAt].label : 'Foto del producto',
+      hasManyImgs: gal.length > 1,
+      galleryImages: gal.map((im, i) => ({
+        url: im.url, label: im.label,
+        border: i === imgAt ? '2px solid #1b1816' : '1px solid var(--color-divider)',
+        opacity: i === imgAt ? '1' : '0.62',
+        select: () => this.setState({ mImg: i })
+      })),
+      // Se topan en los extremos: la última foto no salta al siguiente perfume.
+      imgPrev: () => this.setState(s => ({ mImg: Math.max(0, s.mImg - 1) })),
+      imgNext: () => this.setState(s => ({ mImg: Math.min(gal.length - 1, s.mImg + 1) })),
+      imgPrevOpacity: imgAt > 0 ? '1' : '0.35',
+      imgPrevEvents: imgAt > 0 ? 'auto' : 'none',
+      imgNextOpacity: imgAt < gal.length - 1 ? '1' : '0.35',
+      imgNextEvents: imgAt < gal.length - 1 ? 'auto' : 'none',
       sizeOptions: sizes.map((s, i) => ({
         priceLabel: this.fmt(s.price),
         ml: s.ml,
@@ -322,9 +361,10 @@ class Component extends DCLogic {
       qty,
       qtyMinus: () => this.setState(s => ({ qty: Math.max(1, s.qty - 1) })),
       qtyPlus: () => this.setState(s => ({ qty: s.qty + 1 })),
-      stockLabel: selected ? (selected.stock > 0 ? 'Disponible · ' + selected.stock + ' unidades' : 'Agotado — consulta reposición') : '',
-      stockTagClass: selected && selected.stock > 0 ? 'tag-accent' : 'tag-neutral',
-      waHref: 'https://wa.me/51987654321?text=' + waMsg,
+      stockLabel: stockView.label,
+      stockBg: stockView.bg,
+      stockFg: stockView.fg,
+      waHref: 'https://wa.me/' + (window.MAROS_WHATSAPP || '51987654321') + '?text=' + waMsg,
       cutoff: String(Math.floor(diff / 60)).padStart(2, '0') + ' h ' + String(diff % 60).padStart(2, '0') + ' min',
       shipDate: dFmt(ship),
       deliverDate: dFmt(deliver),
@@ -334,20 +374,11 @@ class Component extends DCLogic {
       toggleSort: () => this.setState(s => ({ sort: s.sort === 'none' ? 'asc' : s.sort === 'asc' ? 'desc' : 'none' })),
       close: () => this.setState({ sel: null }),
       stop: (e) => e.stopPropagation(),
-      prevProd: () => this.nav(-1),
-      nextProd: () => this.nav(1),
       searchOpen: this.state.searchOpen,
       openSearch: () => this.setState({ searchOpen: true }),
       closeSearch: () => this.setState({ searchOpen: false }),
       stopClick: (e) => e.stopPropagation(),
     };
-  }
-  nav(dir) {
-    const list = this.filtered();
-    const i = list.findIndex(p => p.id === this.state.sel);
-    if (i < 0) return;
-    const next = list[(i + dir + list.length) % list.length];
-    this.setState({ sel: next.id, selSize: 0, qty: 1 });
   }
 }
 </script>

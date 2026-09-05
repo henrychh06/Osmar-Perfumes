@@ -175,6 +175,30 @@
           </label>
         </div>
 
+        <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: #fff; padding: 18.4px 22px; margin-bottom: 22px;">
+          <div style="font-family: var(--font-heading); font-size: 20px;">Portada de la página</div>
+          <div style="font-size: 12.5px; color: var(--color-neutral-600); margin-top: 4.6px;">Fotos de combos que van girando solas cada 5 segundos en la cabecera de «Packs de decants». Con una sola foto no gira. <strong>Tamaño recomendado: 1200 × 960 px (proporción 5:4)</strong>, PNG con fondo transparente.</div>
+          <div style="display: grid; gap: 9.2px; margin-top: 13.8px;">
+            <sc-for list="{{ portadaImagenesRows }}" as="im" hint-placeholder-count="3">
+              <div style="display: grid; gap: 4.6px;">
+                <div style="display: flex; gap: 9.2px; align-items: flex-start;">
+                  <label onDragOver="{{ im.onDragOver }}" onDrop="{{ im.onDrop }}" style="{{ im.dropStyle }}">
+                    <input type="file" accept="image/*" onChange="{{ im.onFileChange }}" style="display: none;">
+                    <sc-if value="{{ im.url }}" hint-placeholder-val="{{ false }}">
+                      <img src="{{ im.url }}" alt="" style="width: 100%; height: 100%; object-fit: contain; display: block;">
+                    </sc-if>
+                    <sc-if value="{{ im.empty }}" hint-placeholder-val="{{ true }}">
+                      <span style="font-size: 11px; color: var(--color-neutral-500); text-align: center; padding: 0 6px;">Foto {{ im.n }} — arrastra o haz clic</span>
+                    </sc-if>
+                  </label>
+                </div>
+                <input value="{{ im.url }}" onChange="{{ im.onChange }}" placeholder="o pega un enlace de imagen" style="font-size: 12px; padding: 6px 10px;">
+              </div>
+            </sc-for>
+          </div>
+          <button onClick="{{ addPortadaImagen }}" style="margin-top: 9.2px; background: none; border: 1px dashed var(--color-divider); border-radius: var(--radius-sm); padding: 7px 13.8px; font-size: 12.5px; cursor: pointer; color: var(--color-neutral-700);">+ Añadir otra foto</button>
+        </div>
+
         <sc-if value="{{ packDraft }}" hint-placeholder-val="{{ false }}">
           <div style="border: 1px solid var(--color-accent); border-radius: var(--radius-md); background: #fff; padding: 18.4px 22px; margin-bottom: 22px; display: grid; gap: 13.8px; box-shadow: var(--shadow-md);">
             <div style="font-family: var(--font-heading); font-size: 20px; color: var(--color-accent-700);">Nuevo pack</div>
@@ -769,6 +793,7 @@ const SEED = {
     ]
   },
   contacto: { telefono: '+51 987 654 321', correo: 'maros.perfumes@gmail.com' },
+  packsPortada: [],
   redes: { instagram: '', tiktok: 'https://www.tiktok.com/@maros.parfums1', facebook: '', whatsapp: 'https://wa.me/51987654321' },
   banners: {
     perfumes: { kicker: '', subtitulo: '' },
@@ -1135,6 +1160,8 @@ class Component extends DCLogic {
 
       inicio: d0.inicio,
       setTitular: setInicio('titular'), setBajada: setInicio('bajada'), setCta: setInicio('cta'), setAviso: setInicio('aviso'),
+      portadaImagenesRows: this.imgRows(d0.packsPortada, arr => { const data = this.clone(); data.packsPortada = arr; this.persist(data); }),
+      addPortadaImagen: () => { const data = this.clone(); data.packsPortada = (data.packsPortada || ['', '', '']).concat(''); this.persist(data); },
       heroImagenesRows: this.imgRows(d0.inicio.heroImagenes, arr => { const data = this.clone(); data.inicio.heroImagenes = arr; this.persist(data); }),
 
       ocasionCards: OCASIONES.map((nombre, i) => {
