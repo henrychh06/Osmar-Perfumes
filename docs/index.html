@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="support.js"></script>
 <script src="cart.js"></script>
+<script src="nav.js"></script>
 </head>
 <body>
 <x-dc>
@@ -61,17 +62,10 @@ html, body { height: auto; min-height: 100%; }
 .reviews-track > * { flex: 0 0 300px; }
 @media (hover: hover) and (pointer: fine) { .reviews-track:hover { animation-play-state: paused; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.001s !important; animation-delay: 0s !important; transition-duration: 0.001s !important; } }
-@media (max-width: 1080px) { .top-track { --per-view: 3; } .top-track > * { flex: 0 0 calc((100% - 32px) / 3); } }
-@media (max-width: 860px) {
-  .hero-grid { grid-template-columns: 1fr !important; gap: 34px !important; padding: 44px 0 40px !important; text-align: center; }
-  .hero-grid figure { order: -1; }
-  .hero-grid > div:first-child { display: flex; flex-direction: column; align-items: center; }
-  .hero-subhead { margin-left: auto !important; margin-right: auto !important; }
-  .trust-badges { grid-template-columns: repeat(2,1fr) !important; row-gap: 18px; }
-  .oc-grid { grid-template-columns: repeat(2,1fr) !important; }
-}
-@media (max-width: 620px) { .top-track { --per-view: 2; } .top-track > * { flex: 0 0 calc((100% - 16px) / 2); } .reviews-track > * { flex: 0 0 250px; } }
+/* Los breakpoints de ancho de esta página (antes 1080 / 860 / 620) viven ahora
+   en responsive.css, alineados a los 1120 / 900 / 640 del resto del sitio. */
 </style>
+<link rel="stylesheet" href="responsive.css">
 </helmet>
 
 <nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#ffffff">
@@ -91,7 +85,7 @@ html, body { height: auto; min-height: 100%; }
 </nav>
 
 <header id="inicio" data-screen-label="Hero" style="color: #f3f2f2; background-color: #000000">
-  <div style="max-width:1280px;margin:0 auto;padding:0 40px">
+  <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px">
     <div class="hero-grid" style="display:grid;grid-template-columns:minmax(0,10fr) minmax(0,14fr);gap:48px;align-items:center;padding:72px 0 64px">
       <div>
         <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(44px,4.8vw,68px);line-height:1.08;letter-spacing:0.015em;margin:0;text-transform:uppercase;color:#f3f2f2"><span class="hero-word" style="animation-delay:0s">ENCUENTRA</span> <span class="hero-word" style="animation-delay:.08s">TU</span> <span class="hero-word" style="animation-delay:.16s">PRÓXIMA</span> <span class="hero-word" style="animation-delay:.24s">FRAGANCIA</span></h1>
@@ -145,7 +139,7 @@ html, body { height: auto; min-height: 100%; }
   <div class="marquee-track" style="display:flex;width:max-content;animation:marquee 46s linear infinite" aria-hidden="true"><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CREED</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">XERJOFF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">TOM FORD</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">DIOR</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">YVES SAINT LAURENT</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">PARFUMS DE MARLY</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">LATTAFA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">RASASI</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">AFNAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CAROLINA HERRERA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">INITIO</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">MAISON FRANCIS KURKDJIAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">ARMAF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CREED</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">XERJOFF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">TOM FORD</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">DIOR</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">YVES SAINT LAURENT</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">PARFUMS DE MARLY</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">LATTAFA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">RASASI</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">AFNAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">CAROLINA HERRERA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">INITIO</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">MAISON FRANCIS KURKDJIAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:color-mix(in srgb, var(--color-text) 46%, transparent);padding:0 22px;white-space:nowrap">ARMAF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span></div>
 </div>
 
-<div style="max-width:1280px;margin:0 auto;padding:0 40px">
+<div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px">
 
   <section id="top10" data-screen-label="Top 10 más vendidos" style="padding:52px 0">
     <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:24px">
@@ -195,8 +189,8 @@ html, body { height: auto; min-height: 100%; }
   </div>
 
   <section id="decants" data-screen-label="Decants" data-reveal style="color: #f3f2f2; background-color: #000000; width: 100%; box-sizing: border-box">
-  <div style="max-width:1280px;margin:0 auto;padding:16px 40px 52px">
-    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr))">
+  <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:16px 40px 52px">
+    <div class="mp-cols-3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr))">
       <div data-reveal data-reveal-delay="0" style="padding:28px 30px 28px 0;transition:background .3s ease, transform .3s cubic-bezier(.2,.7,.2,1)" style-hover="background:rgba(225,173,102,0.07);transform:translateY(-4px)">
         <div style="display:flex;align-items:center;gap:12px">
           <span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.18em;color:var(--color-accent-400);font-feature-settings:'tnum' 1">01</span>
@@ -228,7 +222,7 @@ html, body { height: auto; min-height: 100%; }
   </div>
   </section>
 
-  <div style="max-width:1280px;margin:0 auto;padding:0 40px">
+  <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px">
 
   <hr class="hr" style="margin:0">
 
@@ -290,15 +284,15 @@ html, body { height: auto; min-height: 100%; }
 </div>
 
 <footer data-screen-label="Pie de página" style="color: #f3f2f2; background-color: #000000">
-  <div style="max-width:1280px;margin:0 auto;padding:0 40px">
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);padding:26px 0">
+  <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px">
+    <div class="mp-cols-4" style="display:grid;grid-template-columns:repeat(4,1fr);padding:26px 0">
       <div style="display:flex;gap:14px;align-items:center;padding-right:24px"><span style="color:var(--color-accent-400)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v6l-3 5v7a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7l-3-5V2"></path><path d="M8 2h8"></path></svg></span><div><div style="font-size:13.5px;font-weight:600;letter-spacing:0.08em;font-feature-settings:'tnum' 1">+200 FRAGANCIAS</div><div style="font-size:12px;color:rgba(243,242,242,0.6)">Disponibles para ti</div></div></div>
       <div style="display:flex;gap:14px;align-items:center;padding:0 24px;border-left:1px solid rgba(243,242,242,0.16)"><span style="color:var(--color-accent-400)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c1.2-3 3.8-4.5 7-4.5s5.8 1.5 7 4.5"></path><path d="M17 4a4 4 0 0 1 0 8"></path></svg></span><div><div style="font-size:13.5px;font-weight:600;letter-spacing:0.08em">CLIENTES SATISFECHOS</div><div style="font-size:12px;color:rgba(243,242,242,0.6)">Miles de clientes nos recomiendan</div></div></div>
       <div style="display:flex;gap:14px;align-items:center;padding:0 24px;border-left:1px solid rgba(243,242,242,0.16)"><span style="color:var(--color-accent-400)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 15.8 6.4 19l1.4-6.2L3 8.5l6.4-.6Z"></path></svg></span><div><div style="font-size:13.5px;font-weight:600;letter-spacing:0.08em">EXPERIENCIA PREMIUM</div><div style="font-size:12px;color:rgba(243,242,242,0.6)">Perfumes seleccionados con detalle</div></div></div>
       <div style="display:flex;gap:14px;align-items:center;padding-left:24px;border-left:1px solid rgba(243,242,242,0.16)"><span style="color:var(--color-accent-400)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span><div><div style="font-size:13.5px;font-weight:600;letter-spacing:0.08em">COMUNIDAD EXCLUSIVA</div><div style="font-size:12px;color:rgba(243,242,242,0.6)">Tips, lanzamientos y más</div></div></div>
     </div>
     <div style="height:1px;background:rgba(243,242,242,0.16)"></div>
-    <div style="display:grid;grid-template-columns:minmax(0,4fr) minmax(0,2.6fr) minmax(0,2fr) minmax(0,2.8fr) minmax(0,3.6fr);gap:40px;padding:48px 0 40px">
+    <div class="mp-footer" style="display:grid;grid-template-columns:minmax(0,4fr) minmax(0,2.6fr) minmax(0,2fr) minmax(0,2.8fr) minmax(0,3.6fr);gap:40px;padding:48px 0 40px">
       <div>
         <div style="font-family:var(--font-heading);font-weight:600;font-size:24px;letter-spacing:0.14em">MAROS</div>
         <div style="font-size:9px;letter-spacing:0.26em;text-transform:uppercase;color:var(--color-accent-400);margin-top:2px">Perfumes &amp; Decants</div>

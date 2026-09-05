@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="../support.js"></script>
 <script src="../cart.js"></script>
+<script src="../nav.js"></script>
 </head>
 <body>
 <x-dc>
@@ -21,6 +22,7 @@ a:hover { color: var(--color-accent-600); }
 html, body { height: auto; min-height: 100%; }
 #dc-root, .sc-host { height: auto; min-height: 100%; }
 </style>
+<link rel="stylesheet" href="../responsive.css">
 </helmet>
 
 <nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#1b1816;color:#f3f2f2">
@@ -40,10 +42,10 @@ html, body { height: auto; min-height: 100%; }
   </div>
 </nav>
 
-<section data-screen-label="Contacto" style="background:#dedcdb;padding:56px 40px;min-height:calc(100vh - 76px)">
+<section class="mp-shell" data-screen-label="Contacto" style="background:#dedcdb;padding:56px 40px;min-height:calc(100vh - 76px)">
   <div style="max-width:1280px;margin:0 auto">
     <h1 style="font-family:var(--font-heading);font-weight:500;font-size:34px;margin:0 0 24px;color:#1b1816">Contacto</h1>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="mp-cols-2" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <input type="text" placeholder="Nombre" aria-label="Nombre" style="min-height:52px;padding:14px 18px;font:inherit;font-size:13px;color:#1b1816;background:#ffffff;border:none;border-radius:var(--radius-md)">
       <input type="email" placeholder="Correo electrónico" aria-label="Correo electrónico" style="min-height:52px;padding:14px 18px;font:inherit;font-size:13px;color:#1b1816;background:#ffffff;border:none;border-radius:var(--radius-md)">
     </div>
