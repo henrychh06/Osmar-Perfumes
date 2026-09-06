@@ -115,6 +115,38 @@
     try { registraPedido(JSON.parse(raw)); } catch (err) { /* atributo mal formado */ }
   }
 
+  /* -------------------------------------------------- visitas */
+
+  // Una fila por carga de página, para el gráfico de visitas del panel. Se
+  // marca en sessionStorage para no sumar de nuevo si la misma pestaña
+  // recarga la página varias veces seguidas (alguien probando el sitio).
+  // Va con fetch + keepalive, igual que registraPedido, para no depender de
+  // que el cliente de Supabase ya esté listo ni de esperar su respuesta.
+  function registraVisita() {
+    if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) return;
+    try {
+      var marca = 'maros:visita:' + location.pathname;
+      if (sessionStorage.getItem(marca)) return;
+      sessionStorage.setItem(marca, '1');
+    } catch (e) { /* sin sessionStorage, se registra igual */ }
+
+    try {
+      fetch(window.SUPABASE_URL + '/rest/v1/page_views', {
+        method: 'POST',
+        keepalive: true,
+        headers: {
+          'apikey': window.SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + window.SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ path: location.pathname })
+      }).catch(function (e) { console.error('MarosData: no se pudo registrar la visita:', e); });
+    } catch (e) {
+      console.error('MarosData: no se pudo registrar la visita:', e);
+    }
+  }
+
   /* -------------------------------------------------- carga */
 
   function notify() {
@@ -155,6 +187,7 @@
 
   function init() {
     load();
+    registraVisita();
     document.addEventListener('click', alPulsarPedido, true);
     // El runtime x-dc vuelve a pintar la página y repone los enlaces con el
     // número escrito a mano; hay que reaplicar. Reescribir un href no altera
