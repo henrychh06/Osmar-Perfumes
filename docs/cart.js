@@ -73,6 +73,10 @@
         detalle: item.detalle ? String(item.detalle) : '',
         tamano: item.tamano ? String(item.tamano) : '',
         precio: Number(item.precio) || 0,
+        // Precio antes del descuento (por unidad): si viene y es mayor al
+        // precio final, el panel lo muestra tachado.
+        antes: item.antes != null && Number(item.antes) > 0 ? Number(item.antes) : null,
+        imgUrl: item.imgUrl ? String(item.imgUrl) : '',
         qty: qty
       });
     }
@@ -144,21 +148,30 @@
       "font-family:'Manrope',system-ui,sans-serif;color:#1b1816}",
       '.mc-panel.mc-on{transform:translateX(0)}',
       '.mc-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid #e6e3e1}',
+      '.mc-title-row{display:flex;align-items:center;gap:9px}',
       ".mc-title{font-family:'Oswald',system-ui,sans-serif;font-size:20px;letter-spacing:.08em;text-transform:uppercase;margin:0}",
-      '.mc-x{background:none;border:none;cursor:pointer;padding:6px;color:#1b1816;line-height:0;border-radius:50%}',
+      '.mc-count{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#f0efee;color:#1b1816;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}',
+      '.mc-x{background:none;border:1px solid #ddd9d6;cursor:pointer;padding:7px;color:#1b1816;line-height:0;border-radius:50%}',
       '.mc-x:hover{background:#f0efee}',
       '.mc-body{flex:1;overflow:auto;padding:14px 22px}',
       '.mc-empty{text-align:center;color:#6f6a66;font-size:13.5px;line-height:1.6;padding:48px 10px}',
-      '.mc-item{display:grid;gap:6px;padding:15px 0;border-bottom:1px solid #efedeb}',
-      '.mc-name{font-size:14px;font-weight:600;line-height:1.35}',
-      '.mc-meta{font-size:12px;color:#6f6a66;line-height:1.5}',
-      '.mc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px}',
+      '.mc-item{display:grid;grid-template-columns:56px 1fr;gap:12px;padding:15px 0;border-bottom:1px solid #efedeb}',
+      '.mc-thumb{width:56px;height:56px;border-radius:8px;background:#f0efee;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none;color:#b7b2ad}',
+      '.mc-thumb img{width:100%;height:100%;object-fit:cover;display:block}',
+      '.mc-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}',
+      '.mc-name{font-size:13.5px;font-weight:700;color:var(--color-accent-700);line-height:1.35}',
+      '.mc-linetotal{font-size:13.5px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}',
+      '.mc-meta{font-size:12px;color:#6f6a66;line-height:1.5;margin-top:2px}',
+      '.mc-pricerow{display:flex;align-items:baseline;gap:8px;margin-top:4px}',
+      '.mc-now{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums}',
+      '.mc-was{font-size:12px;color:#a8a29c;text-decoration:line-through;font-variant-numeric:tabular-nums}',
+      '.mc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}',
       '.mc-qty{display:flex;align-items:center;border:1px solid #ddd9d6;border-radius:999px;overflow:hidden}',
       '.mc-qty button{width:30px;height:28px;border:none;background:#fff;cursor:pointer;font-size:15px;color:#1b1816;line-height:1}',
       '.mc-qty button:hover{background:#f0efee}',
       '.mc-qty span{min-width:26px;text-align:center;font-size:13px;font-variant-numeric:tabular-nums}',
-      '.mc-price{font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums}',
-      '.mc-del{background:none;border:none;color:#8c2f2f;font-size:11.5px;cursor:pointer;padding:0;text-decoration:underline;justify-self:start}',
+      '.mc-del{background:none;border:none;color:#8c2f2f;cursor:pointer;padding:6px;line-height:0;border-radius:50%}',
+      '.mc-del:hover{background:#faf2f2}',
       '.mc-foot{border-top:1px solid #e6e3e1;padding:18px 22px calc(18px + env(safe-area-inset-bottom));display:grid;gap:12px}',
       '.mc-total{display:flex;align-items:baseline;justify-content:space-between;font-size:15px;font-weight:700}',
       '.mc-total span:last-child{font-variant-numeric:tabular-nums}',
@@ -193,25 +206,32 @@
     var items = read();
     var html = '<div class="mc-backdrop" data-mc-close></div>';
     html += '<aside class="mc-panel" role="dialog" aria-label="Tu carrito">';
-    html += '<div class="mc-head"><h2 class="mc-title">Tu carrito</h2>';
-    html += '<button class="mc-x" aria-label="Cerrar" data-mc-close><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>';
+    html += '<div class="mc-head"><div class="mc-title-row"><h2 class="mc-title">Carrito</h2>';
+    if (items.length) html += '<span class="mc-count">' + count() + '</span>';
+    html += '</div>';
+    html += '<button class="mc-x" aria-label="Cerrar" data-mc-close><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>';
     html += '<div class="mc-body">';
     if (!items.length) {
       html += '<p class="mc-empty">Todavía no agregaste nada.<br>Elige un decant, un pack o arma tu combo.</p>';
     } else {
       items.forEach(function (it) {
         html += '<div class="mc-item">';
-        html += '<div class="mc-name">' + esc(it.nombre) + '</div>';
-        if (it.tamano) html += '<div class="mc-meta">Tamaño: ' + esc(it.tamano) + '</div>';
+        html += '<div class="mc-thumb">' + (it.imgUrl
+          ? '<img src="' + esc(it.imgUrl) + '" alt="">'
+          : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 14H5L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>') + '</div>';
+        html += '<div>';
+        html += '<div class="mc-top"><span class="mc-name">' + esc(it.nombre) + '</span><span class="mc-linetotal">' + esc(fmt(it.precio * it.qty)) + ' PEN</span></div>';
+        if (it.tamano) html += '<div class="mc-meta">' + esc(it.tamano) + '</div>';
         if (it.detalle) html += '<div class="mc-meta">Incluye: ' + esc(it.detalle) + '</div>';
-        html += '<div class="mc-meta">' + esc(fmt(it.precio)) + ' c/u</div>';
+        html += '<div class="mc-pricerow"><span class="mc-now">' + esc(fmt(it.precio)) + '</span>';
+        if (it.antes && it.antes > it.precio) html += '<span class="mc-was">' + esc(fmt(it.antes)) + '</span>';
+        html += '</div>';
         html += '<div class="mc-row"><div class="mc-qty">';
         html += '<button aria-label="Quitar uno" data-mc-dec="' + esc(it.k) + '">−</button>';
         html += '<span>' + it.qty + '</span>';
         html += '<button aria-label="Agregar uno" data-mc-inc="' + esc(it.k) + '">+</button>';
-        html += '</div><span class="mc-price">' + esc(fmt(it.precio * it.qty)) + '</span></div>';
-        html += '<button class="mc-del" data-mc-del="' + esc(it.k) + '">Quitar</button>';
-        html += '</div>';
+        html += '</div><button class="mc-del" aria-label="Quitar del carrito" data-mc-del="' + esc(it.k) + '"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg></button></div>';
+        html += '</div></div>';
       });
     }
     html += '</div>';

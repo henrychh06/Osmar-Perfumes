@@ -43,7 +43,7 @@ html, body { height: auto; min-height: 100%; }
 <link rel="stylesheet" href="../responsive.css">
 </helmet>
 
-<nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#1b1816;color:#f3f2f2">
+<nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#000000;color:#f3f2f2">
   <a href="../" class="nav-brand" aria-label="Ir al inicio" style="display:flex;flex-direction:column;line-height:1.1;text-decoration:none;color:#f3f2f2">
     <span style="font-size:26px;letter-spacing:0.14em">MAROS</span>
     <span style="font-family:var(--font-body);font-size:9px;letter-spacing:0.26em;text-transform:uppercase;color:var(--color-accent-400)">Perfumes &amp; Decants</span>
@@ -62,9 +62,9 @@ html, body { height: auto; min-height: 100%; }
 
 <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px 72px" data-screen-label="Decants">
   <div style="margin-top:36px">
-    <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700)">{{ bannerKicker }}</div>
-    <h1 style="font-family:var(--font-heading);font-weight:500;font-size:44px;letter-spacing:0.03em;text-transform:uppercase;margin:6px 0 0">Decants</h1>
-    <p style="font-size:14px;color:color-mix(in srgb, var(--color-text) 65%, transparent);max-width:60ch;margin:10px 0 0">{{ bannerSub }}</p>
+    <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);opacity:{{ bOpacity }};transition:opacity .35s ease">{{ bannerKicker }}</div>
+    <h1 style="font-family:var(--font-heading);font-weight:500;font-size:44px;letter-spacing:0.03em;text-transform:uppercase;margin:6px 0 0;opacity:{{ bOpacity }};transition:opacity .35s ease">Decants</h1>
+    <p style="font-size:14px;color:color-mix(in srgb, var(--color-text) 65%, transparent);max-width:60ch;margin:10px 0 0;opacity:{{ bOpacity }};transition:opacity .35s ease">{{ bannerSub }}</p>
   </div>
 
   <div style="display:flex;gap:10px;margin-top:26px;flex-wrap:wrap">
@@ -207,12 +207,20 @@ class Component extends DCLogic {
   state = {
     cat: 'todos', sel: null, mImg: 0, selSize: 0, qty: 1, onlyAvail: false, sort: 'none' , searchOpen: false,
     bannerKicker: 'Antes de comprar tu botella',
-    bannerSub: 'Prueba fragancias originales en formato pequeño antes de invertir en la botella completa. Sellados y etiquetados al momento de tu pedido.'
+    bannerSub: 'Prueba fragancias originales en formato pequeño antes de invertir en la botella completa. Sellados y etiquetados al momento de tu pedido.',
+    // El texto del banner llega de la base de datos; se oculta hasta que
+    // carga (o hasta 700ms como tope) para que no se vea cambiar de golpe.
+    bReady: false
   };
   componentDidMount() {
     window.MarosCart.onChange(() => this.forceUpdate());
     this.setupPhotoZoom();
+    // Tope de espera para que el banner no quede invisible si la consulta
+    // tarda o falla; en el camino normal, el .then() abajo llega primero.
+    this._bReadyTimer = setTimeout(() => this.setState({ bReady: true }), 700);
     window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
+      clearTimeout(this._bReadyTimer);
+      this.setState({ bReady: true });
       if (error || !row || !row.data) return;
       const admin = row.data;
       const catsAdmin = (admin.cats || []).map(c => ({ key: this.slugCat(c), label: c, title: c }));
@@ -377,7 +385,7 @@ class Component extends DCLogic {
       'Pago contra entrega (previo adelanto). Quedo atento para coordinar la entrega.'
     ].join('\n')) : '';
     return {
-      bannerKicker: this.state.bannerKicker, bannerSub: this.state.bannerSub,
+      bannerKicker: this.state.bannerKicker, bannerSub: this.state.bannerSub, bOpacity: this.state.bReady ? 1 : 0,
       cartCount: window.MarosCart.count(),
       hasCart: window.MarosCart.count() > 0,
       openCart: () => window.MarosCart.open(),
@@ -386,7 +394,8 @@ class Component extends DCLogic {
         if (!selected || !curSize) return;
         window.MarosCart.add({
           tipo: 'decant', nombre: selected.brand + ' ' + selected.name,
-          tamano: curSize.ml, precio: curSize.price, qty: qty
+          tamano: curSize.ml, precio: curSize.price, qty: qty,
+          imgUrl: (slots[imgAt] && slots[imgAt].url) || (selected.imagenes || []).filter(Boolean)[0] || ''
         });
       },
       count: list.length,

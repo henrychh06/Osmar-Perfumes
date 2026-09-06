@@ -28,6 +28,7 @@ html, body { height: auto; min-height: 100%; }
 #dc-root, .sc-host { height: auto; min-height: 100%; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
 @keyframes plateIn { from { opacity: 0; transform: scale(0.965); } to { opacity: 1; transform: none; } }
+@keyframes heroPhotoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
 :root { --ease-out: cubic-bezier(0.23, 1, 0.32, 1); }
 /* Visor de fotos del pack: la lupa solo se activa con mouse real. */
 .pack-photo { position: relative; overflow: hidden; background: #ffffff; }
@@ -42,7 +43,7 @@ html, body { height: auto; min-height: 100%; }
 <link rel="stylesheet" href="./responsive.css">
 </helmet>
 
-<nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#1b1816;color:#f3f2f2">
+<nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#000000;color:#f3f2f2">
   <a href="Maros Landing.dc.html" class="nav-brand" aria-label="Ir al inicio" style="display:flex;flex-direction:column;line-height:1.1;text-decoration:none;color:#f3f2f2">
     <span style="font-size:26px;letter-spacing:0.14em">MAROS</span>
     <span style="font-family:var(--font-body);font-size:9px;letter-spacing:0.26em;text-transform:uppercase;color:var(--color-accent-400)">Perfumes &amp; Decants</span>
@@ -58,13 +59,13 @@ html, body { height: auto; min-height: 100%; }
   </div>
 </nav>
 
-<header data-screen-label="Packs — portada" style="background:#000000;color:#f3f2f2">
+<header id="packs-hero" data-screen-label="Packs — portada" style="background:#000000;color:#f3f2f2">
   <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px">
-    <div class="mp-split" style="display:grid;grid-template-columns:minmax(0,13fr) minmax(0,9fr);gap:52px;align-items:center;padding:56px 0 48px">
+    <div class="mp-split" style="display:grid;grid-template-columns:minmax(0,9fr) minmax(0,13fr);gap:52px;align-items:center;padding:56px 0 48px">
       <div>
-        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-400)">{{ bannerKicker }}</div>
-        <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(38px,4.2vw,58px);line-height:1;letter-spacing:0.02em;text-transform:uppercase;margin:0;color:#f3f2f2;animation:fadeUp .8s cubic-bezier(.2,.7,.2,1) both">Packs de decants</h1>
-        <p style="font-size:16.5px;line-height:1.7;color:rgba(243,242,242,0.72);max-width:52ch;margin:20px 0 0;animation:fadeUp .85s cubic-bezier(.2,.7,.2,1) .16s both">{{ bannerSub }}</p>
+        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-accent-400);opacity:{{ bOpacity }};transition:opacity .35s ease">{{ bannerKicker }}</div>
+        <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(38px,4.2vw,58px);line-height:1;letter-spacing:0.02em;text-transform:uppercase;margin:0;color:#f3f2f2;opacity:{{ bOpacity }};transition:opacity .35s ease">Packs de decants</h1>
+        <p style="font-size:16.5px;line-height:1.7;color:rgba(243,242,242,0.72);max-width:52ch;margin:20px 0 0;opacity:{{ bOpacity }};transition:opacity .35s ease">{{ bannerSub }}</p>
         <div class="mp-cta-row" style="display:flex;gap:14px;margin-top:30px;animation:fadeUp .85s cubic-bezier(.2,.7,.2,1) .26s both">
           <a href="#listos" class="btn" style="color:var(--color-accent-400);border-color:var(--color-accent-400);letter-spacing:0.12em;text-transform:uppercase;font-size:13px;padding:12px 24px;text-decoration:none" style-hover="background:rgba(225,173,102,0.12)">Ver packs listos <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></a>
           <a href="Combo.dc.html" class="btn" style="color:rgba(243,242,242,0.85);border-color:rgba(243,242,242,0.3);letter-spacing:0.12em;text-transform:uppercase;font-size:13px;padding:12px 24px;text-decoration:none" style-hover="border-color:var(--color-accent-400);color:var(--color-accent-400)">Arma el tuyo</a>
@@ -72,17 +73,15 @@ html, body { height: auto; min-height: 100%; }
       </div>
       <figure style="margin:0;position:relative;display:flex;justify-content:center;align-items:center;animation:plateIn 1.15s cubic-bezier(.2,.7,.2,1) .15s both">
         <div class="mp-glow" style="position:absolute;inset:-8% -6% -12%;background:radial-gradient(closest-side, rgba(225,173,102,0.20), rgba(225,173,102,0.05) 58%, rgba(225,173,102,0) 80%);pointer-events:none"></div>
-        <div id="packs-portada" style="position:relative;width:100%;aspect-ratio:5/4">
-          <sc-for list="{{ portadaImages }}" as="pi" hint-placeholder-count="1">
-            <img src="{{ pi.url }}" alt="{{ pi.alt }}" style="position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 26px 40px rgba(0,0,0,0.6));object-fit:contain;display:block;opacity:{{ pi.opacity }};transition:opacity .7s ease">
-          </sc-for>
-        </div>
-        <sc-if value="{{ hasPortadaDots }}" hint-placeholder-val="{{ false }}">
-          <div style="position:absolute;left:0;right:0;bottom:-4px;display:flex;justify-content:center;gap:8px">
-            <sc-for list="{{ portadaDots }}" as="pd" hint-placeholder-count="3">
-              <button type="button" onClick="{{ pd.select }}" aria-label="{{ pd.label }}" style="width:8px;height:8px;padding:0;border-radius:50%;border:none;cursor:pointer;background:{{ pd.bg }}"></button>
+        <sc-if value="{{ heroImg }}" hint-placeholder-val="{{ false }}">
+          <div id="packs-portada" style="{{ figureStyle }}">
+            <sc-for list="{{ heroBottles }}" as="b" hint-placeholder-count="1">
+              <img src="{{ b.url }}" alt="{{ b.alt }}" style="{{ b.imgStyle }}">
             </sc-for>
           </div>
+        </sc-if>
+        <sc-if value="{{ noHeroImg }}" hint-placeholder-val="{{ true }}">
+          <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Foto: varios decants juntos" style="width:100%;max-width:640px;aspect-ratio:5/4;object-fit:contain;display:block">
         </sc-if>
       </figure>
     </div>
@@ -293,10 +292,11 @@ html, body { height: auto; min-height: 100%; }
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;discountPct&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:15,&quot;min&quot;:0,&quot;max&quot;:30,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pack armado&quot;},&quot;minTesters&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:2,&quot;max&quot;:8,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pack armado&quot;},&quot;packDiscountPct&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:12,&quot;min&quot;:0,&quot;max&quot;:30,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Packs listos&quot;},&quot;whatsapp&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;51987654321&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contacto&quot;}}">
 class Component extends DCLogic {
-  state = { cat: 'arabes', type: 'todos', size: 0, picked: [], sel: null, mSize: 0, mImg: 0, qty: 1, searchOpen: false, portadaAt: 0,
-    bannerKicker: 'Varios decants, un solo envío', bannerSub: 'Varios decants en un solo envío: llévate una selección ya armada o elige tú mismo qué fragancias quieres probar. Disponibles en 3, 5 y 10 ml, con descuento por combinar y pago contra entrega.' };
-  // Imágenes de combos que giran en la portada; las carga el admin.
-  portada = [];
+  state = { cat: 'arabes', type: 'todos', size: 0, picked: [], sel: null, mSize: 0, mImg: 0, qty: 1, searchOpen: false, heroImgs: [], heroTrims: null, heroTick: 0,
+    bannerKicker: 'Varios decants, un solo envío', bannerSub: 'Varios decants en un solo envío: llévate una selección ya armada o elige tú mismo qué fragancias quieres probar. Disponibles en 3, 5 y 10 ml, con descuento por combinar y pago contra entrega.',
+    // El texto del banner llega de la base de datos; se oculta hasta que
+    // carga (o hasta 700ms como tope) para que no se vea cambiar de golpe.
+    bReady: false };
   // Las fotos del pack siguen un orden fijo acordado con el admin:
   // 0 = foto general (la de la tarjeta), 1 = 3 ml, 2 = 5 ml, 3 = 10 ml.
   IMG_LABELS = ['Foto general', '3 ml', '5 ml', '10 ml'];
@@ -304,25 +304,63 @@ class Component extends DCLogic {
   // desmonta condicionalmente, así que se re-engancha en cada actualización y se
   // marca el nodo para no duplicar listeners.
   componentDidUpdate() { this.setupPhotoZoom(); }
-  /* La portada gira sola cada 5 s. Se detiene al pasar el ratón por encima y
-     no arranca si el sistema pide menos movimiento. */
-  startPortada() {
-    if (this._portadaTimer || this.portada.length < 2) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const box = document.getElementById('packs-portada');
-    if (box && !this._portadaHover) {
-      this._portadaHover = true;
-      box.addEventListener('mouseenter', () => { this._portadaPaused = true; });
-      box.addEventListener('mouseleave', () => { this._portadaPaused = false; });
-    }
-    this._portadaTimer = setInterval(() => {
-      if (this._portadaPaused) return;
-      this.setState(s => ({ portadaAt: (s.portadaAt + 1) % this.portada.length }));
-    }, 5000);
-  }
   componentWillUnmount() {
-    if (this._portadaTimer) clearInterval(this._portadaTimer);
-    this._portadaTimer = null;
+    if (this._heroTimer) clearInterval(this._heroTimer);
+    if (this._heroStart) clearTimeout(this._heroStart);
+  }
+  /* Los frascos de la portada rotan de puesto cada 5s, igual que en el inicio.
+     Arranca a los 2.2s para no encimarse con la animación de entrada. */
+  startHeroRotation(count) {
+    if (count < 2) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (this._heroTimer || this._heroStart) return;
+    this._heroStart = setTimeout(() => {
+      this._heroStart = null;
+      this._heroTimer = setInterval(() => {
+        this.setState(s => ({ heroTick: (s.heroTick || 0) + 1 }));
+      }, 5000);
+    }, 2200);
+  }
+  /* Mide la proporción real de cada foto (alto/ancho) leyendo el canal alfa,
+     para que el marco de la portada no le sobre ni le falte espacio. */
+  measureTrims(urls) {
+    const S = 200, ALPHA = 12, PAD = 2;
+    return Promise.all(urls.map(url => new Promise(resolve => {
+      const im = new Image();
+      im.crossOrigin = 'anonymous';
+      im.onerror = () => resolve(null);
+      im.onload = () => {
+        try {
+          const c = document.createElement('canvas');
+          c.width = S; c.height = S;
+          const g = c.getContext('2d', { willReadFrequently: true });
+          g.drawImage(im, 0, 0, S, S);
+          const d = g.getImageData(0, 0, S, S).data;
+          let minX = S, minY = S, maxX = -1, maxY = -1;
+          for (let y = 0; y < S; y++) {
+            for (let x = 0; x < S; x++) {
+              if (d[(y * S + x) * 4 + 3] > ALPHA) {
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+              }
+            }
+          }
+          if (maxX < 0) return resolve(null);
+          const l = Math.max(0, minX - PAD) / S;
+          const t = Math.max(0, minY - PAD) / S;
+          const r = Math.min(S, maxX + 1 + PAD) / S;
+          const b = Math.min(S, maxY + 1 + PAD) / S;
+          const w = r - l, h = b - t;
+          if (w <= 0 || h <= 0) return resolve(null);
+          resolve({ l, t, w, h, ar: (im.naturalWidth * w) / (im.naturalHeight * h) });
+        } catch (e) {
+          resolve(null);
+        }
+      };
+      im.src = url;
+    })));
   }
   setupPhotoZoom() {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
@@ -351,12 +389,17 @@ class Component extends DCLogic {
   componentDidMount() {
     window.MarosCart.onChange(() => this.forceUpdate());
     this.setupPhotoZoom();
+    // Tope de espera para que el banner no quede invisible si la consulta
+    // tarda o falla; en el camino normal, el .then() abajo llega primero.
+    this._bReadyTimer = setTimeout(() => this.setState({ bReady: true }), 700);
     window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
+      clearTimeout(this._bReadyTimer);
+      this.setState({ bReady: true });
       if (error || !row || !row.data) return;
       const admin = row.data;
       this.aplicaBanner(admin, 'packs');
       const newTesters = (admin.products || []).filter(p => p.enDecants && p.p3 !== '' && p.p3 != null).map(p => ({
-        id: p.id, brand: p.marca, name: p.nombre, cat: this.slugCat(p.linea), price: Number(p.p3)
+        id: p.id, brand: p.marca, name: p.nombre, cat: this.slugCat(p.linea), price: Number(p.p3), imagenes: p.imagenes || []
       }));
       if (newTesters.length) this.testers = newTesters;
       const typeKeyMap = { 'Mixto': 'mixtos', 'Nicho': 'nicho', 'Diseñador': 'disenador', 'Árabe': 'arabes', 'Damas': 'damas' };
@@ -366,8 +409,13 @@ class Component extends DCLogic {
       }));
       if (newPacks.length) this.packs = newPacks;
       if (admin.packDiscountGlobal != null) this.packDiscountAdmin = admin.packDiscountGlobal;
-      this.portada = (admin.packsPortada || []).filter(Boolean);
-      this.startPortada();
+      const heroImgsPk = (admin.packsPortada || []).filter(Boolean);
+      if (heroImgsPk.length) {
+        this.measureTrims(heroImgsPk).then(trims => {
+          this.setState({ heroImgs: heroImgsPk, heroTrims: trims });
+          this.startHeroRotation(heroImgsPk.length);
+        });
+      }
       this.forceUpdate();
       this.abreDesdeUrl({ mSize: 0 });
     });
@@ -499,21 +547,40 @@ class Component extends DCLogic {
       '· TOTAL: ' + this.fmt(total), '',
       'Pago contra entrega (previo adelanto). Quedo atento para coordinar la entrega.'
     ]).join('\n'));
-    // Portada giratoria: las fotos se apilan y solo la activa queda visible,
-    // para que el cambio sea un fundido y no un salto.
-    const port = this.portada;
-    const portAt = port.length ? this.state.portadaAt % port.length : 0;
+    // Portada: una sola foto de combo a la vez (rotan cada 5s con fundido),
+    // con una flotación suave. Cada foto ya trae varios frascos juntos, así
+    // que se muestran de a una — nunca superpuestas — dentro de un marco de
+    // tamaño fijo, para que no salte al rotar entre fotos.
+    const heroSrcs = this.state.heroImgs || [];
+    const activeIdx = heroSrcs.length ? (((this.state.heroTick || 0) % heroSrcs.length) + heroSrcs.length) % heroSrcs.length : 0;
+    // El marco usa el promedio de proporciones de todas las fotos (no la de la
+    // foto activa), así su tamaño no salta cada vez que rota a la siguiente.
+    const arList = heroSrcs.map((u, i) => {
+      const t = (this.state.heroTrims && this.state.heroTrims[i]) || null;
+      return t ? t.ar : 1.9;
+    });
+    const avgAr = arList.length ? arList.reduce((a, b) => a + b, 0) / arList.length : 1.9;
+    const heroBottles = heroSrcs.map((url, i) => {
+      const trim = (this.state.heroTrims && this.state.heroTrims[i]) || null;
+      // Cada foto trae mucho margen transparente alrededor de los frascos; se
+      // usa el recuadro real (medido por measureTrims) para que el contenido
+      // llene el marco en vez de verse chico y encogido en una esquina.
+      const box = trim
+        ? 'position:absolute;max-width:none;max-height:none;left:' + (-trim.l / trim.w * 100).toFixed(3) + '%;top:' + (-trim.t / trim.h * 100).toFixed(3) + '%;width:' + (100 / trim.w).toFixed(3) + '%;height:' + (100 / trim.h).toFixed(3) + '%;display:block'
+        : 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block';
+      return {
+        url,
+        alt: 'Combo de decants ' + (i + 1),
+        imgStyle: box + ';filter:drop-shadow(0 20px 30px rgba(0,0,0,0.5));opacity:' + (i === activeIdx ? '1' : '0') + ';transition:opacity .8s ease;animation:' + (i === activeIdx ? 'heroPhotoFloat 5s ease-in-out infinite' : 'none')
+      };
+    });
+    const figureStyle = 'position:relative;overflow:hidden;width:100%;max-width:900px;aspect-ratio:' + Math.max(0.9, Math.min(2.4, avgAr)).toFixed(3);
     return {
-      bannerKicker: this.state.bannerKicker, bannerSub: this.state.bannerSub,
-      portadaImages: port.length
-        ? port.map((url, i) => ({ url, alt: 'Combo de decants ' + (i + 1), opacity: i === portAt ? '1' : '0' }))
-        : [{ url: this.BLANK_IMG, alt: 'Foto: varios decants juntos', opacity: '1' }],
-      hasPortadaDots: port.length > 1,
-      portadaDots: port.map((url, i) => ({
-        label: 'Ver foto ' + (i + 1),
-        bg: i === portAt ? 'var(--color-accent-400)' : 'rgba(243,242,242,0.35)',
-        select: () => this.setState({ portadaAt: i })
-      })),
+      bannerKicker: this.state.bannerKicker, bannerSub: this.state.bannerSub, bOpacity: this.state.bReady ? 1 : 0,
+      figureStyle,
+      heroImg: heroBottles.length > 0,
+      noHeroImg: heroBottles.length === 0,
+      heroBottles,
       cartCount: window.MarosCart.count(),
       hasCart: window.MarosCart.count() > 0,
       openCart: () => window.MarosCart.open(),
@@ -602,9 +669,10 @@ class Component extends DCLogic {
         if (!selPack || !selCalc) return;
         window.MarosCart.add({
           tipo: 'pack', nombre: selPack.name,
-          tamano: (this.sizes[mSize] || this.sizes[0]).ml,
+          tamano: (this.sizes[mSize] || this.sizes[0]).label,
           detalle: selCalc.items.map(t => t.brand + ' ' + t.name).join(', '),
-          precio: selCalc.price, qty: qty
+          precio: selCalc.price, antes: selCalc.before, imgUrl: imgs.length ? imgs[imgAt].url : (selPack.imagenes && selPack.imagenes[0]) || '',
+          qty: qty
         });
       },
       close: () => this.setState({ sel: null }),
@@ -657,7 +725,8 @@ class Component extends DCLogic {
           tipo: 'pack', nombre: 'Pack armado (' + pickedItems.length + ' decants)',
           tamano: sz.label,
           detalle: pickedItems.map(t => t.brand + ' ' + t.name).join(', '),
-          precio: total, qty: 1
+          precio: total, antes: subtotal, imgUrl: (pickedItems[0] && pickedItems[0].imagenes && pickedItems[0].imagenes[0]) || '',
+          qty: 1
         });
       },
       builderHref: 'https://wa.me/' + wa + '?text=' + msg,

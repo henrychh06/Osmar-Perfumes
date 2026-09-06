@@ -27,12 +27,15 @@ a:hover { color: var(--color-accent-600); }
 html, body { height: auto; min-height: 100%; }
 #dc-root, .sc-host { height: auto; min-height: 100%; }
 @keyframes stepIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-track { transition: animation-play-state 0s; }
+@media (hover: hover) and (pointer: fine) { .marquee-track:hover { animation-play-state: paused; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.001s !important; transition-duration: 0.001s !important; } }
 </style>
 <link rel="stylesheet" href="./responsive.css">
 </helmet>
 
-<nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#1b1816;color:#f3f2f2">
+<nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#000000;color:#f3f2f2">
   <a href="Maros Landing.dc.html" class="nav-brand" aria-label="Ir al inicio" style="display:flex;flex-direction:column;line-height:1.1;text-decoration:none;color:#f3f2f2">
     <span style="font-size:26px;letter-spacing:0.14em">MAROS</span>
     <span style="font-family:var(--font-body);font-size:9px;letter-spacing:0.26em;text-transform:uppercase;color:var(--color-accent-400)">Perfumes &amp; Decants</span>
@@ -50,11 +53,15 @@ html, body { height: auto; min-height: 100%; }
 
 <header data-screen-label="Arma tu combo — portada" style="background:#000000;color:#f3f2f2">
   <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:52px 40px 46px;text-align:center">
-    <div style="font-size:11.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--color-accent-400)">{{ bannerKicker }}</div>
-    <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(38px,4.2vw,56px);line-height:1;letter-spacing:0.04em;text-transform:uppercase;margin:14px 0 0">Arma tu combo</h1>
-    <p style="font-size:15.5px;line-height:1.7;color:rgba(243,242,242,0.7);max-width:56ch;margin:16px auto 0">{{ bannerSub }}</p>
+    <div style="font-size:11.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--color-accent-400);opacity:{{ bOpacity }};transition:opacity .35s ease">{{ bannerKicker }}</div>
+    <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(38px,4.2vw,56px);line-height:1;letter-spacing:0.04em;text-transform:uppercase;margin:14px 0 0;opacity:{{ bOpacity }};transition:opacity .35s ease">Arma tu combo</h1>
+    <p style="font-size:15.5px;line-height:1.7;color:rgba(243,242,242,0.7);max-width:56ch;margin:16px auto 0;opacity:{{ bOpacity }};transition:opacity .35s ease">{{ bannerSub }}</p>
   </div>
 </header>
+
+<div data-screen-label="Marcas" style="background:#000000;border-bottom:1px solid rgba(243,242,242,0.16);overflow:hidden;padding:15px 0">
+  <div class="marquee-track" style="display:flex;width:max-content;animation:marquee 46s linear infinite" aria-hidden="true"><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">CREED</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">XERJOFF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">TOM FORD</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">DIOR</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">YVES SAINT LAURENT</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">PARFUMS DE MARLY</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">LATTAFA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">RASASI</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">AFNAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">CAROLINA HERRERA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">INITIO</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">MAISON FRANCIS KURKDJIAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">ARMAF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">CREED</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">XERJOFF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">TOM FORD</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">DIOR</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">YVES SAINT LAURENT</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">PARFUMS DE MARLY</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">LATTAFA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">RASASI</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">AFNAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">CAROLINA HERRERA</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">INITIO</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">MAISON FRANCIS KURKDJIAN</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span><span style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.24em;color:rgba(243,242,242,0.85);padding:0 22px;white-space:nowrap">ARMAF</span><span style="color:var(--color-accent);font-size:8px" aria-hidden="true">◆</span></div>
+</div>
 
 <div style="border-bottom:1px solid var(--color-divider);background:#fbfbfa;position:sticky;top:67px;z-index:40">
   <div class="mp-shell mp-steps" style="max-width:1280px;margin:0 auto;padding:0 40px;display:flex;align-items:stretch;justify-content:center">
@@ -70,7 +77,7 @@ html, body { height: auto; min-height: 100%; }
   </div>
 </div>
 
-<div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px 80px">
+<div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px 44px">
   <div class="mp-split" style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:36px;align-items:start;padding-top:34px">
 
     <div style="min-width:0">
@@ -156,11 +163,6 @@ html, body { height: auto; min-height: 100%; }
         </div>
       </sc-if>
 
-      <sc-if value="{{ showStepNav }}" hint-placeholder-val="{{ true }}">
-      <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;margin-top:28px;border-top:1px solid var(--color-divider);padding-top:20px">
-        <button type="button" onClick="{{ next }}" style="display:flex;align-items:center;gap:8px;background:#1b1816;color:#ffffff;border:none;border-radius:999px;padding:12px 26px;font:inherit;font-size:12.5px;font-weight:600;letter-spacing:0.06em;cursor:{{ nextCursor }};opacity:{{ nextOpacity }};pointer-events:{{ nextEvents }};transition:background .25s ease" style-hover="background:#33302d">{{ nextLabel }} <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></button>
-      </div>
-      </sc-if>
     </div>
 
     <div class="card mp-summary" style="padding:0;gap:0;position:sticky;top:150px;overflow:hidden">
@@ -211,15 +213,19 @@ html, body { height: auto; min-height: 100%; }
       </div>
     </div>
   </div>
+</div>
 
-  <div style="border-top:1px solid var(--color-divider);margin-top:8px;padding-top:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px">
-    <sc-for list="{{ tierBlocks }}" as="tb" hint-placeholder-count="3">
-      <div>
-        <div style="font-family:var(--font-heading);font-size:12.5px;letter-spacing:0.18em;color:var(--color-accent-700);font-feature-settings:'tnum' 1">{{ tb.rangeLabel }}</div>
-        <div style="font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em;text-transform:uppercase;margin-top:8px">{{ tb.pctLabel }}</div>
-        <p style="font-size:13.5px;line-height:1.7;color:color-mix(in srgb, var(--color-text) 68%, transparent);margin:8px 0 0">{{ tb.descripcion }}</p>
-      </div>
-    </sc-for>
+<div data-screen-label="Descuento por cantidad" style="background:#000000;padding:36px 0 44px">
+  <div class="mp-shell" style="max-width:1280px;margin:0 auto;padding:0 40px">
+    <div style="border-top:1px solid rgba(243,242,242,0.16);padding-top:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px">
+      <sc-for list="{{ tierBlocks }}" as="tb" hint-placeholder-count="3">
+        <div>
+          <div style="font-family:var(--font-heading);font-size:12.5px;letter-spacing:0.18em;color:var(--color-accent-400);font-feature-settings:'tnum' 1">{{ tb.rangeLabel }}</div>
+          <div style="font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em;text-transform:uppercase;margin-top:8px;color:#f3f2f2">{{ tb.pctLabel }}</div>
+          <p style="font-size:13.5px;line-height:1.7;color:rgba(243,242,242,0.68);margin:8px 0 0">{{ tb.descripcion }}</p>
+        </div>
+      </sc-for>
+    </div>
   </div>
 </div>
 
@@ -238,12 +244,20 @@ class Component extends DCLogic {
   // picked guarda { id, size }: el tamaño se fija al elegir la fragancia, no
   // al final, para que un combo pueda mezclar tamaños de varias categorías.
   state = { step: 1, cat: null, size: null, picked: [], searchOpen: false,
-    bannerKicker: 'Descuento automático', bannerSub: 'Elige la categoría, el tamaño y las fragancias que quieres probar. Mientras más decants sumes, mayor es el descuento — y pagas contra entrega.' };
+    bannerKicker: 'Descuento automático', bannerSub: 'Elige la categoría, el tamaño y las fragancias que quieres probar. Mientras más decants sumes, mayor es el descuento — y pagas contra entrega.',
+    // El texto del banner llega de la base de datos; se oculta hasta que
+    // carga (o hasta 700ms como tope) para que no se vea cambiar de golpe.
+    bReady: false };
   tramosAdmin = null;
   sizesOn = null;
   componentDidMount() {
     window.MarosCart.onChange(() => this.forceUpdate());
+    // Tope de espera para que el banner no quede invisible si la consulta
+    // tarda o falla; en el camino normal, el .then() abajo llega primero.
+    this._bReadyTimer = setTimeout(() => this.setState({ bReady: true }), 700);
     window.sb.from('site_data').select('data').eq('id', 1).single().then(({ data: row, error }) => {
+      clearTimeout(this._bReadyTimer);
+      this.setState({ bReady: true });
       if (error || !row || !row.data) return;
       const admin = row.data;
       this.aplicaBanner(admin, 'combo');
@@ -367,7 +381,6 @@ class Component extends DCLogic {
       { n: '2', label: 'Tamaño', value: n ? sizeSummary : (size === null ? 'Sin elegir' : this.sizes[size].ml), to: 2, on: !!cat },
       { n: '3', label: 'Perfumes', value: n ? n + (n === 1 ? ' elegido' : ' elegidos') : 'Sin elegir', to: 3, on: !!cat && size !== null }
     ];
-    const canNext = step === 1 ? !!cat : step === 2 ? size !== null : n >= min;
     const msg = encodeURIComponent([
       'Hola! Armé mi combo de decants:', '',
       '· Tamaños: ' + sizesUsed.join(' y '),
@@ -382,7 +395,7 @@ class Component extends DCLogic {
       'Pago contra entrega (previo adelanto). Quedo atento para coordinar la entrega.'
     ]).join('\n'));
     return {
-      bannerKicker: this.state.bannerKicker, bannerSub: this.state.bannerSub,
+      bannerKicker: this.state.bannerKicker, bannerSub: this.state.bannerSub, bOpacity: this.state.bReady ? 1 : 0,
       cartCount: window.MarosCart.count(),
       hasCart: window.MarosCart.count() > 0,
       openCart: () => window.MarosCart.open(),
@@ -482,7 +495,9 @@ class Component extends DCLogic {
           tipo: 'combo', nombre: 'Combo de ' + pickedItems.length + ' decants',
           tamano: sizeSummary + (pct ? ' · ' + pct + '% dscto.' : ''),
           detalle: pickedItems.map(x => x.t.brand + ' ' + x.t.name + ' (' + this.sizes[x.si].ml + ')').join(', '),
-          precio: total, qty: 1
+          precio: total, antes: pct ? subtotal : null,
+          imgUrl: (pickedItems[0] && pickedItems[0].t.imagenes && pickedItems[0].t.imagenes[0]) || '',
+          qty: 1
         });
       },
       waPedido: n ? JSON.stringify({
@@ -496,15 +511,6 @@ class Component extends DCLogic {
       backCursor: step > 1 ? 'pointer' : 'not-allowed',
       backEvents: step > 1 ? 'auto' : 'none',
       backOpacity: step > 1 ? '1' : '0.45',
-      next: () => { if (step < 3) this.setState({ step: step + 1 }); },
-      // En el paso 3 no hay "siguiente": el botón que cierra el combo es
-      // "Añadir al carrito", en la ficha lateral. La barra entera se oculta y
-      // el "Atrás" vive arriba a la derecha del box de perfumes.
-      showStepNav: step < 3,
-      nextLabel: step === 1 ? 'Continuar al tamaño' : 'Elegir perfumes',
-      nextCursor: canNext ? 'pointer' : 'not-allowed',
-      nextEvents: canNext ? 'auto' : 'none',
-      nextOpacity: canNext ? 1 : 0.45,
       searchOpen: this.state.searchOpen,
       openSearch: () => this.setState({ searchOpen: true }),
       closeSearch: () => this.setState({ searchOpen: false }),

@@ -30,7 +30,7 @@ html, body { height: auto; min-height: 100%; }
 <link rel="stylesheet" href="../responsive.css">
 </helmet>
 
-<nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#1b1816;color:#f3f2f2">
+<nav class="nav" data-screen-label="Navegación" style="position:sticky;top:0;z-index:60;box-shadow:0 1px 0 rgba(27,24,22,0.10), 0 6px 18px rgba(27,24,22,0.06);padding-inline:max(40px, calc((100% - 1280px) / 2 + 40px)); background:#000000;color:#f3f2f2">
   <a href="../" class="nav-brand" aria-label="Ir al inicio" style="display:flex;flex-direction:column;line-height:1.1;text-decoration:none;color:#f3f2f2">
     <span style="font-size:26px;letter-spacing:0.14em">MAROS</span>
     <span style="font-family:var(--font-body);font-size:9px;letter-spacing:0.26em;text-transform:uppercase;color:var(--color-accent-400)">Perfumes &amp; Decants</span>
@@ -49,9 +49,9 @@ html, body { height: auto; min-height: 100%; }
 
 <section class="mp-shell" data-screen-label="Contacto" style="background:#dedcdb;padding:56px 40px;min-height:calc(100vh - 76px)">
   <div style="max-width:1280px;margin:0 auto">
-    <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700)">{{ bannerKicker }}</div>
-    <h1 style="font-family:var(--font-heading);font-weight:500;font-size:34px;margin:6px 0 0;color:#1b1816">Contacto</h1>
-    <p style="font-size:14px;color:color-mix(in srgb, #1b1816 65%, transparent);max-width:60ch;margin:10px 0 24px">{{ bannerSub }}</p>
+    <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);opacity:{{ bOpacity }};transition:opacity .35s ease">{{ bannerKicker }}</div>
+    <h1 style="font-family:var(--font-heading);font-weight:500;font-size:34px;margin:6px 0 0;color:#1b1816;opacity:{{ bOpacity }};transition:opacity .35s ease">Contacto</h1>
+    <p style="font-size:14px;color:color-mix(in srgb, #1b1816 65%, transparent);max-width:60ch;margin:10px 0 24px;opacity:{{ bOpacity }};transition:opacity .35s ease">{{ bannerSub }}</p>
     <div class="mp-cols-2" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <input type="text" placeholder="Nombre" aria-label="Nombre" style="min-height:52px;padding:14px 18px;font:inherit;font-size:13px;color:#1b1816;background:#ffffff;border:none;border-radius:var(--radius-md)">
       <input type="email" placeholder="Correo electrónico" aria-label="Correo electrónico" style="min-height:52px;padding:14px 18px;font:inherit;font-size:13px;color:#1b1816;background:#ffffff;border:none;border-radius:var(--radius-md)">
@@ -70,11 +70,19 @@ html, body { height: auto; min-height: 100%; }
 class Component extends DCLogic {
   state = { searchOpen: false,
     bannerKicker: 'Estamos para ayudarte',
-    bannerSub: 'Escríbenos y te respondemos por WhatsApp o correo.' };
+    bannerSub: 'Escríbenos y te respondemos por WhatsApp o correo.',
+    // El texto del banner llega de la base de datos; se oculta hasta que
+    // carga (o hasta 700ms como tope) para que no se vea cambiar de golpe.
+    bReady: false };
   componentDidMount() {
     window.MarosCart.onChange(() => this.forceUpdate());
+    // Tope de espera para que el banner no quede invisible si la consulta
+    // tarda o falla; en el camino normal, el .ready() abajo llega primero.
+    this._bReadyTimer = setTimeout(() => this.setState({ bReady: true }), 700);
     // Esta página no consultaba nada; store.js ya trae los datos del panel.
     window.MarosData.ready(data => {
+      clearTimeout(this._bReadyTimer);
+      this.setState({ bReady: true });
       const b = ((data || {}).banners || {}).contacto;
       if (!b) return;
       this.setState({
@@ -85,7 +93,7 @@ class Component extends DCLogic {
   }
   renderVals() {
     return {
-      bannerKicker: this.state.bannerKicker, bannerSub: this.state.bannerSub,
+      bannerKicker: this.state.bannerKicker, bannerSub: this.state.bannerSub, bOpacity: this.state.bReady ? 1 : 0,
       searchOpen: this.state.searchOpen,
       cartCount: window.MarosCart.count(),
       hasCart: window.MarosCart.count() > 0,
