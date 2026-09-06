@@ -151,6 +151,11 @@ body.mp-no-scroll { overflow: hidden !important; }
   .mp-split { grid-template-columns: 1fr !important; }
   .mp-summary { position: static !important; }
 
+  /* Landing: el video de TikTok apilado sobre el texto, centrado en vez de
+     quedar pegado a la izquierda. */
+  .tiktok-grid { gap: 28px !important; text-align: center; }
+  .tiktok-follow { justify-content: center; }
+
   /* Bandas de garantías y cifras, y el pie de la portada. */
   .mp-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; row-gap: 18px; }
 
