@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="./favicon.ico">
+<link rel="icon" type="image/png" sizes="512x512" href="./favicon.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <script src="./support.js"></script>
 <script src="./cart.js"></script>
 <script src="./store.js"></script>
@@ -112,7 +115,7 @@ html, body { height: auto; min-height: 100%; }
 
   <section id="listos" data-screen-label="Packs listos" style="padding:48px 0 0">
     <h2 style="font-family:var(--font-heading);font-weight:600;font-size:28px;letter-spacing:0.06em;text-transform:uppercase;margin:0">Packs listos</h2>
-    <p style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:8px 0 0">Selecciones cerradas con {{ packDiscountLabel }} de descuento. Entra al pack para elegir 3, 5 o 10 ml.</p>
+    <p style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin:8px 0 0">Selecciones ya armadas. Entra al pack para elegir 3, 5 o 10 ml.</p>
 
     <div class="mp-toolbar" style="display:flex;gap:22px;flex-wrap:wrap;margin:22px 0 24px;border-top:1px solid var(--color-divider);border-bottom:1px solid var(--color-divider);padding:12px 0">
       <sc-for list="{{ typeTabs }}" as="t" hint-placeholder-count="6">
@@ -145,7 +148,6 @@ html, body { height: auto; min-height: 100%; }
             <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 10px;margin-top:8px">
               <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">Desde</span>
               <span style="font-family:var(--font-heading);font-size:26px;font-weight:500;font-feature-settings:'tnum' 1;white-space:nowrap">{{ k.fromLabel }}</span>
-              <span class="tag tag-accent" style="font-feature-settings:'tnum' 1;white-space:nowrap">{{ k.saveLabel }}</span>
             </div>
             <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;height:44px;border:1.5px solid #1b1816;border-radius:999px;font-size:12.5px;font-weight:600;letter-spacing:0.06em;transition:background .25s ease, color .25s ease" style-hover="background:#1b1816;color:#ffffff">Ver pack <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></div>
           </div>
@@ -223,8 +225,6 @@ html, body { height: auto; min-height: 100%; }
               </sc-for>
             </div>
             <div style="display:flex;align-items:baseline;gap:10px;margin-top:14px">
-              <span style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 55%, transparent);text-decoration:line-through;font-feature-settings:'tnum' 1">{{ selectedBefore }}</span>
-              <span class="tag tag-accent" style="font-feature-settings:'tnum' 1">{{ selectedSave }}</span>
               <span style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">{{ selectedPerUnit }}</span>
             </div>
 
@@ -405,7 +405,8 @@ class Component extends DCLogic {
       const typeKeyMap = { 'Mixto': 'mixtos', 'Nicho': 'nicho', 'Diseñador': 'disenador', 'Árabe': 'arabes', 'Damas': 'damas' };
       const newPacks = (admin.packs || []).map(k => ({
         id: k.id, type: typeKeyMap[k.tipo] || 'mixtos', typeLabel: k.tipo === 'Árabe' ? 'Árabes' : k.tipo,
-        tag: k.etiqueta || '', name: k.nombre, subtitle: k.subtitulo, ids: k.productos || [], imagenes: k.imagenes || []
+        tag: k.etiqueta || '', name: k.nombre, subtitle: k.subtitulo, ids: k.productos || [], imagenes: k.imagenes || [],
+        precios: k.precios || null
       }));
       if (newPacks.length) this.packs = newPacks;
       if (admin.packDiscountGlobal != null) this.packDiscountAdmin = admin.packDiscountGlobal;
@@ -477,8 +478,11 @@ class Component extends DCLogic {
   packPrice(pack, sizeIndex, packPct) {
     const mult = (this.sizes[sizeIndex] || this.sizes[0]).mult;
     const items = pack.ids.map(id => this.tester(id)).filter(Boolean);
+    const manualKey = ['p3', 'p5', 'p10'][sizeIndex];
+    const manual = pack.precios && Number(pack.precios[manualKey]);
+    if (manual > 0) return { items, before: manual, price: manual };
     const before = items.reduce((a, t) => a + Math.round(t.price * mult), 0);
-    return { items, before, price: Math.round(before * (100 - packPct) / 100) };
+    return { items, before, price: before };
   }
   aplicaBanner(admin, clave) {
     const b = (admin.banners || {})[clave];
@@ -584,7 +588,6 @@ class Component extends DCLogic {
       cartCount: window.MarosCart.count(),
       hasCart: window.MarosCart.count() > 0,
       openCart: () => window.MarosCart.open(),
-      packDiscountLabel: packPct + '%',
       packCountLabel: shownPacks.length + (shownPacks.length === 1 ? ' pack' : ' packs'),
       typeTabs: this.types.map(t => ({
         label: t.label,
@@ -603,7 +606,6 @@ class Component extends DCLogic {
           subtitle: p.subtitle,
           items: base.items.map(t => t.brand + ' ' + t.name),
           fromLabel: this.fmt(base.price),
-          saveLabel: 'Ahorras ' + this.fmt(base.before - base.price),
           open: () => this.setState({ sel: p.id, mSize: 0, mImg: 0, qty: 1 })
         };
       }),
@@ -625,8 +627,6 @@ class Component extends DCLogic {
       hasNextImg: imgAt < imgs.length - 1,
       imgPrev: () => this.setState(s => ({ mImg: Math.max(0, s.mImg - 1) })),
       imgNext: () => this.setState(s => ({ mImg: Math.min(imgs.length - 1, s.mImg + 1) })),
-      selectedBefore: selCalc ? this.fmt(selCalc.before) : '',
-      selectedSave: selCalc ? 'Ahorras ' + this.fmt(selCalc.before - selCalc.price) : '',
       selectedPerUnit: selCalc ? this.fmt(selCalc.price / selCalc.items.length) + ' por decant' : '',
       waPedido: (selPack && selCalc) ? JSON.stringify({
         canal: 'pack', total: selCalc.total,
@@ -643,7 +643,7 @@ class Component extends DCLogic {
       ).concat([
         '',
         '· Cantidad: ' + qty,
-        '· Precio unitario: ' + this.fmt(selCalc.price) + ' (antes ' + this.fmt(selCalc.before) + ')',
+        '· Precio unitario: ' + this.fmt(selCalc.price),
         '· TOTAL: ' + this.fmt(selCalc.price * qty), '',
         'Pago contra entrega (previo adelanto). Quedo atento para coordinar la entrega.'
       ]).join('\n')) : '',

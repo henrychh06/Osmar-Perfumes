@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="512x512" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <script src="../support.js"></script>
 <script src="../cart.js"></script>
 <script src="../store.js"></script>
@@ -266,7 +269,8 @@ class Component extends DCLogic {
       const newCats = (admin.cats || []).map(c => ({ key: this.slugCat(c), label: c, brands: marcas[c] || '', imagen: fotos[c] || '' }));
       if (newCats.length) this.cats = newCats;
       const newTesters = (admin.products || []).filter(p => p.enCombo && p.p3 !== '' && p.p3 != null).map(p => ({
-        id: p.id, brand: p.marca, name: p.nombre, cat: this.slugCat(p.linea), price: Number(p.p3), tag: p.etiqueta || '', imagenes: p.imagenes || []
+        id: p.id, brand: p.marca, name: p.nombre, cat: this.slugCat(p.linea), price: Number(p.p3),
+        prices: [Number(p.p3), Number(p.p5), Number(p.p10)], tag: p.etiqueta || '', imagenes: p.imagenes || []
       }));
       if (newTesters.length) this.testers = newTesters;
       if (admin.tramos && admin.tramos.length) this.tramosAdmin = admin.tramos;
@@ -287,27 +291,27 @@ class Component extends DCLogic {
     { key: 'damas', label: 'Damas', brands: 'PDM · Carolina Herrera · YSL' }
   ];
   testers = [
-    { id: 'khamrah', brand: 'Lattafa', name: 'Khamrah', cat: 'arabes', price: 12, tag: 'HOT' },
-    { id: 'qahwa', brand: 'Lattafa', name: 'Khamrah Qahwa', cat: 'arabes', price: 13, tag: '' },
-    { id: 'asad', brand: 'Lattafa', name: 'Asad', cat: 'arabes', price: 13, tag: '' },
-    { id: '9pm', brand: 'Afnan', name: '9PM', cat: 'arabes', price: 12, tag: 'HOT' },
-    { id: '9pm-elixir', brand: 'Afnan', name: '9PM Elixir', cat: 'arabes', price: 14, tag: 'NUEVO' },
-    { id: 'hawas-ice', brand: 'Rasasi', name: 'Hawas Ice', cat: 'arabes', price: 13, tag: 'NUEVO' },
-    { id: 'oddysey', brand: 'Armaf', name: 'Oddysey Aqua', cat: 'arabes', price: 12, tag: '' },
-    { id: 'mandarin', brand: 'Armaf', name: 'Mandarin Sky', cat: 'arabes', price: 12, tag: 'OFERTA' },
-    { id: 'sauvage-elixir', brand: 'Dior', name: 'Sauvage Elixir', cat: 'disenador', price: 33, tag: 'OFERTA' },
-    { id: 'y-parfum', brand: 'Saint Laurent', name: 'Y Le Parfum', cat: 'disenador', price: 28, tag: 'NUEVO' },
-    { id: '212vip', brand: 'Carolina Herrera', name: '212 VIP Black', cat: 'disenador', price: 25, tag: '' },
-    { id: 'oud-wood', brand: 'Tom Ford', name: 'Oud Wood', cat: 'disenador', price: 50, tag: 'HOT' },
-    { id: 'aventus', brand: 'Creed', name: 'Aventus', cat: 'nicho', price: 48, tag: 'HOT' },
-    { id: 'br540', brand: 'MFK', name: 'Baccarat Rouge 540', cat: 'nicho', price: 52, tag: 'HOT' },
-    { id: 'erba', brand: 'Xerjoff', name: 'Erba Pura', cat: 'nicho', price: 52, tag: '' },
-    { id: 'layton', brand: 'Parfums de Marly', name: 'Layton', cat: 'nicho', price: 50, tag: '' },
-    { id: 'side-effect', brand: 'Initio', name: 'Side Effect', cat: 'nicho', price: 45, tag: 'NUEVO' },
-    { id: 'delina', brand: 'Parfums de Marly', name: 'Delina', cat: 'damas', price: 55, tag: 'NUEVO' },
-    { id: 'goodgirl', brand: 'Carolina Herrera', name: 'Good Girl', cat: 'damas', price: 32, tag: 'HOT' },
-    { id: 'blush', brand: 'Carolina Herrera', name: 'Good Girl Blush', cat: 'damas', price: 33, tag: '' },
-    { id: 'libre', brand: 'Saint Laurent', name: 'Libre Intense', cat: 'damas', price: 29, tag: 'OFERTA' }
+    { id: 'khamrah', brand: 'Lattafa', name: 'Khamrah', cat: 'arabes', price: 12, prices: [12, 18, 32], tag: 'HOT' },
+    { id: 'qahwa', brand: 'Lattafa', name: 'Khamrah Qahwa', cat: 'arabes', price: 13, prices: [13, 20, 36], tag: '' },
+    { id: 'asad', brand: 'Lattafa', name: 'Asad', cat: 'arabes', price: 13, prices: [13, 20, 36], tag: '' },
+    { id: '9pm', brand: 'Afnan', name: '9PM', cat: 'arabes', price: 12, prices: [12, 18, 32], tag: 'HOT' },
+    { id: '9pm-elixir', brand: 'Afnan', name: '9PM Elixir', cat: 'arabes', price: 14, prices: [14, 22, 40], tag: 'NUEVO' },
+    { id: 'hawas-ice', brand: 'Rasasi', name: 'Hawas Ice', cat: 'arabes', price: 13, prices: [13, 20, 36], tag: 'NUEVO' },
+    { id: 'oddysey', brand: 'Armaf', name: 'Oddysey Aqua', cat: 'arabes', price: 12, prices: [12, 18, 32], tag: '' },
+    { id: 'mandarin', brand: 'Armaf', name: 'Mandarin Sky', cat: 'arabes', price: 12, prices: [12, 18, 32], tag: 'OFERTA' },
+    { id: 'sauvage-elixir', brand: 'Dior', name: 'Sauvage Elixir', cat: 'disenador', price: 33, prices: [33, 52, 95], tag: 'OFERTA' },
+    { id: 'y-parfum', brand: 'Saint Laurent', name: 'Y Le Parfum', cat: 'disenador', price: 28, prices: [28, 44, 82], tag: 'NUEVO' },
+    { id: '212vip', brand: 'Carolina Herrera', name: '212 VIP Black', cat: 'disenador', price: 25, prices: [25, 39, 71], tag: '' },
+    { id: 'oud-wood', brand: 'Tom Ford', name: 'Oud Wood', cat: 'disenador', price: 50, prices: [50, 78, 148], tag: 'HOT' },
+    { id: 'aventus', brand: 'Creed', name: 'Aventus', cat: 'nicho', price: 48, prices: [48, 75, 140], tag: 'HOT' },
+    { id: 'br540', brand: 'MFK', name: 'Baccarat Rouge 540', cat: 'nicho', price: 52, prices: [52, 82, 155], tag: 'HOT' },
+    { id: 'erba', brand: 'Xerjoff', name: 'Erba Pura', cat: 'nicho', price: 52, prices: [52, 82, 150], tag: '' },
+    { id: 'layton', brand: 'Parfums de Marly', name: 'Layton', cat: 'nicho', price: 50, prices: [50, 78, 145], tag: '' },
+    { id: 'side-effect', brand: 'Initio', name: 'Side Effect', cat: 'nicho', price: 45, prices: [45, 70, 128], tag: 'NUEVO' },
+    { id: 'delina', brand: 'Parfums de Marly', name: 'Delina', cat: 'damas', price: 55, prices: [55, 88, 165], tag: 'NUEVO' },
+    { id: 'goodgirl', brand: 'Carolina Herrera', name: 'Good Girl', cat: 'damas', price: 32, prices: [32, 50, 92], tag: 'HOT' },
+    { id: 'blush', brand: 'Carolina Herrera', name: 'Good Girl Blush', cat: 'damas', price: 33, prices: [33, 51, 94], tag: '' },
+    { id: 'libre', brand: 'Saint Laurent', name: 'Libre Intense', cat: 'damas', price: 29, prices: [29, 46, 85], tag: 'OFERTA' }
   ];
   fmt(n) { return 'S/. ' + n.toFixed(2); }
   tagColor(t) { return t === 'HOT' ? '#9a3324' : t === 'OFERTA' ? '#1a7d38' : '#1b1816'; }
@@ -358,7 +362,7 @@ class Component extends DCLogic {
     // El tamaño del paso 2 es el que se aplica a las siguientes fragancias que
     // se elijan; las ya elegidas conservan el suyo.
     const curSize = size === null ? (enabled.length ? enabled[0] : 0) : size;
-    const unit = (t, si) => Math.round(t.price * this.sizes[si].mult);
+    const unit = (t, si) => (t.prices && t.prices[si] != null) ? t.prices[si] : Math.round(t.price * this.sizes[si].mult);
     const catDef = this.cats.find(c => c.key === cat) || null;
     const list = cat ? this.testers.filter(t => t.cat === cat) : [];
     const pickedItems = picked.map(it => {
@@ -426,7 +430,7 @@ class Component extends DCLogic {
       }),
       sizeCards: this.sizes.map((s, i) => ({ s, i })).filter(({ s }) => !this.sizesOn || this.sizesOn[s.ml] !== false).map(({ s, i }) => {
         const items = cat ? this.testers.filter(t => t.cat === cat) : this.testers;
-        const from = items.length ? Math.round(Math.min(...items.map(t => t.price)) * s.mult) : 0;
+        const from = items.length ? Math.min(...items.map(t => unit(t, i))) : 0;
         return {
           ml: s.ml, sprays: s.sprays, popular: i === 0,
           fromLabel: 'Desde ' + this.fmt(from) + ' por decant',

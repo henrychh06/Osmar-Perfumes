@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="./favicon.ico">
+<link rel="icon" type="image/png" sizes="512x512" href="./favicon.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <script src="./support.js"></script>
 </head>
 <body>
@@ -226,6 +229,21 @@
             <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">Subtítulo
               <input value="{{ pd.subtitulo }}" onChange="{{ pdh.subtitulo }}">
             </label>
+            <div style="border-top: 1px solid var(--color-divider); padding-top: 13.8px;">
+              <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Precio del pack por tamaño ({{ moneda }})</div>
+              <p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Déjalo vacío para calcularlo solo sumando el precio de 3 ml de cada perfume incluido.</p>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9.2px;">
+                <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">3 ml
+                  <input type="number" value="{{ pd.precios.p3 }}" onChange="{{ pdh.precioP3 }}" placeholder="Auto">
+                </label>
+                <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">5 ml
+                  <input type="number" value="{{ pd.precios.p5 }}" onChange="{{ pdh.precioP5 }}" placeholder="Auto">
+                </label>
+                <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">10 ml
+                  <input type="number" value="{{ pd.precios.p10 }}" onChange="{{ pdh.precioP10 }}" placeholder="Auto">
+                </label>
+              </div>
+            </div>
             <div>
               <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Fotos</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> En la tarjeta del listado se recorta a 4:3, así que deja algo de aire alrededor del motivo.</p>
               <div style="display: grid; gap: 9.2px;">
@@ -297,6 +315,21 @@
               <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">Subtítulo
                 <input value="{{ k.subtitulo }}" onChange="{{ k.setSubtitulo }}">
               </label>
+              <div style="border-top: 1px solid var(--color-divider); padding-top: 13.8px;">
+                <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Precio del pack por tamaño ({{ moneda }})</div>
+                <p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Déjalo vacío para calcularlo solo sumando el precio de 3 ml de cada perfume incluido.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9.2px;">
+                  <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">3 ml
+                    <input type="number" value="{{ k.precioP3 }}" onChange="{{ k.setPrecioP3 }}" placeholder="Auto">
+                  </label>
+                  <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">5 ml
+                    <input type="number" value="{{ k.precioP5 }}" onChange="{{ k.setPrecioP5 }}" placeholder="Auto">
+                  </label>
+                  <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">10 ml
+                    <input type="number" value="{{ k.precioP10 }}" onChange="{{ k.setPrecioP10 }}" placeholder="Auto">
+                  </label>
+                </div>
+              </div>
               <div>
                 <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 9.2px;">Fotos</div><p style="margin: 0 0 9.2px; font-size: 11.5px; color: var(--color-neutral-600); line-height: 1.5;">Orden: <strong>1ª</strong> foto general (la que se ve en la tarjeta), <strong>2ª</strong> el de 3 ml, <strong>3ª</strong> el de 5 ml, <strong>4ª</strong> el de 10 ml. Al elegir un tamaño se muestra su foto. <strong>Tamaño recomendado: 1200 × 1200 px (cuadrada).</strong> En la tarjeta del listado se recorta a 4:3, así que deja algo de aire alrededor del motivo.</p>
                 <div style="display: grid; gap: 9.2px;">
@@ -1306,13 +1339,23 @@ class Component extends DCLogic {
     const packCards = shownPacks.map(k => {
       const i = d0.packs.indexOf(k);
       const set = field => e => { const data = this.clone(); data.packs[i][field] = e.target.value; this.persist(data); };
+      const setPrecio = field => e => {
+        const data = this.clone();
+        data.packs[i].precios = Object.assign({ p3: '', p5: '', p10: '' }, data.packs[i].precios, { [field]: e.target.value });
+        this.persist(data);
+      };
+      const precios = k.precios || { p3: '', p5: '', p10: '' };
       const items = (k.productos || []).map(id => byId[id]).filter(Boolean);
       const before = items.reduce((a, p) => a + (Number(p.p3) || 0), 0);
-      const price = Math.round(before * (100 - packDisc) / 100);
+      const manual = Number(precios.p3) > 0;
+      const price = manual ? Number(precios.p3) : Math.round(before * (100 - packDisc) / 100);
       return {
         nombre: k.nombre, tipo: k.tipo, etiqueta: k.etiqueta, subtitulo: k.subtitulo,
         setNombre: set('nombre'), setTipo: set('tipo'), setEtiqueta: set('etiqueta'), setSubtitulo: set('subtitulo'),
-        resumen: items.length + (items.length === 1 ? ' perfume · ' : ' perfumes · ') + 'desde ' + this.money(price) + ' (antes ' + this.money(before) + ')',
+        precioP3: precios.p3, precioP5: precios.p5, precioP10: precios.p10,
+        setPrecioP3: setPrecio('p3'), setPrecioP5: setPrecio('p5'), setPrecioP10: setPrecio('p10'),
+        resumen: items.length + (items.length === 1 ? ' perfume · ' : ' perfumes · ') +
+          (manual ? 'desde ' + this.money(price) + ' (precio manual)' : 'desde ' + this.money(price) + ' (antes ' + this.money(before) + ')'),
         imagenesRows: this.imgRows(k.imagenes, arr => { const data = this.clone(); data.packs[i].imagenes = arr; this.persist(data); }, RANURAS_FOTO),
         addImage: () => { const data = this.clone(); data.packs[i].imagenes = conFotoExtra(k.imagenes); this.persist(data); },
         opciones: decantProducts.map(p => ({
@@ -1329,10 +1372,18 @@ class Component extends DCLogic {
     });
     const setPackDiscount = e => { const data = this.clone(); data.packDiscountGlobal = Number(e.target.value); this.persist(data); };
 
-    const EMPTY_PACK_DRAFT = { nombre: '', tipo: d0.cats[0] || 'Nicho', etiqueta: '', subtitulo: '', productos: [], imagenes: ranurasVacias() };
+    const EMPTY_PACK_DRAFT = { nombre: '', tipo: d0.cats[0] || 'Nicho', etiqueta: '', subtitulo: '', productos: [], imagenes: ranurasVacias(), precios: { p3: '', p5: '', p10: '' } };
     const pd = s.packDraft || EMPTY_PACK_DRAFT;
     const pdField = k => e => this.setState({ packDraft: Object.assign({}, this.state.packDraft || EMPTY_PACK_DRAFT, { [k]: e.target.value }) });
-    const pdh = { nombre: pdField('nombre'), tipo: pdField('tipo'), etiqueta: pdField('etiqueta'), subtitulo: pdField('subtitulo') };
+    const pdPrecio = k => e => {
+      const cur = this.state.packDraft || EMPTY_PACK_DRAFT;
+      const precios = Object.assign({ p3: '', p5: '', p10: '' }, cur.precios, { [k]: e.target.value });
+      this.setState({ packDraft: Object.assign({}, cur, { precios }) });
+    };
+    const pdh = {
+      nombre: pdField('nombre'), tipo: pdField('tipo'), etiqueta: pdField('etiqueta'), subtitulo: pdField('subtitulo'),
+      precioP3: pdPrecio('p3'), precioP5: pdPrecio('p5'), precioP10: pdPrecio('p10')
+    };
     const draftOpciones = decantProducts.map(p => ({
       label: p.nombre + ' · ' + p.marca, on: pd.productos.includes(p.id),
       toggle: () => {
