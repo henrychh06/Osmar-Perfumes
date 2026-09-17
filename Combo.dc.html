@@ -253,6 +253,7 @@ class Component extends DCLogic {
     bReady: false };
   tramosAdmin = null;
   sizesOn = null;
+  sizesDesde = null;
   componentDidMount() {
     window.MarosCart.onChange(() => this.forceUpdate());
     // Tope de espera para que el banner no quede invisible si la consulta
@@ -275,6 +276,8 @@ class Component extends DCLogic {
       if (newTesters.length) this.testers = newTesters;
       if (admin.tramos && admin.tramos.length) this.tramosAdmin = admin.tramos;
       if (admin.tamanos) this.sizesOn = admin.tamanos;
+      if (admin.tamanosTexto) this.sizes.forEach(s => { if (admin.tamanosTexto[s.ml]) s.sprays = admin.tamanosTexto[s.ml]; });
+      if (admin.tamanosDesde) this.sizesDesde = admin.tamanosDesde;
       this.forceUpdate();
     });
   }
@@ -430,7 +433,8 @@ class Component extends DCLogic {
       }),
       sizeCards: this.sizes.map((s, i) => ({ s, i })).filter(({ s }) => !this.sizesOn || this.sizesOn[s.ml] !== false).map(({ s, i }) => {
         const items = cat ? this.testers.filter(t => t.cat === cat) : this.testers;
-        const from = items.length ? Math.min(...items.map(t => unit(t, i))) : 0;
+        const manualFrom = this.sizesDesde && Number(this.sizesDesde[s.ml]);
+        const from = manualFrom > 0 ? manualFrom : (items.length ? Math.min(...items.map(t => unit(t, i))) : 0);
         return {
           ml: s.ml, sprays: s.sprays, popular: i === 0,
           fromLabel: 'Desde ' + this.fmt(from) + ' por decant',

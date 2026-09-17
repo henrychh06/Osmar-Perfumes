@@ -501,14 +501,23 @@
           </div>
           <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: #fff; padding: 18.4px 22px; display: grid; gap: 13.8px;">
             <div style="font-family: var(--font-heading); font-size: 22px;">Tamaños disponibles en el combo</div>
-            <div style="display: flex; gap: 18.4px;">
-              <sc-for list="{{ tamanos }}" as="s" hint-placeholder-count="3">
+            <p style="margin: 0; font-size: 12px; color: var(--color-neutral-600);">El mensaje y el precio "Desde" se muestran en el recuadro del Paso 2 (Elige el tamaño). Deja el precio vacío para que se calcule solo (el más barato de la categoría en ese tamaño).</p>
+            <sc-for list="{{ tamanos }}" as="s" hint-placeholder-count="3">
+              <div style="display: grid; gap: 9.2px; padding-bottom: 13.8px; border-bottom: 1px solid var(--color-divider);">
                 <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
                   <input type="checkbox" checked="{{ s.on }}" onChange="{{ s.toggle }}" style="width: auto;">
                   {{ s.label }}
                 </label>
-              </sc-for>
-            </div>
+                <div style="display: grid; grid-template-columns: 1fr 200px; gap: 13.8px;">
+                  <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600);">Mensaje
+                    <input value="{{ s.texto }}" onChange="{{ s.setTexto }}" placeholder="p. ej. aprox. 50 aplicaciones">
+                  </label>
+                  <label style="display: grid; gap: 4.6px; font-size: 12px; color: var(--color-neutral-600); white-space: nowrap;">Precio: ({{ moneda }})
+                    <input type="number" value="{{ s.desde }}" onChange="{{ s.setDesde }}" placeholder="Auto">
+                  </label>
+                </div>
+              </div>
+            </sc-for>
           </div>
           <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-md); background: #fff; padding: 18.4px 22px; display: grid; gap: 13.8px;">
             <div style="font-family: var(--font-heading); font-size: 22px;">Categorías del combo</div>
@@ -879,6 +888,8 @@ const SEED = {
     { label: 'Tercer tramo', min: 6, pct: 20, descripcion: 'Para armar tu colección de bolsillo o repartir entre varios.' }
   ],
   tamanos: { '3 ml': true, '5 ml': true, '10 ml': true },
+  tamanosTexto: { '3 ml': 'aprox. 50 aplicaciones', '5 ml': 'aprox. 90 aplicaciones', '10 ml': 'aprox. 180 aplicaciones' },
+  tamanosDesde: { '3 ml': '', '5 ml': '', '10 ml': '' },
   marcasPorLinea: {
     'Nicho': 'Creed · Xerjoff · MFK · Initio',
     'Diseñador': 'Dior · Tom Ford · Saint Laurent',
@@ -1420,7 +1431,11 @@ class Component extends DCLogic {
 
     const tamanos = Object.keys(d0.tamanos).map(k => ({
       label: k, on: !!d0.tamanos[k],
-      toggle: () => { const data = this.clone(); data.tamanos[k] = !data.tamanos[k]; this.persist(data); }
+      toggle: () => { const data = this.clone(); data.tamanos[k] = !data.tamanos[k]; this.persist(data); },
+      texto: (d0.tamanosTexto || {})[k] || '',
+      setTexto: e => { const data = this.clone(); if (!data.tamanosTexto) data.tamanosTexto = {}; data.tamanosTexto[k] = e.target.value; this.persist(data); },
+      desde: (d0.tamanosDesde || {})[k] || '',
+      setDesde: e => { const data = this.clone(); if (!data.tamanosDesde) data.tamanosDesde = {}; data.tamanosDesde[k] = e.target.value; this.persist(data); }
     }));
 
     const marcas = d0.cats.map(c => ({
